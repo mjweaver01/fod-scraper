@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  }
+}

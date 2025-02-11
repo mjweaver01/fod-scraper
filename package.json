@@ -1,0 +1,29 @@
+{
+  "name": "fod-scraper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "netlify": "netlify dev --port 8181",
+    "d": "npm run netlify"
+  },
+  "packageManager": "yarn@1.22.19",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pinia": "^2.1.7",
+    "primeicons": "^7.0.0",
+    "typescript": "^5.5.3",
+    "vue": "^3.5.3",
+    "vue-router": "^4.4.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^2.8.0",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "prettier": "^3.4.2",
+    "sass": "^1.82.0",
+    "vite": "^5.3.1"
+  }
+}
