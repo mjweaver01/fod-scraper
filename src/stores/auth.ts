@@ -13,12 +13,13 @@ export const useAuthStore = defineStore('auth', {
       const authed = await fetch('/.netlify/functions/auth', {
         method: 'POST',
         body: JSON.stringify({ password: this.password }),
-      })
+      }).then((res) => res.json())
 
-      if (authed.ok) {
+      if (authed.code === 200) {
         this.loggingIn = false
         this.authenticated = true
       } else {
+        alert(authed.message)
         this.loggingIn = false
         this.password = ''
         this.authenticated = false

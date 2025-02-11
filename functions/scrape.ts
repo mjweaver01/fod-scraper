@@ -1,8 +1,7 @@
-import type { Handler, Context } from '@netlify/functions'
+import type { Context } from '@netlify/functions'
 
-export const handler: Handler = async (event, context) => {
-  // Parse the request body.
-  const { password } = JSON.parse(event.body || '{}')
+export default async (req: Request, context: Context) => {
+  const { password } = await req.json()
 
   if (password === process.env.AUTH_SECRET) {
     // @TODO SCRAPE
@@ -12,14 +11,11 @@ export const handler: Handler = async (event, context) => {
     //   message: 'Authorized',
     //   error: false,
     // })
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Authorized' }),
-    }
   } else {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ message: 'Unauthorized' }),
-    }
+    return Response.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
   }
 }

@@ -1,16 +1,19 @@
-import { Handler } from '@netlify/functions'
+import type { Context } from '@netlify/functions'
 
-export const handler: Handler = async (event, context) => {
-  try {
-    // Your function logic here
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Auth function working' }),
-    }
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to execute function' }),
-    }
+export default async (req: Request, context: Context) => {
+  const { password } = await req.json()
+
+  if (password === process.env.AUTH_SECRET) {
+    return Response.json({
+      code: 200,
+      message: 'Authorized',
+      error: false,
+    })
+  } else {
+    return Response.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
   }
 }
