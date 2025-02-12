@@ -14,6 +14,8 @@ export const useScrapeStore = defineStore('scrape', {
   },
   actions: {
     async scrapeSites() {
+      this.results = []
+
       const results = await fetch('/.netlify/functions/scrape', {
         method: 'POST',
         body: JSON.stringify({ password: this.auth.password }),

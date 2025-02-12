@@ -69,14 +69,28 @@ export default async function scrapeBinnys(url: string) {
       if (!table) return []
       console.log('Table found in evaluate.')
       const rows = Array.from(table.querySelectorAll('tbody tr'))
-      return rows.map((row) => {
-        const cells = row.querySelectorAll('td')
-        return {
-          store: cells[0]?.textContent?.trim() || '',
-          phone: cells[1]?.textContent?.trim() || '',
-          stock_status: cells[2]?.textContent?.trim() || '',
-        }
-      })
+      return rows
+        .map((row) => {
+          const store = row.querySelector('td:first-of-type a')
+          const phone = row.querySelector('td:nth-of-type(2)')
+          const stock_status = row.querySelector('td:nth-of-type(3)')
+
+          if (
+            store &&
+            !store.textContent?.trim()?.includes('Ship to Me') &&
+            phone &&
+            stock_status
+          ) {
+            return {
+              store: store.textContent?.trim() || '',
+              phone: phone.textContent?.trim() || '',
+              stock_status: stock_status.textContent?.trim() || '',
+            }
+          } else {
+            return false
+          }
+        })
+        .filter(Boolean)
     })
 
     return data
