@@ -1,12 +1,22 @@
 <template>
   <div class="scraper-wrapper">
     <div class="scraper-status">{{ scrapeStatus }}</div>
-    <div class="scraper-results">
-      <div v-for="result in scrapeStore.results" :key="result.id">
-        <h3>{{ result.name }}</h3>
-        <p>{{ result.stock_status }}</p>
-      </div>
-    </div>
+    <table class="scraper-results">
+      <thead>
+        <tr>
+          <th>Store</th>
+          <th>Phone</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="result in scrapeStore.results" :key="result.id">
+          <td>{{ result.store }}</td>
+          <td>{{ result.phone }}</td>
+          <td>{{ result.stock_status }}</td>
+        </tr>
+      </tbody>
+    </table>
     <button @click="scrapeSites">Scrape Sites</button>
   </div>
 </template>

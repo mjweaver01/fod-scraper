@@ -52,58 +52,16 @@ export default async function scrapeBinnys(url: string) {
     await page.goto(url, { waitUntil: 'networkidle0' })
     console.log('Page loaded')
 
-    // Wait for the stock element to be visible with an increased timeout
-    const stockButtonSelector = '.js-store-selector'
-    const stockButton = await page.$(stockButtonSelector)
-    console.log('stockButton', stockButton)
+    await page.evaluate(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    if (stockButton) {
-      console.log('Stock button found')
-      console.log('scroll into view')
-      // Scroll element into view for proper interactivity.
-      await stockButton.evaluate((btn) => btn.scrollIntoView())
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // @TODO FIX
-      // Error during elementHandle.click(), falling back to page.mouse.click(): Error: Node is either not clickable or not an Element
-      // @TODO FIX
-
-      // First try to click using the element handle.
-      try {
-        await stockButton.click()
-        await stockButton.click()
-        console.log('Stock button clicked via elementHandle.click().')
-      } catch (err) {
-        console.error(
-          'Error during elementHandle.click(), falling back to page.mouse.click():',
-          err,
-        )
-        const boundingBox = await stockButton.boundingBox()
-        if (boundingBox) {
-          await page.mouse.click(
-            boundingBox.x + boundingBox.width / 2,
-            boundingBox.y + boundingBox.height / 2,
-          )
-          console.log('Stock button clicked via page.mouse.click().')
-        } else {
-          throw new Error('Unable to determine bounding box for clickable element.')
-        }
-      }
-
-      // Optional: wait for the modal to appear after clicking.
-      try {
-        await page.waitForSelector('#store-selector-modal.show', { timeout: 5000 })
-        console.log('Modal is visible after clicking the stock button.')
-      } catch (e) {
-        console.error('Modal did not appear after the click.')
-      }
-    } else {
-      throw new Error('Stock button not found after waiting.')
-    }
-
-    // Continue to wait for the table to appear
-    await page.waitForSelector('.store-list table', { timeout: 10000 })
-    console.log('Table is visible. Extracting data now...')
+      const target = document.querySelector('.js-store-selector')
+      target?.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+      )
+      // await wait for a second
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    })
 
     // Extract the data from the table
     const data = await page.evaluate(() => {
