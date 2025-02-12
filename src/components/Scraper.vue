@@ -1,6 +1,5 @@
 <template>
-  <div class="scraper">
-    <button @click="scrapeSites">Scrape Sites</button>
+  <div class="scraper-wrapper">
     <div class="scraper-status">{{ scrapeStatus }}</div>
     <div class="scraper-results">
       <div v-for="result in scrapeStore.results" :key="result.id">
@@ -8,6 +7,7 @@
         <p>{{ result.stock_status }}</p>
       </div>
     </div>
+    <button @click="scrapeSites">Scrape Sites</button>
   </div>
 </template>
 
@@ -28,15 +28,20 @@ export default {
   methods: {
     async scrapeSites() {
       this.scrapeStatus = 'scraping'
-      await this.scrapeStore.scrapeSites()
-      this.scrapeStatus = 'idle'
+      try {
+        await this.scrapeStore.scrapeSites()
+        this.scrapeStatus = 'idle'
+      } catch (error) {
+        this.scrapeStatus = 'error'
+        console.error(error)
+      }
     },
   },
 }
 </script>
 
 <style scoped>
-.scraper {
-  padding: 1rem;
+button {
+  margin-top: 1rem;
 }
 </style>

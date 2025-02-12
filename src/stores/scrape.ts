@@ -1,4 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
+import { useAuthStore } from './auth'
 
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
@@ -6,11 +7,16 @@ export const useScrapeStore = defineStore('scrape', {
       results: [],
     }
   },
+  getters: {
+    auth() {
+      return useAuthStore()
+    },
+  },
   actions: {
     async scrapeSites() {
       const results = await fetch('/.netlify/functions/scrape', {
         method: 'POST',
-        body: JSON.stringify({ password: this.password }),
+        body: JSON.stringify({ password: this.auth.password }),
       }).then((res) => res.json())
 
       if (results.code === 200) {

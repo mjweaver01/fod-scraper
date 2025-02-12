@@ -1,7 +1,25 @@
+import chromium from 'chrome-aws-lambda'
+import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
 
 export default async function scrapeBinnys(url: string) {
-  const browser = await puppeteer.launch()
+  let browser
+  // Check if we're running in an AWS Lambda environment (which Netlify Functions are based on)
+  const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_VERSION
+
+  if (isLambda) {
+    // Use chrome-aws-lambda and puppeteer-core for serverless environments
+    browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    })
+  } else {
+    // When running locally, use the regular puppeteer package
+    browser = await puppeteer.launch()
+  }
+
   const page = await browser.newPage()
   await page.goto(url)
 
@@ -21,17 +39,18 @@ export default async function scrapeBinnys(url: string) {
 
     // Get all the rows from the table body
     const rows = Array.from(table.querySelectorAll('tbody tr'))
-    // Map each row to an object with store, phone number, and stock status values
+    // Extract data from each row
     return rows.map((row) => {
       const cells = row.querySelectorAll('td')
       return {
-        store: cells[0]?.textContent.trim() || '',
-        phone: cells[1]?.textContent.trim() || '',
-        stock_status: cells[2]?.textContent.trim() || '',
+        store: cells[0]?.textContent?.trim() || '',
+        phone: cells[1]?.textContent?.trim() || '',
+        stock_status: cells[2]?.textContent?.trim() || '',
       }
     })
   })
 
   await browser.close()
+
   return data
 }

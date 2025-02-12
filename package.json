@@ -12,6 +12,7 @@
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "dotenv": "^16.4.5",
     "googleapis": "^144.0.0",
     "pinia": "^2.1.7",
