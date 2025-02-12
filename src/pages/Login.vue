@@ -33,7 +33,7 @@ export default {
       if (this.auth?.authenticated) {
         this.$router.push('/')
       } else {
-        alert(authed.message)
+        alert(authed?.message ?? 'Could not log in')
       }
     },
   },
