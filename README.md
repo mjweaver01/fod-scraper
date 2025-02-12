@@ -1,6 +1,6 @@
 <img src="./public/fod.png" width="50" />
 
-# FOD Scraper
+# 🌽 FOD Scraper
 
 Scrape sites for stock statuses
 
