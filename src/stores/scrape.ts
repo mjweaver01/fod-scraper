@@ -4,6 +4,7 @@ import { useAuthStore } from './auth'
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
     return {
+      status: 'idle',
       results: [],
     }
   },
@@ -15,6 +16,7 @@ export const useScrapeStore = defineStore('scrape', {
   actions: {
     async scrapeSites() {
       this.results = []
+      this.status = 'scraping'
 
       const results = await fetch('/.netlify/functions/scrape', {
         method: 'POST',
@@ -23,8 +25,10 @@ export const useScrapeStore = defineStore('scrape', {
 
       if (results.code === 200) {
         this.results = results.data
+        this.status = 'idle'
       } else {
-        this.error = results.message
+        this.results = []
+        this.status = 'error'
       }
     },
   },

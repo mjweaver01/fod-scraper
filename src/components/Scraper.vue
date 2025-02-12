@@ -1,11 +1,11 @@
 <template>
   <div class="scraper-wrapper">
-    <div class="scraper-status">{{ scrapeStatus }}</div>
+    <div class="scraper-status">{{ scrape.status }}</div>
     <div class="scraper-controls">
-      <button @click="scrapeSites">Scrape Sites</button>
-      <button v-if="scrapeStore.results.length > 0" @click="saveToDB">Save to DB</button>
+      <button @click="scrape.scrapeSites()">Scrape Sites</button>
+      <button v-if="scrape.results.length > 0" @click="saveToDB">Save to DB</button>
     </div>
-    <table class="scraper-results" v-if="scrapeStore.results.length > 0">
+    <table class="scraper-results" v-if="scrape.results.length > 0">
       <thead>
         <tr>
           <th>Store</th>
@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="result in scrapeStore.results" :key="result.id">
+        <tr v-for="result in scrape.results" :key="result.id">
           <td>{{ result.store }}</td>
           <td>{{ result.phone }}</td>
           <td>
@@ -32,27 +32,12 @@
 import { useScrapeStore } from '@/stores/scrape'
 
 export default {
-  data() {
-    return {
-      scrapeStatus: 'idle',
-    }
-  },
   computed: {
-    scrapeStore() {
+    scrape() {
       return useScrapeStore()
     },
   },
   methods: {
-    async scrapeSites() {
-      this.scrapeStatus = 'scraping'
-      try {
-        await this.scrapeStore.scrapeSites()
-        this.scrapeStatus = 'idle'
-      } catch (error) {
-        this.scrapeStatus = 'error'
-        console.error(error)
-      }
-    },
     computeStockStatus(status) {
       if (status === 'In Stock') {
         return 'in-stock'
