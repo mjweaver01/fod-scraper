@@ -8,10 +8,6 @@ node_bundler = "esbuild"
 external_node_modules = ["chrome-aws-lambda"]
 included_files = ["node_modules/chrome-aws-lambda/bin/*"]
 
-[build.environment]
-AWS_LAMBDA_FUNCTION_MEMORY_SIZE = "1024"
-AWS_LAMBDA_TIMEOUT = "30"
-
 [dev]
 functions = "functions"
 publish = "dist"
