@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style scoped>
-button {
-  margin-top: 1rem;
+.scraper-results {
+  padding: 1rem;
 }
 </style>

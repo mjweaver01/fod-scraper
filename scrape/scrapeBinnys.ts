@@ -4,53 +4,73 @@ import puppeteer from 'puppeteer'
 
 export default async function scrapeBinnys(url: string) {
   let browser
-  // Check if we're running in an AWS Lambda environment (which Netlify Functions are based on)
-  const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_VERSION
 
-  if (isLambda) {
-    // Use chrome-aws-lambda and puppeteer-core for serverless environments
-    browser = await puppeteerCore.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-    })
-  } else {
-    // When running locally, use the regular puppeteer package
-    browser = await puppeteer.launch()
-  }
-
-  const page = await browser.newPage()
-  await page.goto(url)
-
-  const data = await page.evaluate(() => {
-    // Optionally click the element that reveals the store list
-    const stockElement = document.querySelector('a[data-target="#store-selector-modal"]')
-    if (stockElement) {
-      console.log('Clicking stock element')
-      stockElement.click()
+  try {
+    if (process.platform === 'linux') {
+      console.log('Using Linux configuration for Chromium.')
+      const executablePath = await chromium.executablePath
+      if (!executablePath) {
+        throw new Error('Chromium executable not found.')
+      }
+      browser = await puppeteerCore.launch({
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+        ],
+        defaultViewport: chromium.defaultViewport,
+        executablePath,
+        headless: true,
+      })
+    } else if (process.platform === 'darwin') {
+      console.log('Using macOS configuration for Chrome.')
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        ignoreDefaultArgs: ['--disable-extensions'],
+      })
+    } else {
+      console.log('Using default puppeteer launch configuration.')
+      browser = await puppeteer.launch({ headless: true })
     }
 
-    // Select the table within the element that has the class 'store-list'
-    const table = document.querySelector('.store-list table')
-    if (!table) return []
+    const page = await browser.newPage()
+    console.log('Navigating to:', url)
+    await page.goto(url, { waitUntil: 'networkidle0' })
+    console.log('Page loaded')
 
-    console.log('Table found, pulling data')
-
-    // Get all the rows from the table body
-    const rows = Array.from(table.querySelectorAll('tbody tr'))
-    // Extract data from each row
-    return rows.map((row) => {
-      const cells = row.querySelectorAll('td')
-      return {
-        store: cells[0]?.textContent?.trim() || '',
-        phone: cells[1]?.textContent?.trim() || '',
-        stock_status: cells[2]?.textContent?.trim() || '',
+    const data = await page.evaluate(() => {
+      // Optionally click the element that reveals the store list
+      const stockElement = document.querySelector('a[data-target="#store-selector-modal"]')
+      if (stockElement) {
+        console.log('Clicking stock element')
+        ;(stockElement as HTMLElement).click()
       }
+
+      const table = document.querySelector('.store-list table')
+      if (!table) return []
+
+      console.log('Table found, pulling data')
+      const rows = Array.from(table.querySelectorAll('tbody tr'))
+      return rows.map((row) => {
+        const cells = row.querySelectorAll('td')
+        return {
+          store: cells[0]?.textContent?.trim() || '',
+          phone: cells[1]?.textContent?.trim() || '',
+          stock_status: cells[2]?.textContent?.trim() || '',
+        }
+      })
     })
-  })
 
-  await browser.close()
-
-  return data
+    return data
+  } catch (error) {
+    console.error('Scraping error:', error)
+    throw error
+  } finally {
+    if (browser) {
+      await browser.close()
+    }
+  }
 }
