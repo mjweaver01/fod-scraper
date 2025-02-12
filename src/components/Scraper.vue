@@ -1,7 +1,10 @@
 <template>
   <div class="scraper-wrapper">
     <div class="scraper-status">{{ scrapeStatus }}</div>
-    <button @click="scrapeSites">Scrape Sites</button>
+    <div class="scraper-controls">
+      <button @click="scrapeSites">Scrape Sites</button>
+      <button v-if="scrapeStore.results.length > 0" @click="saveToDB">Save to DB</button>
+    </div>
     <table class="scraper-results" v-if="scrapeStore.results.length > 0">
       <thead>
         <tr>
@@ -64,8 +67,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-button {
-  margin: 1rem 0;
+.scraper-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  button {
+    margin: 1rem 0;
+  }
 }
 
 table {
