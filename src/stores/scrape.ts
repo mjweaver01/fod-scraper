@@ -31,6 +31,21 @@ export const useScrapeStore = defineStore('scrape', {
         this.status = 'error'
       }
     },
+
+    async saveToDB() {
+      this.status = 'saving'
+
+      const results = await fetch('/.netlify/functions/save', {
+        method: 'POST',
+        body: JSON.stringify({ password: this.auth.password }),
+      }).then((res) => res.json())
+
+      if (results.code === 200) {
+        this.status = 'saved to db'
+      } else {
+        this.status = 'error'
+      }
+    },
   },
 })
 

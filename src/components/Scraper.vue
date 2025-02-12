@@ -1,9 +1,9 @@
 <template>
   <div class="scraper-wrapper">
-    <div class="scraper-status">{{ scrape.status }}</div>
+    <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
     <div class="scraper-controls">
       <button @click="scrape.scrapeSites()">Scrape Sites</button>
-      <button v-if="scrape.results.length > 0" @click="saveToDB">Save to DB</button>
+      <button v-if="scrape.results.length > 0" @click="scrape.saveToDB">Save to DB</button>
     </div>
     <table class="scraper-results" v-if="scrape.results.length > 0">
       <thead>
@@ -38,13 +38,20 @@ export default {
     },
   },
   methods: {
+    computeStatus(status) {
+      if (status === 'scraping') {
+        return ''
+      } else if (status === 'saved') {
+        return 'good'
+      }
+    },
     computeStockStatus(status) {
       if (status === 'In Stock') {
-        return 'in-stock'
+        return 'good'
       } else if (status === 'Out of Stock') {
-        return 'out-of-stock'
+        return 'bad'
       } else if (status.includes('Only')) {
-        return 'limited-stock'
+        return 'warning'
       }
     },
   },
@@ -80,23 +87,26 @@ table {
   }
 }
 
-.stock-status {
+.stock-status,
+.scraper-status {
   display: block;
   font-weight: 400;
   border-radius: 5px;
   background: var(--gray);
   color: var(--white);
   padding: 0.25rem 0.5rem;
+  max-width: 125px;
+  margin: 0 auto;
 
-  &.in-stock {
+  &.good {
     background: var(--green);
   }
 
-  &.out-of-stock {
+  &.bad {
     background: var(--red);
   }
 
-  &.limited-stock {
+  &.warning {
     background: var(--yellow);
     color: var(--red);
   }
