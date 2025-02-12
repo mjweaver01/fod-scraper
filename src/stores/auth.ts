@@ -3,9 +3,10 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 export const useAuthStore = defineStore('auth', {
   state: () => {
     return {
-      password: '',
+      password: localStorage.getItem('password') || '',
       loggingIn: false,
       authenticated: false,
+      error: null,
     }
   },
   actions: {
@@ -18,16 +19,20 @@ export const useAuthStore = defineStore('auth', {
       if (authed.code === 200) {
         this.loggingIn = false
         this.authenticated = true
+        this.error = null
+        localStorage.setItem('password', this.password)
       } else {
-        alert(authed.message)
         this.loggingIn = false
         this.password = ''
         this.authenticated = false
+        this.error = authed.message
       }
     },
     async logout() {
       this.authenticated = false
       this.password = ''
+      this.error = null
+      localStorage.removeItem('password')
     },
   },
 })

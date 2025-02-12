@@ -38,6 +38,8 @@ export default {
       await this.auth?.authUser()
       if (!this.auth?.authenticated) {
         this.$router.push('/login')
+      } else if (this.auth?.error) {
+        alert(this.auth?.error)
       }
     },
   },

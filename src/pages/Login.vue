@@ -3,7 +3,7 @@
     <Hero />
     <div class="login-form">
       <h1>Login</h1>
-      <form @submit.prevent="auth?.authUser">
+      <form @submit.prevent="login">
         <input
           id="password-input"
           name="password"
@@ -25,6 +25,16 @@ export default {
   computed: {
     auth() {
       return useAuthStore()
+    },
+  },
+  methods: {
+    async login() {
+      await this.auth?.authUser()
+      if (this.auth?.authenticated) {
+        this.$router.push('/')
+      } else {
+        alert(authed.message)
+      }
     },
   },
 }
