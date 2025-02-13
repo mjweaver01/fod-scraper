@@ -2,73 +2,6 @@
   <div class="facebook-page">
     <h1>Push Facebook Audiences</h1>
 
-    <!-- Common configuration -->
-    <div class="common-config">
-      <h2>Common Ad Set Configuration</h2>
-      <div class="form-group">
-        <div>
-          <label>
-            Optimization Goal:
-            <input type="text" v-model="common.optimization_goal" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Billing Event:
-            <input type="text" v-model="common.billing_event" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Bid Amount:
-            <input type="number" v-model.number="common.bid_amount" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Daily Budget:
-            <input type="number" v-model.number="common.daily_budget" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Campaign ID:
-            <input type="text" v-model="common.campaign_id" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Promoted Page ID:
-            <input type="text" v-model="common.promoted_object.page_id" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Status:
-            <select v-model="common.status" :disabled="pushingAll">
-              <option value="PAUSED">Paused</option>
-              <option value="ACTIVE">Active</option>
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Radius:
-            <input type="number" v-model.number="common.radius" :disabled="pushingAll" />
-          </label>
-        </div>
-        <div>
-          <label>
-            Distance Unit:
-            <select v-model="common.distance_unit" :disabled="pushingAll">
-              <option value="mile">Mile</option>
-              <option value="kilometer">Kilometer</option>
-            </select>
-          </label>
-        </div>
-      </div>
-    </div>
-
     <!-- Scraped records and push buttons -->
     <div class="records">
       <h2>Scraped Records</h2>
@@ -85,8 +18,14 @@
           <h3>{{ record.store }}</h3>
           <p>
             Address:
-            <strong>{{ record.address }}</strong>
+            <strong>{{ record.address || 'No address provided' }}</strong>
           </p>
+          <!-- Show the record-specific common configuration -->
+          <AdsetConfig
+            :modelValue="recordConfigs[index] || defaultConfig"
+            :disabled="pushingAll"
+            @update:modelValue="(val) => $set(recordConfigs, index, val)"
+          />
           <button
             @click="pushAudience(index, record)"
             :disabled="pushingAll || (pushStatus[index] && pushStatus[index].loading)"
@@ -112,68 +51,95 @@
 
 <script>
 import { useScrapeStore } from '@/stores/scrape'
+import AdsetConfig from '@/components/AdsetConfig.vue'
 
 export default {
   name: 'Facebook',
+  components: {
+    AdsetConfig,
+  },
   data() {
     return {
-      common: {
+      // Default configuration for each record
+      defaultConfig: {
         optimization_goal: 'REACH',
         billing_event: 'IMPRESSIONS',
         bid_amount: 200,
         daily_budget: 500,
         campaign_id: '',
-        status: 'PAUSED',
+        status: 'INACTIVE', // preselected to inactive
         promoted_object: {
           page_id: '',
         },
         radius: 5,
         distance_unit: 'mile',
       },
+      recordConfigs: [],
       pushStatus: {},
       pushingAll: false,
-      scrapeStore: null,
     }
   },
   computed: {
+    scrape() {
+      return useScrapeStore()
+    },
     scrapedRecords() {
-      return this.scrapeStore.allResults.filter(
-        (record) => record.address && record.address.trim() !== '',
+      return (
+        this.scrape?.allResults.filter(
+          (record) => record.address && record.address.trim() !== '',
+        ) || []
       )
     },
   },
-  created() {
-    this.scrapeStore = useScrapeStore()
+  watch: {
+    scrapedRecords: {
+      handler(newRecords) {
+        // Initialize a configuration for each record if not already set
+        newRecords?.forEach((record, index) => {
+          if (!this.recordConfigs[index]) {
+            // Determine the preset status based on product availability
+            const presetStatus = record.in_stock ? 'ACTIVE' : 'INACTIVE'
+            this.$set(this.recordConfigs, index, {
+              ...this.defaultConfig,
+              status: presetStatus,
+            })
+          }
+        })
+      },
+      immediate: true,
+    },
   },
   methods: {
     async pushAudience(index, record) {
-      this.pushStatus[index] = {
+      // Use record-specific config (or default if missing)
+      const config = this.recordConfigs[index] || this.defaultConfig
+      this.$set(this.pushStatus, index, {
         loading: true,
         error: null,
         response: null,
-      }
+      })
 
       const payload = {
         name: record.store + ' Audience',
-        optimization_goal: this.common.optimization_goal,
-        billing_event: this.common.billing_event,
-        bid_amount: this.common.bid_amount,
-        daily_budget: this.common.daily_budget,
-        campaign_id: this.common.campaign_id,
+        optimization_goal: config.optimization_goal,
+        billing_event: config.billing_event,
+        bid_amount: config.bid_amount,
+        daily_budget: config.daily_budget,
+        campaign_id: config.campaign_id,
         targeting: {
           geo_locations: {
             custom_locations: [
               {
                 address_string: record.address,
-                radius: this.common.radius,
-                distance_unit: this.common.distance_unit,
+                radius: config.radius,
+                distance_unit: config.distance_unit,
               },
             ],
           },
         },
-        status: this.common.status,
+        status: config.status,
         promoted_object: {
-          page_id: this.common.promoted_object.page_id,
+          page_id: config.promoted_object.page_id,
         },
       }
 
@@ -186,17 +152,17 @@ export default {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        this.pushStatus[index] = {
+        this.$set(this.pushStatus, index, {
           loading: false,
           error: null,
           response: data,
-        }
+        })
       } catch (err) {
-        this.pushStatus[index] = {
+        this.$set(this.pushStatus, index, {
           loading: false,
           error: err.message,
           response: null,
-        }
+        })
       }
     },
     async pushAllAudiences() {
@@ -218,20 +184,8 @@ export default {
   padding: 1rem;
 }
 
-.common-config,
 .records {
   margin-bottom: 2rem;
-}
-
-.common-config label,
-.record label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.common-config input,
-.common-config select {
-  margin-left: 0.5rem;
 }
 
 .record {

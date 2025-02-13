@@ -7,7 +7,9 @@ export const useScrapeStore = defineStore('scrape', {
     return {
       status: 'idle',
       activeTab: 0,
-      results: [],
+      results: localStorage.getItem('scrapeResults')
+        ? JSON.parse(localStorage.getItem('scrapeResults') || '[]')
+        : [],
     }
   },
   getters: {
@@ -27,11 +29,13 @@ export const useScrapeStore = defineStore('scrape', {
   actions: {
     async scrapeSites() {
       this.results = []
+      localStorage.removeItem('scrapeResults')
       this.status = 'scraping'
 
       const scrapePromises = this.sites.map((page) => this.scrapeSite(page))
       const results = await Promise.all(scrapePromises)
       this.results = results
+      localStorage.setItem('scrapeResults', JSON.stringify(this.results))
       this.status = 'idle'
     },
 
