@@ -11,18 +11,10 @@ if (process.platform === 'linux') {
   if (!executablePath) {
     throw new Error('Chromium executable not found.')
   }
-
-  // Copy the Chromium binary from its original location to /tmp.
-  const tempExecutablePath = '/tmp/chromium'
-  if (!fs.existsSync(tempExecutablePath)) {
-    fs.copyFileSync(executablePath, tempExecutablePath)
-    fs.chmodSync(tempExecutablePath, 0o755)
-  }
-
   browser = await puppeteerCore.launch({
     args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     ignoreDefaultArgs: ['--disable-extensions'],
-    executablePath: tempExecutablePath,
+    executablePath,
     headless: true,
     defaultViewport: {
       width: 1024,
