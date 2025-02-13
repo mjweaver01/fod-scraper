@@ -18,6 +18,7 @@ export default async (req: Request, context: Context) => {
       code: 200,
       message: 'Authorized',
       error: false,
+      name: page.name,
       data: result,
     })
   } else {

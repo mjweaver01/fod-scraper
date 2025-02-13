@@ -20,7 +20,7 @@ export default async function scrapeBigRed(url: string) {
     // Trigger a click on the element to load the dynamic content
     await page.evaluate(async () => {
       // Small delay to allow any lazy-loaded content to initialize.
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 500))
       const target = document.querySelector('.product-availability-container a b')
       if (target) {
         target.dispatchEvent(
@@ -32,9 +32,6 @@ export default async function scrapeBigRed(url: string) {
         )
       }
     })
-
-    // Small delay to give time for any lazy-loaded content after the click.
-    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Wait for the <ul> element containing the data to be fully loaded.
     await page.waitForSelector('ul.ch-availability-item', { timeout: 10000 })

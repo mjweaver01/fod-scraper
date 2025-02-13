@@ -51,7 +51,11 @@ export default async function scrapeBinnys(url: string) {
               phone: phone.textContent?.trim() || '',
               stock_status: stock_status.textContent?.trim() || '',
               address: `${location?.addressLine1} ${location?.city}, ${location?.state} ${location?.zipCode}`,
-              in_stock: stock_status.textContent?.trim()?.includes('In Stock') ? true : false,
+              in_stock:
+                stock_status.textContent?.trim()?.includes('In Stock') ||
+                stock_status.textContent?.trim()?.includes('Left')
+                  ? true
+                  : false,
             }
           } else {
             return false
