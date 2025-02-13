@@ -66,11 +66,11 @@ if (isDev) {
   // In production mode, serve the built client assets.
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-  app.use(express.static(path.join(__dirname, '../dist/client')))
+  app.use(express.static(path.join(__dirname, '../frontend')))
 
   // For SPA: Any unhandled route returns the client index.html.
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../dist/client/index.html'))
+    res.sendFile(path.join(__dirname, '../frontend/index.html'))
   })
 }
 
