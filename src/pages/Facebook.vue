@@ -5,8 +5,8 @@
     <div class="records">
       <button
         class="push-all"
-        @click="facebook.pushAllAudiences(filteredRecords)"
-        :disabled="facebook.pushingAll || filteredRecords.length === 0"
+        @click="facebook.pushAllAudiences(displayRecords)"
+        :disabled="facebook.pushingAll || displayRecords.length === 0"
       >
         Push All Audiences
       </button>
@@ -17,11 +17,30 @@
       <hr />
 
       <div class="search">
-        <input type="text" placeholder="Search audiences..." v-model="searchTerm" />
+        <input type="search" placeholder="Search audiences..." v-model="searchTerm" />
       </div>
 
-      <div v-if="filteredRecords.length">
-        <div class="record" v-for="record in filteredRecords" :key="record.__index">
+      <div class="controls">
+        <div class="sort-dropdown">
+          <label for="sortDropdown">Sort by Stock Status:</label>
+          <select id="sortDropdown" v-model="selectedSort">
+            <option value="none">None</option>
+            <option value="inFirst">In Stock First</option>
+            <option value="outFirst">Out of Stock First</option>
+          </select>
+        </div>
+        <div class="filter-dropdown">
+          <label for="stockFilterDropdown">Filter by Stock:</label>
+          <select id="stockFilterDropdown" v-model="selectedStockFilter">
+            <option value="all">All</option>
+            <option value="in">In Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+      </div>
+
+      <div v-if="displayRecords.length">
+        <div class="record" v-for="record in displayRecords" :key="record.__index">
           <h3>{{ record.store }}</h3>
           <p>
             Product: <strong>{{ record.name }}</strong>
@@ -94,7 +113,9 @@ export default {
   },
   data() {
     return {
-      searchTerm: '', // Holds user input for fuzzy search
+      searchTerm: '',
+      selectedSort: 'none',
+      selectedStockFilter: 'all',
     }
   },
   computed: {
@@ -134,6 +155,33 @@ export default {
           this.fuzzyMatch(search, record.stock_status)
         )
       })
+    },
+    // New computed property combining search filter, stock filter, and sorting.
+    displayRecords() {
+      let records = this.filteredRecords
+
+      // Apply filter dropdown for In Stock / Out of Stock.
+      if (this.selectedStockFilter === 'in') {
+        records = records.filter((record) => record.in_stock)
+      } else if (this.selectedStockFilter === 'out') {
+        records = records.filter((record) => !record.in_stock)
+      }
+
+      // Apply sorting dropdown for stock status.
+      // "In Stock First" will put records where record.in_stock is truthy at the top.
+      // "Out of Stock First" will do the opposite.
+      if (this.selectedSort === 'inFirst') {
+        records = records.slice().sort((a, b) => {
+          if (a.in_stock === b.in_stock) return 0
+          return a.in_stock ? -1 : 1
+        })
+      } else if (this.selectedSort === 'outFirst') {
+        records = records.slice().sort((a, b) => {
+          if (a.in_stock === b.in_stock) return 0
+          return a.in_stock ? 1 : -1
+        })
+      }
+      return records
     },
   },
   methods: {
@@ -188,6 +236,19 @@ hr {
 
 .search {
   margin-bottom: 1rem;
+}
+
+/* Styling for the new controls section */
+.controls {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.sort-dropdown label,
+.filter-dropdown label {
+  margin-right: 0.5rem;
 }
 
 .records {
