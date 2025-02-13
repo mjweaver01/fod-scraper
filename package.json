@@ -10,7 +10,7 @@
     "build:frontend": "vite build",
     "build:backend": "tsc -p tsconfig.prod.json",
     "build": "npm run clean && npm run build:frontend && npm run build:backend",
-    "backend:serve": "tsx dist/backend/server.js",
+    "backend:serve": "tsx dist/server/index.js",
     "prod": "npm run build && npm run backend:serve",
     "clean": "rm -rf dist",
     "start": "npm run build && npm run backend:serve",
