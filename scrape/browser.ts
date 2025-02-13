@@ -1,25 +1,27 @@
-import fs from 'fs'
-import chromium from 'chrome-aws-lambda'
 import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
+import chromium from '@sparticuz/chromium'
 
-let browser
+// Configure Sparticuz/chromium settings for serverless platforms.
+chromium.setHeadlessMode = true
+chromium.setGraphicsMode = false
+
+let browser: any
 
 if (process.platform === 'linux') {
-  console.log('Using Linux configuration for Chromium.')
-  const executablePath = await chromium.executablePath
+  console.log('Using Sparticuz/chromium on a Linux serverless environment.')
+
+  // Use a custom executable (if provided) or retrieve one from Sparticuz.
+  const executablePath = process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath)
   if (!executablePath) {
     throw new Error('Chromium executable not found.')
   }
+
   browser = await puppeteerCore.launch({
-    args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    ignoreDefaultArgs: ['--disable-extensions'],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
     executablePath,
-    headless: true,
-    defaultViewport: {
-      width: 1024,
-      height: 768,
-    },
+    headless: chromium.headless,
   })
 } else if (process.platform === 'darwin') {
   console.log('Using macOS configuration for Chrome.')
