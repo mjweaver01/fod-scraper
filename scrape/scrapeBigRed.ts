@@ -10,11 +10,7 @@ export default async function scrapeBigRed(url: string) {
       'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
     await page.setUserAgent(userAgent)
 
-    // Optional: Capture console logs from the page context
-    page.on('console', (msg) => console.log('PAGE LOG:', msg.text()))
-
     console.log('Navigating to:', url)
-    // Change wait condition to 'domcontentloaded' ensuring the initial HTML is parsed
     await page.goto(url, { waitUntil: 'domcontentloaded' })
     console.log('Page loaded')
 

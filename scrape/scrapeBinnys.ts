@@ -10,12 +10,7 @@ export default async function scrapeBinnys(url: string) {
       'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
     await page.setUserAgent(userAgent)
 
-    // Optional: Capture console logs from the page context
-    page.on('console', (msg) => console.log('PAGE LOG:', msg.text()))
-
     console.log('Navigating to:', url)
-    // Using 'domcontentloaded' ensures that the initial HTML is parsed,
-    // and then we wait explicitly for the required element.
     await page.goto(url, { waitUntil: 'domcontentloaded' })
     console.log('Page loaded')
 
