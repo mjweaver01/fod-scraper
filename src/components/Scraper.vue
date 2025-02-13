@@ -2,8 +2,10 @@
   <div class="scraper-wrapper">
     <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
     <div class="scraper-controls">
-      <button @click="scrape.scrapeSites()">Scrape Sites</button>
-      <button v-if="scrape.results.length > 0" @click="scrape.saveToDB">Save to DB</button>
+      <button @click="scrape.scrapeSites()" :disabled="scraping">Scrape Sites</button>
+      <button v-if="scrape.results.length > 0" :disabled="scraping" @click="scrape.saveToDB">
+        Save to DB
+      </button>
     </div>
 
     <div class="tabs">
@@ -50,6 +52,9 @@ export default {
   computed: {
     scrape() {
       return useScrapeStore()
+    },
+    scraping() {
+      return this.scrape.status === 'scraping'
     },
   },
   methods: {
