@@ -45,7 +45,10 @@
         <div>
           <label>
             Status:
-            <input type="text" v-model="common.status" :disabled="pushingAll" />
+            <select v-model="common.status" :disabled="pushingAll">
+              <option value="PAUSED">Paused</option>
+              <option value="ACTIVE">Active</option>
+            </select>
           </label>
         </div>
         <div>
