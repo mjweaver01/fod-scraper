@@ -4,23 +4,33 @@ export default async function scrapeBinnys(url: string) {
   try {
     const page = await browser.newPage()
 
+    // Use a custom user agent to mimic a standard (or even mobile) browser.
+    // This can help bypass websites that block scrapers by examining headers.
+    const userAgent =
+      'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
+    await page.setUserAgent(userAgent)
+
     // Optional: Capture console logs from the page context
     page.on('console', (msg) => console.log('PAGE LOG:', msg.text()))
 
     console.log('Navigating to:', url)
-    await page.goto(url, { waitUntil: 'networkidle0' })
+    // Using 'domcontentloaded' ensures that the initial HTML is parsed,
+    // and then we wait explicitly for the required element.
+    await page.goto(url, { waitUntil: 'domcontentloaded' })
     console.log('Page loaded')
 
-    // Wait for the <ul> element to be fully loaded before scraping data
+    // Wait for the element that will trigger the table load.
     await page.waitForSelector('.js-store-selector', { timeout: 10000 })
 
-    // Extract the data from the table
+    // Extract the data from the dynamically loaded table.
     const data = await page.evaluate(async () => {
       const target = document.querySelector('.js-store-selector')
-      target?.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
-      )
-      // await wait for a second
+      if (target) {
+        target.dispatchEvent(
+          new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
+        )
+      }
+      // Brief pause to allow data to load
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       const table = document.querySelector('.store-list table')
