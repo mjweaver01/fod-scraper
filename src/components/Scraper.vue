@@ -8,6 +8,10 @@
       </button>
     </div>
 
+    <div class="scraper-time" v-if="scrape.activeSite.time">
+      Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
+    </div>
+
     <div class="tabs">
       <button
         v-for="(result, index) in scrape.sites"
@@ -98,6 +102,10 @@ export default {
   button {
     margin: 1rem 0;
   }
+}
+
+.scraper-time {
+  margin-bottom: 1rem;
 }
 
 /* Styles for the Tab Navigation */

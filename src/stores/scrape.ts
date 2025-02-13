@@ -19,8 +19,11 @@ export const useScrapeStore = defineStore('scrape', {
     sites() {
       return sites
     },
+    activeSite() {
+      return this.results[this.activeTab]
+    },
     activeSiteData() {
-      return this.results[this.activeTab]?.data || []
+      return this.activeSite?.data || []
     },
     allResults() {
       return this.results.flatMap((result) => {
@@ -28,6 +31,8 @@ export const useScrapeStore = defineStore('scrape', {
         return result.data.map((record) => ({
           ...record,
           name: result.name,
+          url: result.url,
+          time: result.time,
         }))
       })
     },

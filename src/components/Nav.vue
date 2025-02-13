@@ -42,7 +42,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid var(--border-color);
 
   img {

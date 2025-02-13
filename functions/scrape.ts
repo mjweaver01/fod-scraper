@@ -18,8 +18,10 @@ export default async (req: Request, context: Context) => {
       code: 200,
       message: 'Authorized',
       error: false,
+      url,
       name: page.name,
       data: result,
+      time: new Date().toISOString(),
     })
   } else {
     return Response.json({
