@@ -39,7 +39,8 @@
         </tbody>
       </table>
       <div v-else>
-        <p>No data available for this site.</p>
+        <p v-if="scraping">Scraping...</p>
+        <p v-else>No data available for this site.</p>
       </div>
     </div>
   </div>
