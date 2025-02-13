@@ -23,17 +23,25 @@
       <table class="scraper-results" v-if="scrape.activeSiteData.length > 0">
         <thead>
           <tr>
-            <th>Store</th>
+            <th class="store">Store</th>
+            <th class="address" v-if="scrape.activeSiteData[0].address">Address</th>
             <th>Status</th>
+            <th class="quantity" v-if="scrape.activeSiteData[0].quantity">Quantity</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, i) in scrape.activeSiteData" :key="i">
-            <td>{{ item.store }}</td>
+            <td class="store">{{ item.store }}</td>
+            <td class="address" v-if="item.address">
+              {{ item.address }}
+            </td>
             <td>
               <span class="stock-status" :class="computeStockStatus(item.stock_status)">
                 {{ item.stock_status }}
               </span>
+            </td>
+            <td class="quantity" v-if="item.quantity">
+              {{ item.quantity }}
             </td>
           </tr>
         </tbody>
@@ -128,11 +136,13 @@ export default {
 
 table {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
 
-  th:first-of-type,
-  td:first-of-type {
+  th.store,
+  td.store,
+  th.address,
+  td.address {
     text-align: left;
   }
 
