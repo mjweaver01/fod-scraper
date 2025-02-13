@@ -14,7 +14,7 @@ export default [
   },
   {
     name: 'Players Series - Big Red',
-    url: 'https://bigredliquors.com/shop/product/field-of-dreams-small-batch-bourbon-whiskey/670fdbe1d76d41428066111b',
+    url: 'https://bigredliquors.com/shop/product/field-of-dreams-player-series-bourbon/647eb382b132754f051df543',
     scraper: scrapeBigRed,
   },
 ]
