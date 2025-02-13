@@ -32,7 +32,7 @@ if (process.platform === 'linux') {
 } else if (process.platform === 'darwin') {
   console.log('Using macOS configuration for Chrome.')
   browser = await puppeteer.launch({
-    headless: false,
+    headless: 'new' as any,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     ignoreDefaultArgs: ['--disable-extensions'],
