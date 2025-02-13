@@ -1,58 +1,7 @@
-import fs from 'fs'
-import chromium from 'chrome-aws-lambda'
-import puppeteerCore from 'puppeteer-core'
-import puppeteer from 'puppeteer'
+import browser from './browser'
 
 export default async function scrapeBigRed(url: string) {
-  let browser
-
   try {
-    if (process.platform === 'linux') {
-      console.log('Using Linux configuration for Chromium.')
-      const executablePath = await chromium.executablePath
-      if (!executablePath) {
-        throw new Error('Chromium executable not found.')
-      }
-
-      // Copy the Chromium binary from its original location to /tmp.
-      const tempExecutablePath = '/tmp/chromium'
-      if (!fs.existsSync(tempExecutablePath)) {
-        fs.copyFileSync(executablePath, tempExecutablePath)
-        fs.chmodSync(tempExecutablePath, 0o755)
-      }
-
-      browser = await puppeteerCore.launch({
-        args: [
-          ...chromium.args,
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
-        ignoreDefaultArgs: ['--disable-extensions'],
-        executablePath: tempExecutablePath,
-        headless: true,
-        defaultViewport: {
-          width: 1024,
-          height: 768,
-        },
-      })
-    } else if (process.platform === 'darwin') {
-      console.log('Using macOS configuration for Chrome.')
-      browser = await puppeteer.launch({
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-        ignoreDefaultArgs: ['--disable-extensions'],
-        defaultViewport: {
-          width: 1024,
-          height: 768,
-        },
-      })
-    } else {
-      console.log('Using default puppeteer launch configuration.')
-      browser = await puppeteer.launch({ headless: true })
-    }
-
     const page = await browser.newPage()
 
     // Optional: Capture console logs from the page context
@@ -75,6 +24,9 @@ export default async function scrapeBigRed(url: string) {
         }),
       )
     })
+
+    // Small delay to give time for any lazy-loaded content
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     // Wait for the <ul> element to be fully loaded before scraping data
     await page.waitForSelector('ul.ch-availability-item', { timeout: 10000 })

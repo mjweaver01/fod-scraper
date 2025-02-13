@@ -1,10 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuthStore } from './auth'
+import sites from '../../scrape/sites'
 
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
     return {
       status: 'idle',
+      activeTab: 0,
       results: [],
     }
   },
@@ -12,22 +14,33 @@ export const useScrapeStore = defineStore('scrape', {
     auth() {
       return useAuthStore()
     },
+    sites() {
+      return sites
+    },
+    activeSiteData() {
+      return this.results[this.activeTab]?.data || []
+    },
   },
   actions: {
     async scrapeSites() {
       this.results = []
       this.status = 'scraping'
 
-      const results = await fetch('/.netlify/functions/scrape', {
-        method: 'POST',
-        body: JSON.stringify({ password: this.auth.password }),
-      }).then((res) => res.json())
+      const scrapePromises = this.sites.map((page) => this.scrapeSite(page))
+      const results = await Promise.all(scrapePromises)
+      this.results = results
+      this.status = 'idle'
+    },
 
-      if (results.code === 200) {
-        this.results = results.data
-        this.status = 'idle'
-      } else {
-        this.results = []
+    async scrapeSite(page) {
+      try {
+        const results = await fetch('/.netlify/functions/scrape', {
+          method: 'POST',
+          body: JSON.stringify({ password: this.auth.password, page }),
+        }).then((res) => res.json())
+
+        return results
+      } catch {
         this.status = 'error'
       }
     },
