@@ -11,19 +11,18 @@ export default async function scrapeBinnys(url: string) {
     await page.goto(url, { waitUntil: 'networkidle0' })
     console.log('Page loaded')
 
-    await page.evaluate(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Wait for the <ul> element to be fully loaded before scraping data
+    await page.waitForSelector('.js-store-selector', { timeout: 10000 })
 
+    // Extract the data from the table
+    const data = await page.evaluate(async () => {
       const target = document.querySelector('.js-store-selector')
       target?.dispatchEvent(
         new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
       )
       // await wait for a second
       await new Promise((resolve) => setTimeout(resolve, 1000))
-    })
 
-    // Extract the data from the table
-    const data = await page.evaluate(() => {
       const table = document.querySelector('.store-list table')
       if (!table) return []
       console.log('Table found in evaluate.')

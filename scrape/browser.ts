@@ -23,7 +23,7 @@ if (process.platform === 'linux') {
     args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     ignoreDefaultArgs: ['--disable-extensions'],
     executablePath: tempExecutablePath,
-    headless: 'new' as any,
+    headless: true,
     defaultViewport: {
       width: 1024,
       height: 768,
@@ -32,8 +32,13 @@ if (process.platform === 'linux') {
 } else if (process.platform === 'darwin') {
   console.log('Using macOS configuration for Chrome.')
   browser = await puppeteer.launch({
-    headless: 'new' as any,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: false,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-blink-features=AutomationControlled',
+      '--window-size=1024,768',
+    ],
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     ignoreDefaultArgs: ['--disable-extensions'],
     defaultViewport: {
