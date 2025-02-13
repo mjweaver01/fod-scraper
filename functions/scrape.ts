@@ -1,6 +1,6 @@
 import type { Context } from '@netlify/functions'
-import scrapeBinnys from '../scrape/scrapeBinnys'
-import scrapeBigRed from '../scrape/scrapeBigRed'
+import scrapeBinnys from '../server/scrape/scrapeBinnys'
+import scrapeBigRed from '../server/scrape/scrapeBigRed'
 
 export default async (req: Request, context: Context) => {
   const { password, page } = await req.json()

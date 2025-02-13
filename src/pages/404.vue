@@ -2,7 +2,7 @@
   <div class="form-container not-found">
     <Hero title="404 Not Found." />
     <p>Oops! The page you're looking for doesn't exist.</p>
-    <router-link class="button go-to-chat" to="/">Go Home</router-link>
+    <router-link class="button go-to-chat" to="/scrape">Scrape</router-link>
   </div>
 </template>
 

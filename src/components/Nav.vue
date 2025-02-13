@@ -3,7 +3,10 @@
     <router-link to="/"><img src="/fod.png" alt="logo" /></router-link>
     <ul v-if="auth?.authenticated">
       <li>
-        <router-link to="/">Home</router-link>
+        <router-link to="/">Scrape</router-link>
+      </li>
+      <li>
+        <router-link to="/facebook">Push</router-link>
       </li>
       <li><a href="#" @click="logout">Logout</a></li>
     </ul>

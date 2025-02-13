@@ -161,6 +161,7 @@ table {
   padding: 0.25rem 0.5rem;
   max-width: 125px;
   margin: 0 auto;
+  white-space: nowrap;
 
   &.good {
     background: var(--green);

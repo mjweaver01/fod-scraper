@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuthStore } from './auth'
-import sites from '../../scrape/sites'
+import sites from '../../server/scrape/sites'
 
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
@@ -19,6 +19,9 @@ export const useScrapeStore = defineStore('scrape', {
     },
     activeSiteData() {
       return this.results[this.activeTab]?.data || []
+    },
+    allResults() {
+      return this.results.flatMap((result) => result.data)
     },
   },
   actions: {
