@@ -54,6 +54,7 @@ export default async function scrapeBigRed(url: string) {
     console.log('Page loaded')
 
     await page.evaluate(async () => {
+      // Small delay to give time for any lazy-loaded content
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       const target = document.querySelector('.product-availability-container a b')
@@ -64,12 +65,13 @@ export default async function scrapeBigRed(url: string) {
           view: window,
         }),
       )
-      // Wait for a second for any dynamic content to update
-      await new Promise((resolve) => setTimeout(resolve, 1000))
     })
 
+    // Wait for the <ul> element to be fully loaded before scraping data
+    await page.waitForSelector('ul.ch-availability-item', { timeout: 10000 })
+
     // Extract the data from the updated list structure
-    const data = await page.evaluate(() => {
+    const data = await page.evaluate(async () => {
       const itemsList = document.querySelector('ul.ch-availability-item')
       if (!itemsList) return []
       const items = Array.from(itemsList.querySelectorAll('li.ch-result-unit'))
@@ -83,10 +85,11 @@ export default async function scrapeBigRed(url: string) {
         const addressElem = item.querySelector('small.ch-location-wrapper > span.ch-address')
 
         return {
-          store: merchantNameElem ? merchantNameElem.textContent.trim() : '',
+          store: merchantNameElem ? merchantNameElem.textContent.trim().replace(/:$/, '') : '',
           price: priceElem ? priceElem.textContent.trim() : '',
           distance: distanceElem ? distanceElem.textContent.trim() : '',
           quantity: quantityElem ? quantityElem.textContent.trim() : '',
+          stock_status: quantityElem.textContent.trim().includes('0') ? 'Out of Stock' : 'In Stock',
           address: addressElem ? addressElem.textContent.trim() : '',
         }
       })

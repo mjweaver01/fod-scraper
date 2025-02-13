@@ -22,14 +22,12 @@
         <thead>
           <tr>
             <th>Store</th>
-            <th>Phone</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, i) in activeSiteData" :key="i">
             <td>{{ item.store }}</td>
-            <td>{{ item.phone }}</td>
             <td>
               <span class="stock-status" :class="computeStockStatus(item.stock_status)">
                 {{ item.stock_status }}
@@ -73,6 +71,8 @@ export default {
   },
   methods: {
     computeStatus(status) {
+      if (!status) return ''
+
       if (status === 'scraping') {
         return 'warning'
       } else if (status === 'saved') {
@@ -80,6 +80,8 @@ export default {
       }
     },
     computeStockStatus(status) {
+      if (!status) return ''
+
       if (status === 'In Stock') {
         return 'good'
       } else if (status === 'Out of Stock') {
@@ -141,9 +143,7 @@ table {
   margin: 0 auto;
 
   th:first-of-type,
-  td:first-of-type,
-  th:nth-of-type(2),
-  td:nth-of-type(2) {
+  td:first-of-type {
     text-align: left;
   }
 
