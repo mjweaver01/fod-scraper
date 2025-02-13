@@ -8,10 +8,6 @@
       </button>
     </div>
 
-    <div class="scraper-time" v-if="scrape.activeSite.time">
-      Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
-    </div>
-
     <div class="tabs">
       <button
         v-for="(result, index) in scrape.sites"
@@ -21,6 +17,10 @@
       >
         {{ result.name }}
       </button>
+    </div>
+
+    <div class="scraper-time" v-if="scrape.activeSite.time">
+      Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
     </div>
 
     <div class="tab-content">
@@ -40,8 +40,8 @@
               {{ item.address }}
             </td>
             <td>
-              <span class="stock-status" :class="scrape.computeStockStatus(item.in_stock)">
-                {{ item.in_stock ? 'In Stock' : 'Out of Stock' }}
+              <span class="stock-status" :class="scrape.computeStockStatus(item.stock_status)">
+                {{ item.stock_status }}
               </span>
             </td>
             <td class="quantity" v-if="item.quantity">

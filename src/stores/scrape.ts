@@ -79,12 +79,12 @@ export const useScrapeStore = defineStore('scrape', {
     },
 
     computeStockStatus(status) {
-      if (status === 'In Stock' || status === true) {
+      if (typeof status === 'string' && status?.includes('Only')) {
+        return 'warning'
+      } else if (status === 'In Stock' || status === true) {
         return 'good'
       } else if (status === 'Out of Stock' || status === false) {
         return 'bad'
-      } else if (status?.includes('Only')) {
-        return 'warning'
       }
 
       return ''
