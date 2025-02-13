@@ -26,9 +26,9 @@ export const useScrapeStore = defineStore('scrape', {
       return this.activeSite?.data || []
     },
     allResults() {
-      return this.results.flatMap((result) => {
+      return this.results.flatMap((result: any) => {
         if (!result?.data) return []
-        return result.data.map((record) => ({
+        return result.data.map((record: any) => ({
           ...record,
           name: result.name,
           url: result.url,
@@ -84,7 +84,7 @@ export const useScrapeStore = defineStore('scrape', {
       }
     },
 
-    computeStockStatus(status) {
+    computeStockStatus(status: string | boolean) {
       if (typeof status === 'string' && status?.includes('Only')) {
         return 'warning'
       } else if (status === 'In Stock' || status === true) {
