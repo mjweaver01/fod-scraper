@@ -1,7 +1,6 @@
 <template>
   <div class="home" v-if="auth?.authenticated">
     <h1>Scrape</h1>
-    <p>Welcome to the FOD Scraper. This is a work in progress.</p>
     <Scraper />
   </div>
 </template>

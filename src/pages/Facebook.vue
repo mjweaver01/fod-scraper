@@ -1,6 +1,6 @@
 <template>
   <div class="facebook-page">
-    <h1>Push Facebook Audiences for Each Scraped Record</h1>
+    <h1>Push Facebook Audiences</h1>
 
     <!-- Common configuration -->
     <div class="common-config">
