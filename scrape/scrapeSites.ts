@@ -4,15 +4,16 @@ import sites from './sites'
 dotenv.config()
 
 export default async function scrapeSites() {
-  const results = []
-
-  for (const site of sites) {
-    const data = await site.scraper(site.url)
-    results.push({
+  // Create an array of promises for each site scrape
+  const scrapeTasks = sites.map((site) =>
+    site.scraper(site.url).then((data) => ({
       name: site.name,
       url: site.url,
       data: data,
-    })
-  }
+    })),
+  )
+
+  // Await all promises concurrently
+  const results = await Promise.all(scrapeTasks)
   return { results }
 }
