@@ -19,6 +19,7 @@ export default async function scrapeBinnys(url: string) {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
         ],
+        ignoreDefaultArgs: ['--disable-extensions'],
         executablePath,
         headless: true,
         defaultViewport: {
