@@ -15,6 +15,9 @@
         <div class="record" v-for="(record, index) in scrapedRecords" :key="index">
           <h3>{{ record.store }}</h3>
           <p>
+            Product: <strong>{{ record.name }}</strong>
+          </p>
+          <p>
             Address:
             <strong>{{ record.address || 'No address provided' }}</strong>
           </p>

@@ -23,7 +23,13 @@ export const useScrapeStore = defineStore('scrape', {
       return this.results[this.activeTab]?.data || []
     },
     allResults() {
-      return this.results.flatMap((result) => result?.data)
+      return this.results.flatMap((result) => {
+        if (!result?.data) return []
+        return result.data.map((record) => ({
+          ...record,
+          name: result.name,
+        }))
+      })
     },
   },
   actions: {
