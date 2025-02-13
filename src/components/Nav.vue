@@ -8,6 +8,9 @@
       <li>
         <router-link to="/facebook">Push</router-link>
       </li>
+      <li>
+        <router-link to="/automate">Automate</router-link>
+      </li>
       <li><a href="#" @click="logout">Logout</a></li>
     </ul>
     <ul v-else>
