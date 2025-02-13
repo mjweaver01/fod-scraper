@@ -1,3 +1,4 @@
+import fs from 'fs'
 import chromium from 'chrome-aws-lambda'
 import puppeteerCore from 'puppeteer-core'
 import puppeteer from 'puppeteer'
@@ -12,6 +13,14 @@ export default async function scrapeBigRed(url: string) {
       if (!executablePath) {
         throw new Error('Chromium executable not found.')
       }
+
+      // Copy the Chromium binary from its original location to /tmp.
+      const tempExecutablePath = '/tmp/chromium'
+      if (!fs.existsSync(tempExecutablePath)) {
+        fs.copyFileSync(executablePath, tempExecutablePath)
+        fs.chmodSync(tempExecutablePath, 0o755)
+      }
+
       browser = await puppeteerCore.launch({
         args: [
           ...chromium.args,
@@ -20,7 +29,7 @@ export default async function scrapeBigRed(url: string) {
           '--disable-dev-shm-usage',
         ],
         ignoreDefaultArgs: ['--disable-extensions'],
-        executablePath,
+        executablePath: tempExecutablePath,
         headless: true,
         defaultViewport: {
           width: 1024,
