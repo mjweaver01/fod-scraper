@@ -1166,6 +1166,11 @@ nanoid@^3.3.8:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.8.tgz#b1be3030bee36aaff18bacb375e5cce521684baf"
   integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
 
+netlify-plugin-chromium@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/netlify-plugin-chromium/-/netlify-plugin-chromium-1.1.4.tgz#d0a04ef2fbd677a19f3be94ccf47c320d2c3c334"
+  integrity sha512-yLgw6YePOF38URWVsHg3nBBoVSKcbMabKxziJX5i01/weyXWtFQVFvDWSOhyWkQgoMJ6zwF2UznA0Icy+m4pow==
+
 netmask@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-2.0.2.tgz#8b01a07644065d536383835823bc52004ebac5e7"
