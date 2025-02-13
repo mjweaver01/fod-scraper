@@ -1,4 +1,5 @@
 import browser from './browser'
+import binnysLocations from './binnysLocations'
 
 export default async function scrapeBinnys(url: string) {
   try {
@@ -17,8 +18,8 @@ export default async function scrapeBinnys(url: string) {
     // Wait for the element that will trigger the table load.
     await page.waitForSelector('.js-store-selector', { timeout: 10000 })
 
-    // Extract the data from the dynamically loaded table.
-    const data = await page.evaluate(async () => {
+    // Pass the binnysLocations as an argument into the evaluate function.
+    const data = await page.evaluate(async (locations) => {
       const target = document.querySelector('.js-store-selector')
       if (target) {
         target.dispatchEvent(
@@ -37,6 +38,7 @@ export default async function scrapeBinnys(url: string) {
           const store = row.querySelector('td:first-of-type a')
           const phone = row.querySelector('td:nth-of-type(2)')
           const stock_status = row.querySelector('td:nth-of-type(3)')
+          const location = locations.find((l) => store?.textContent?.trim()?.includes(l.name))
 
           if (
             store &&
@@ -48,6 +50,7 @@ export default async function scrapeBinnys(url: string) {
               store: store.textContent?.trim() || '',
               phone: phone.textContent?.trim() || '',
               stock_status: stock_status.textContent?.trim() || '',
+              address: `${location?.addressLine1} ${location?.city}, ${location?.state} ${location?.zipCode}`,
               in_stock: stock_status.textContent?.trim()?.includes('In Stock') ? true : false,
             }
           } else {
@@ -55,7 +58,7 @@ export default async function scrapeBinnys(url: string) {
           }
         })
         .filter(Boolean)
-    })
+    }, binnysLocations)
 
     return data
   } catch (error) {

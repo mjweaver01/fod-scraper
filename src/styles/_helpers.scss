@@ -1,0 +1,25 @@
+.stock-status,
+.scraper-status {
+  font-weight: 400;
+  border-radius: 5px;
+  background: var(--gray);
+  color: var(--white);
+  padding: 0.25rem 0.5rem;
+  max-width: 125px;
+  margin: 0 auto;
+  white-space: nowrap;
+  text-align: center;
+
+  &.good {
+    background: var(--green);
+  }
+
+  &.bad {
+    background: var(--red);
+  }
+
+  &.warning {
+    background: var(--yellow);
+    color: var(--red);
+  }
+}

@@ -2,9 +2,7 @@
   <div class="facebook-page">
     <h1>Push Facebook Audiences</h1>
 
-    <!-- Scraped records and push buttons -->
     <div class="records">
-      <h2>Scraped Records</h2>
       <button
         class="push-all"
         @click="pushAllAudiences"
@@ -19,6 +17,12 @@
           <p>
             Address:
             <strong>{{ record.address || 'No address provided' }}</strong>
+          </p>
+          <p>
+            Stock Status:
+            <span class="stock-status" :class="scrape.computeStockStatus(record.stock_status)">
+              {{ record.stock_status }}
+            </span>
           </p>
           <!-- Show the record-specific common configuration -->
           <AdsetConfig

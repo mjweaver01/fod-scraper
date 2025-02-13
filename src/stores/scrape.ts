@@ -66,6 +66,18 @@ export const useScrapeStore = defineStore('scrape', {
         this.status = 'error'
       }
     },
+
+    computeStockStatus(status) {
+      if (status === 'In Stock' || status === true) {
+        return 'good'
+      } else if (status === 'Out of Stock' || status === false) {
+        return 'bad'
+      } else if (status?.includes('Only')) {
+        return 'warning'
+      }
+
+      return ''
+    },
   },
 })
 

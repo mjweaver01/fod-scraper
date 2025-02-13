@@ -36,8 +36,8 @@
               {{ item.address }}
             </td>
             <td>
-              <span class="stock-status" :class="computeStockStatus(item.stock_status)">
-                {{ item.stock_status }}
+              <span class="stock-status" :class="scrape.computeStockStatus(item.in_stock)">
+                {{ item.in_stock ? 'In Stock' : 'Out of Stock' }}
               </span>
             </td>
             <td class="quantity" v-if="item.quantity">
@@ -74,17 +74,6 @@ export default {
         return 'warning'
       } else if (status === 'saved') {
         return 'good'
-      }
-    },
-    computeStockStatus(status) {
-      if (!status) return ''
-
-      if (status === 'In Stock') {
-        return 'good'
-      } else if (status === 'Out of Stock') {
-        return 'bad'
-      } else if (status.includes('Only')) {
-        return 'warning'
       }
     },
   },
@@ -154,26 +143,5 @@ table {
 .stock-status,
 .scraper-status {
   display: block;
-  font-weight: 400;
-  border-radius: 5px;
-  background: var(--gray);
-  color: var(--white);
-  padding: 0.25rem 0.5rem;
-  max-width: 125px;
-  margin: 0 auto;
-  white-space: nowrap;
-
-  &.good {
-    background: var(--green);
-  }
-
-  &.bad {
-    background: var(--red);
-  }
-
-  &.warning {
-    background: var(--yellow);
-    color: var(--red);
-  }
 }
 </style>
