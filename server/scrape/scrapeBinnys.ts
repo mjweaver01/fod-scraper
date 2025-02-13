@@ -48,6 +48,7 @@ export default async function scrapeBinnys(url: string) {
               store: store.textContent?.trim() || '',
               phone: phone.textContent?.trim() || '',
               stock_status: stock_status.textContent?.trim() || '',
+              in_stock: stock_status.textContent?.trim()?.includes('In Stock') ? true : false,
             }
           } else {
             return false

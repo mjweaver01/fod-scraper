@@ -62,6 +62,7 @@ export default async function scrapeBigRed(url: string) {
             quantityElem && quantityElem.textContent.trim().includes('0')
               ? 'Out of Stock'
               : 'In Stock',
+          in_stock: quantityElem && quantityElem.textContent.trim().includes('0') ? false : true,
           address: addressElem ? addressElem.textContent.trim() : '',
         }
       })

@@ -24,7 +24,7 @@
           <AdsetConfig
             :modelValue="recordConfigs[index] || defaultConfig"
             :disabled="pushingAll"
-            @update:modelValue="(val) => $set(recordConfigs, index, val)"
+            @update:modelValue="(val) => (recordConfigs[index] = val)"
           />
           <button
             @click="pushAudience(index, record)"
@@ -85,8 +85,8 @@ export default {
     },
     scrapedRecords() {
       return (
-        this.scrape?.allResults.filter(
-          (record) => record.address && record.address.trim() !== '',
+        this.scrape?.allResults?.filter(
+          (record) => record?.address && record?.address?.trim() !== '',
         ) || []
       )
     },
@@ -99,10 +99,10 @@ export default {
           if (!this.recordConfigs[index]) {
             // Determine the preset status based on product availability
             const presetStatus = record.in_stock ? 'ACTIVE' : 'INACTIVE'
-            this.$set(this.recordConfigs, index, {
+            this.recordConfigs[index] = {
               ...this.defaultConfig,
               status: presetStatus,
-            })
+            }
           }
         })
       },
@@ -113,11 +113,11 @@ export default {
     async pushAudience(index, record) {
       // Use record-specific config (or default if missing)
       const config = this.recordConfigs[index] || this.defaultConfig
-      this.$set(this.pushStatus, index, {
+      this.pushStatus[index] = {
         loading: true,
         error: null,
         response: null,
-      })
+      }
 
       const payload = {
         name: record.store + ' Audience',
@@ -152,17 +152,17 @@ export default {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        this.$set(this.pushStatus, index, {
+        this.pushStatus[index] = {
           loading: false,
           error: null,
           response: data,
-        })
+        }
       } catch (err) {
-        this.$set(this.pushStatus, index, {
+        this.pushStatus[index] = {
           loading: false,
           error: err.message,
           response: null,
-        })
+        }
       }
     },
     async pushAllAudiences() {
