@@ -11,7 +11,7 @@
     "build:backend": "tsc -p tsconfig.prod.json",
     "build": "npm run clean && npm run build:frontend && npm run build:backend",
     "backend:serve": "tsx dist/server/index.js",
-    "prod": "npm run build && npm run backend:serve",
+    "prod": "cross-env NODE_ENV=production npm run build && cross-env NODE_ENV=production npm run backend:serve",
     "clean": "rm -rf dist",
     "start": "npm run build && npm run backend:serve",
     "postinstall": "npm run build"
@@ -33,6 +33,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
     "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
     "prettier": "^3.4.2",
     "sass": "^1.82.0",
     "tsx": "^4.19.2",
