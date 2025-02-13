@@ -11,6 +11,7 @@ export default async function pushToGoogleSheets(data) {
   const spreadsheetId = process.env.SPREADSHEET_ID
   const range = 'Sheet1!A:B' // Adjust range as needed
 
+  // @ts-ignore
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId,
     range,
@@ -20,5 +21,6 @@ export default async function pushToGoogleSheets(data) {
     },
   })
 
+  // @ts-ignore
   console.log('Data added:', response.data.updates.updatedCells)
 }

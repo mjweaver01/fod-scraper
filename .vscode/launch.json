@@ -2,10 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Backend (Netlify Functions)",
+      "name": "Attach to Backend",
       "type": "node",
       "request": "attach",
-      "port": 8080,
+      "port": 3000,
       "restart": true,
       "protocol": "inspector",
       "skipFiles": ["<node_internals>/**"],

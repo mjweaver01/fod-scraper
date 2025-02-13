@@ -1,9 +1,20 @@
-import browser from './browser'
+import { getBrowser } from './browser'
+
+// Extend the global Window interface to include serverSideModel.
+declare global {
+  interface Window {
+    serverSideModel: {
+      // Change this to a more specific type if available.
+      storesGroupedByState: any
+    }
+  }
+}
 
 const URL = 'https://www.binnys.com/store-locator/'
 
 export default async function scrapeBinnysLocations() {
   // Open a new Puppeteer page.
+  const browser = await getBrowser()
   const page = await browser.newPage()
 
   // Navigate to the URL and wait until network activity stops.

@@ -19,7 +19,7 @@
       </button>
     </div>
 
-    <div class="scraper-time" v-if="scrape.activeSite.time">
+    <div class="scraper-time" v-if="scrape.activeSite?.time">
       Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
     </div>
 

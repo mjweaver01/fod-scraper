@@ -1,7 +1,8 @@
-import browser from './browser'
+import { getBrowser } from './browser'
 
 export default async function scrapeBigRed(url: string) {
   try {
+    const browser = await getBrowser()
     const page = await browser.newPage()
 
     // Use a custom user agent to mimic a standard (or even mobile) browser.
@@ -51,27 +52,24 @@ export default async function scrapeBigRed(url: string) {
         const addressElem = item.querySelector('small.ch-location-wrapper > span.ch-address')
 
         return {
-          store: merchantNameElem ? merchantNameElem.textContent.trim().replace(/:$/, '') : '',
-          price: priceElem ? priceElem.textContent.trim() : '',
-          distance: distanceElem ? distanceElem.textContent.trim() : '',
-          quantity: quantityElem ? quantityElem.textContent.trim() : '',
+          store: merchantNameElem ? merchantNameElem?.textContent?.trim().replace(/:$/, '') : '',
+          price: priceElem ? priceElem.textContent?.trim() : '',
+          distance: distanceElem ? distanceElem.textContent?.trim() : '',
+          quantity: quantityElem ? quantityElem.textContent?.trim() : '',
           stock_status:
-            quantityElem && quantityElem.textContent.trim().includes('0')
+            quantityElem && quantityElem.textContent?.trim().includes('0')
               ? 'Out of Stock'
               : 'In Stock',
-          in_stock: quantityElem && quantityElem.textContent.trim().includes('0') ? false : true,
-          address: addressElem ? addressElem.textContent.trim() : '',
+          in_stock: quantityElem && quantityElem.textContent?.trim().includes('0') ? false : true,
+          address: addressElem ? addressElem.textContent?.trim() : '',
         }
       })
     })
 
+    await page.close()
     return data
   } catch (error) {
     console.error('Scraping error:', error)
     throw error
-  } finally {
-    if (browser) {
-      await browser.close()
-    }
   }
 }

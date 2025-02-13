@@ -1,46 +1,23 @@
-import type { Context } from '@netlify/functions'
+import { Router, Request, Response } from 'express'
 import fetch from 'node-fetch'
 
-interface FacebookAdSetPayload {
-  name: string
-  optimization_goal: string
-  billing_event: string
-  bid_amount: number
-  daily_budget: number
-  campaign_id: string
-  targeting: {
-    geo_locations: {
-      custom_locations: Array<{
-        address_string: string
-        radius: number
-        distance_unit: string
-      }>
-    }
-  }
-  status: string
-  promoted_object: {
-    page_id: string
-  }
-}
+const router = Router()
 
-export default async (req: Request, context: Context) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
-    const payload: FacebookAdSetPayload = await req.json()
-
+    const payload = req.body // Expect payload to follow your FacebookAdSetPayload interface
     const adAccountId = process.env.AD_ACCOUNT_ID
     const accessToken = process.env.ACCESS_TOKEN
 
     if (!adAccountId || !accessToken) {
-      return Response.json({
+      return res.status(500).json({
         code: 500,
         message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
         error: true,
       })
     }
 
-    // Facebook Graph API endpoint for creating ad sets.
     const url = `https://graph.facebook.com/v22.0/act_${adAccountId}/adsets`
-
     const formData = new URLSearchParams()
     formData.append('name', payload.name)
     formData.append('optimization_goal', payload.optimization_goal)
@@ -55,22 +32,27 @@ export default async (req: Request, context: Context) => {
 
     const fbResponse = await fetch(url, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: formData,
     })
     const fbResult = await fbResponse.json()
 
-    return Response.json({
+    return res.json({
       code: 200,
       message: 'Ad set pushed successfully',
       data: fbResult,
       error: false,
     })
-  } catch (error) {
-    console.error('Error in pushFacebookAds:', error)
-    return Response.json({
+  } catch (error: any) {
+    console.error('Error in pushToFacebook:', error)
+    return res.status(500).json({
       code: 500,
       message: 'Internal Server Error',
       error: true,
     })
   }
-}
+})
+
+export default router

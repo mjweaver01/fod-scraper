@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuthStore } from './auth'
-import sites from '../../server/scrape/sites'
+import { sites, type Site } from '../../server/scrape/sites'
 
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
@@ -43,17 +43,20 @@ export const useScrapeStore = defineStore('scrape', {
       localStorage.removeItem('scrapeResults')
       this.status = 'scraping'
 
-      const scrapePromises = this.sites.map((page) => this.scrapeSite(page))
+      const scrapePromises = this.sites.map((page: Site) => this.scrapeSite(page))
       const results = await Promise.all(scrapePromises)
       this.results = results
       localStorage.setItem('scrapeResults', JSON.stringify(this.results))
       this.status = 'idle'
     },
 
-    async scrapeSite(page) {
+    async scrapeSite(page: Site) {
       try {
-        const results = await fetch('/.netlify/functions/scrape', {
+        const results = await fetch('/scrape', {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({ password: this.auth.password, page }),
         }).then((res) => res.json())
 
@@ -66,8 +69,11 @@ export const useScrapeStore = defineStore('scrape', {
     async saveToDB() {
       this.status = 'saving'
 
-      const results = await fetch('/.netlify/functions/save', {
+      const results = await fetch('/save', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ password: this.auth.password }),
       }).then((res) => res.json())
 

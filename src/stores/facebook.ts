@@ -146,7 +146,7 @@ export const useFacebookStore = defineStore('facebook', {
       const payload = this.constructAudiencePayload(record, config)
 
       try {
-        const res = await fetch('/.netlify/functions/push-to-facebook', {
+        const res = await fetch('/push-to-facebook', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

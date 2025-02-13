@@ -1,4 +1,4 @@
-export default [
+export const sites = [
   {
     name: 'Small Batch - Binnys',
     url: 'https://www.binnys.com/spirits/whiskey/field-of-dreams-small-batch-bourbon-160342/',
@@ -15,3 +15,5 @@ export default [
     scraper: 'bigred',
   },
 ]
+
+export type Site = (typeof sites)[number]

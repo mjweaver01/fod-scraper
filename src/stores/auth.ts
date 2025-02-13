@@ -11,8 +11,11 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async authUser() {
-      const authed = await fetch('/.netlify/functions/auth', {
+      const authed = await fetch('/auth', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ password: this.password }),
       }).then((res) => res.json())
 
