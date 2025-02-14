@@ -1,6 +1,8 @@
 <template>
   <div class="common-config">
-    <h2>Ad Set Configuration</h2>
+    <h2>
+      Ad Set Configuration for <i>{{ record.store }}</i>
+    </h2>
     <div class="form-group">
       <div>
         <label>
@@ -113,6 +115,10 @@
 export default {
   name: 'CommonConfig',
   props: {
+    record: {
+      type: Object,
+      required: true,
+    },
     modelValue: {
       type: Object,
       required: true,
@@ -144,9 +150,6 @@ export default {
 
 <style scoped>
 .common-config {
-  border: 1px solid var(--light-gray);
-  padding: 1rem;
-  margin-bottom: 1rem;
 }
 .common-config label {
   display: block;

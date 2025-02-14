@@ -1,5 +1,5 @@
 <template>
-  <div class="facebook-page">
+  <div class="page facebook-page">
     <h1>Push Facebook Audiences</h1>
 
     <div class="records">
@@ -39,61 +39,71 @@
         </div>
       </div>
 
-      <div v-if="displayRecords.length">
-        <div class="record" v-for="record in displayRecords" :key="record.__index">
-          <h3>{{ record.store }}</h3>
-          <p>
-            Product: <strong>{{ record.name }}</strong>
-          </p>
-          <p>
-            Address:
-            <strong>{{ record.address || 'No address provided' }}</strong>
-          </p>
-          <p>
-            Stock Status:
-            <span class="stock-status" :class="scrape.computeStockStatus(record.stock_status)">
-              {{ record.stock_status }}
-            </span>
-          </p>
-          <!-- Use record-specific config from the Facebook store -->
-          <AdsetConfig
-            :modelValue="facebook.recordConfigs[record.__index] || facebook.defaultConfig"
-            :disabled="facebook.pushingAll"
-            @update:modelValue="(val) => (facebook.recordConfigs[record.__index] = val)"
-          />
-          <button
-            @click="facebook.pushAudience(record.__index, record)"
-            :disabled="
-              facebook.pushingAll ||
-              (facebook.pushStatus[record.__index] && facebook.pushStatus[record.__index].loading)
-            "
-          >
-            Push Audience
-          </button>
-          <div
-            v-if="
-              facebook.pushStatus[record.__index] && facebook.pushStatus[record.__index].loading
-            "
-          >
-            Pushing...
-          </div>
-          <div
-            v-if="
-              facebook.pushStatus[record.__index] && facebook.pushStatus[record.__index].response
-            "
-            class="response"
-          >
-            Response:
-            <pre>{{ facebook.pushStatus[record.__index].response }}</pre>
-          </div>
-          <div
-            v-if="facebook.pushStatus[record.__index] && facebook.pushStatus[record.__index].error"
-            class="error"
-          >
-            Error: {{ facebook.pushStatus[record.__index].error }}
-          </div>
-        </div>
-      </div>
+      <table v-if="displayRecords.length" class="records-table">
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th>Product</th>
+            <th>Address</th>
+            <th>Stock Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="(record, index) in displayRecords" :key="index">
+            <tr>
+              <td>{{ record.store }}</td>
+              <td>{{ record.name }}</td>
+              <td>{{ record.address || 'No address provided' }}</td>
+              <td>
+                <span class="stock-status" :class="scrape.computeStockStatus(record.stock_status)">
+                  {{ record.stock_status }}
+                </span>
+              </td>
+              <td>
+                <button @click="toggleAccordion(index)" :disabled="facebook.pushingAll">
+                  {{ isAccordionOpen(index) ? 'Hide' : 'Show' }} Config
+                </button>
+                <button
+                  @click="facebook.pushAudience(index, record)"
+                  :disabled="
+                    facebook.pushingAll ||
+                    (facebook.pushStatus[index] && facebook.pushStatus[index].loading)
+                  "
+                >
+                  Push Audience
+                </button>
+                <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
+                  Pushing...
+                </div>
+                <div
+                  v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
+                  class="response"
+                >
+                  Response:
+                  <pre>{{ facebook.pushStatus[index].response }}</pre>
+                </div>
+                <div
+                  v-if="facebook.pushStatus[index] && facebook.pushStatus[index].error"
+                  class="error"
+                >
+                  Error: {{ facebook.pushStatus[index].error }}
+                </div>
+              </td>
+            </tr>
+            <tr v-if="isAccordionOpen(index)" class="accordion-content">
+              <td colspan="5">
+                <AdsetConfig
+                  :record="record"
+                  :modelValue="facebook.recordConfigs[index] || facebook.defaultConfig"
+                  :disabled="facebook.pushingAll"
+                  @update:modelValue="(val) => (facebook.recordConfigs[index] = val)"
+                />
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
       <div v-else>
         <p>No scraped records available.</p>
       </div>
@@ -116,6 +126,7 @@ export default {
       searchTerm: '',
       selectedSort: 'none',
       selectedStockFilter: 'all',
+      accordionState: {},
     }
   },
   computed: {
@@ -200,6 +211,12 @@ export default {
       }
       return queryIndex === query.length
     },
+    toggleAccordion(index) {
+      this.accordionState[index] = !this.accordionState[index]
+    },
+    isAccordionOpen(index) {
+      return this.accordionState[index] || false
+    },
   },
   watch: {
     scrapedRecords: {
@@ -222,18 +239,6 @@ export default {
 </script>
 
 <style scoped>
-.facebook-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-hr {
-  margin: 1rem 0 2rem;
-  border: 0;
-  border-top: 1px solid var(--light-gray);
-}
-
 .search {
   margin-bottom: 1rem;
 }
@@ -255,18 +260,21 @@ hr {
   margin-bottom: 2rem;
 }
 
-.record {
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.records-table th,
+.records-table td {
   border: 1px solid var(--light-gray);
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 0.5rem;
+  text-align: left;
 }
 
-button {
-  margin-top: 0.5rem;
-}
-
-.push-all {
-  margin-bottom: 1rem;
+.accordion-content {
+  background-color: var(--light-gray);
 }
 
 .response,

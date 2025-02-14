@@ -10,6 +10,7 @@ export const useScrapeStore = defineStore('scrape', {
       results: localStorage.getItem('scrapeResults')
         ? JSON.parse(localStorage.getItem('scrapeResults') || '[]')
         : [],
+      sites,
     }
   },
   getters: {

@@ -1,6 +1,5 @@
 <template>
-  <div class="home" v-if="auth?.authenticated">
-    <h1>Scrape</h1>
+  <div class="page scrape-page" v-if="auth?.authenticated">
     <Scraper />
   </div>
 </template>
@@ -21,11 +20,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.home {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-</style>

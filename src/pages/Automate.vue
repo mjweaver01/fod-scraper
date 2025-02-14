@@ -1,5 +1,5 @@
 <template>
-  <div class="automate-page">
+  <div class="page automate-page">
     <h1>Automation Scheduler</h1>
     <div class="cron-config">
       <label for="cron">CRON Expression:</label>
@@ -84,12 +84,6 @@ export default {
 </script>
 
 <style scoped>
-.automate-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
 .cron-config {
   margin-bottom: 1.5rem;
 }

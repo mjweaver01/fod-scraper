@@ -1,12 +1,21 @@
 <template>
   <div class="scraper-wrapper">
-    <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
+    <div class="scraper-header">
+      <h1>Scrape ({{ scrape.sites.length }} Products/Locations)</h1>
+      <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
+    </div>
     <div class="scraper-controls">
       <button @click="scrape.scrapeSites()" :disabled="scraping">Scrape Sites</button>
-      <button v-if="scrape.results.length > 0" :disabled="scraping" @click="scrape.saveToDB">
+      <button
+        v-if="scrape.results.length > 0"
+        :disabled="scraping || true"
+        @click="scrape.saveToDB"
+      >
         Save to DB
       </button>
     </div>
+
+    <hr />
 
     <div class="tabs">
       <button
@@ -93,15 +102,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.scraper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .scraper-controls {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-
-  button {
-    margin: 1rem 0;
-  }
 }
 
 .scraper-time {
@@ -111,7 +121,6 @@ export default {
 /* Styles for the Tab Navigation */
 .tabs {
   display: flex;
-  justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
   width: 100%;
@@ -133,8 +142,8 @@ export default {
 
 table {
   width: 100%;
-  max-width: 600px;
   margin: 0 auto;
+  border-collapse: collapse;
 
   th.store,
   td.store,
@@ -143,13 +152,18 @@ table {
     text-align: left;
   }
 
+  th,
   td {
-    padding: 0.5rem 0;
+    padding: 0.5rem;
+    border: 1px solid var(--light-gray);
   }
 }
 
-.stock-status,
-.scraper-status {
+.stock-status {
   display: block;
+}
+
+.scraper-status {
+  margin: 0;
 }
 </style>
