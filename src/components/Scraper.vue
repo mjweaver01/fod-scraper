@@ -29,13 +29,11 @@
     </div>
 
     <div class="scraper-time-container">
-      <div class="scraper-time" v-if="scrape.activeSite?.time">
+      <div v-if="scraping"><strong>Scraping...</strong></div>
+      <div v-else-if="scrape.activeSite?.time">
         Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
       </div>
-      <div v-else>
-        <p v-if="scraping">Scraping...</p>
-        <p v-else>No data available for this site.</p>
-      </div>
+      <div v-else>No data available for this site.</div>
 
       <button
         v-if="scrape.sites[scrape.activeTab]?.name"
