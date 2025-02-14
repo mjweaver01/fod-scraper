@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/auth'
 import Scraper from '@/components/Scraper.vue'
 
 export default {
-  name: 'Home',
+  name: 'Scrape',
   components: {
     Scraper,
   },

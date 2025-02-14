@@ -55,6 +55,18 @@ export const useScrapeStore = defineStore('scrape', {
       this.status = 'idle'
     },
 
+    async scrapeActiveSite() {
+      this.status = 'scraping'
+      try {
+        const results = await this.scrapeSite(this.sites[this.activeTab])
+        this.results[this.activeTab] = results
+        localStorage.setItem('scrapeResults', JSON.stringify(this.results))
+        this.status = 'idle'
+      } catch {
+        this.status = 'error'
+      }
+    },
+
     async scrapeSite(page: Site) {
       try {
         const results = await fetch('/scrape', {

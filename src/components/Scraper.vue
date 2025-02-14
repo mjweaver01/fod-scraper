@@ -5,7 +5,7 @@
       <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
     </div>
     <div class="scraper-controls">
-      <button @click="scrape.scrapeSites()" :disabled="scraping">Scrape Sites</button>
+      <button @click="scrape.scrapeSites()" :disabled="scraping">Scrape All Sites</button>
       <button
         v-if="scrape.results.length > 0"
         :disabled="scraping || true"
@@ -28,8 +28,22 @@
       </button>
     </div>
 
-    <div class="scraper-time" v-if="scrape.activeSite?.time">
-      Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
+    <div class="scraper-time-container">
+      <div class="scraper-time" v-if="scrape.activeSite?.time">
+        Last Scraped: <strong>{{ new Date(scrape.activeSite.time).toLocaleString() }}</strong>
+      </div>
+      <div v-else>
+        <p v-if="scraping">Scraping...</p>
+        <p v-else>No data available for this site.</p>
+      </div>
+
+      <button
+        v-if="scrape.sites[scrape.activeTab]?.name"
+        :disabled="scraping"
+        @click="scrape.scrapeActiveSite()"
+      >
+        Re-scrape {{ scrape.sites[scrape.activeTab].name }}
+      </button>
     </div>
 
     <div class="tab-content">
@@ -59,10 +73,6 @@
           </tr>
         </tbody>
       </table>
-      <div v-else>
-        <p v-if="scraping">Scraping...</p>
-        <p v-else>No data available for this site.</p>
-      </div>
     </div>
   </div>
 </template>
@@ -119,8 +129,12 @@ export default {
   gap: 1rem;
 }
 
-.scraper-time {
+.scraper-time-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 /* Styles for the Tab Navigation */
