@@ -10,6 +10,7 @@ export async function getBrowser() {
     puppeteer.use(AdBlockerPlugin())
     browser = await puppeteer.launch({
       headless: true,
+      timeout: 60000,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     })
   }

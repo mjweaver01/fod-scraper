@@ -10,6 +10,7 @@ export default async function scrapeBigRed(url: string) {
     const userAgent =
       'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
     await page.setUserAgent(userAgent)
+    await page.setViewport({ width: 1280, height: 800 })
 
     console.log('Navigating to:', url)
     await page.goto(url, { waitUntil: 'domcontentloaded' })
