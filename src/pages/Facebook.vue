@@ -49,6 +49,7 @@
             <th>Address</th>
             <th>Stock Status</th>
             <th>Actions</th>
+            <th>Response</th>
           </tr>
         </thead>
         <tbody>
@@ -63,9 +64,6 @@
                 </span>
               </td>
               <td>
-                <button @click="toggleAccordion(index)" :disabled="facebook.pushingAll">
-                  {{ isAccordionOpen(index) ? 'Hide' : 'Show' }} Config
-                </button>
                 <button
                   @click="facebook.pushAudience(index, record)"
                   :disabled="
@@ -78,23 +76,27 @@
                 <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
                   Pushing...
                 </div>
+                <button @click="toggleAccordion(index)" :disabled="facebook.pushingAll">
+                  {{ isAccordionOpen(index) ? 'Hide' : 'Show' }} Config
+                </button>
+              </td>
+              <td class="response-container">
                 <div
                   v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
                   class="response"
                 >
-                  Response:
                   <pre>{{ facebook.pushStatus[index].response }}</pre>
                 </div>
                 <div
                   v-if="facebook.pushStatus[index] && facebook.pushStatus[index].error"
                   class="error"
                 >
-                  Error: {{ facebook.pushStatus[index].error }}
+                  {{ facebook.pushStatus[index].error }}
                 </div>
               </td>
             </tr>
             <tr v-if="isAccordionOpen(index)" class="accordion-content">
-              <td colspan="5">
+              <td colspan="6">
                 <AdsetConfig
                   :record="record"
                   :modelValue="facebook.recordConfigs[index] || facebook.defaultConfig"
@@ -289,6 +291,15 @@ export default {
   border: 1px solid var(--light-gray);
   padding: 0.5rem;
   text-align: left;
+}
+
+.stock-status {
+  display: block;
+}
+
+.response-container pre {
+  overflow: auto;
+  width: 100%;
 }
 
 .accordion-content {
