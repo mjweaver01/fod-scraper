@@ -13,7 +13,7 @@ export default async function scrapeBigRed(url: string) {
     await page.setViewport({ width: 1280, height: 800 })
 
     console.log('Navigating to:', url)
-    await page.goto(url, { waitUntil: 'domcontentloaded' })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
     // Wait for the clickable element to be available before triggering the event

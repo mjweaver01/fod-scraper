@@ -13,7 +13,7 @@ export default async function scrapeBinnys(url: string) {
     await page.setViewport({ width: 1280, height: 800 })
 
     console.log('Navigating to:', url)
-    await page.goto(url, { waitUntil: 'domcontentloaded' })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
     await page.waitForSelector('.js-store-selector', { timeout: 10000 })

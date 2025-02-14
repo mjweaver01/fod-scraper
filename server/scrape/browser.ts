@@ -9,7 +9,12 @@ export async function getBrowser() {
     browser = await puppeteer.launch({
       headless: true,
       timeout: 60000,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-features=site-per-process',
+      ],
     })
   }
   return browser

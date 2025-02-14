@@ -18,7 +18,7 @@ export default async function scrapeBinnysLocations() {
   const page = await browser.newPage()
 
   // Navigate to the URL and wait until network activity stops.
-  await page.goto(URL, { waitUntil: 'networkidle0' })
+  await page.goto(URL, { waitUntil: 'networkidle0', timeout: 60000 })
 
   // Ensure that the serverSideModel is defined in the page context.
   await page.waitForFunction(() => !!window.serverSideModel)
