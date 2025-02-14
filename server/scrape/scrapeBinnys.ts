@@ -16,7 +16,7 @@ export default async function scrapeBinnys(url: string) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
-    await page.waitForSelector('.js-store-selector', { timeout: 10000 })
+    await page.waitForSelector('.js-store-selector', { timeout: 60000 })
 
     // Dispatch a click to trigger data load and wait briefly.
     await page.evaluate(() => {

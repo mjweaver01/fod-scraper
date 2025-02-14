@@ -17,7 +17,7 @@ export default async function scrapeBigRed(url: string) {
     console.log('Page loaded')
 
     // Wait for the clickable element to be available before triggering the event
-    await page.waitForSelector('.product-availability-container a b', { timeout: 10000 })
+    await page.waitForSelector('.product-availability-container a b', { timeout: 60000 })
 
     // Trigger a click on the element to load the dynamic content
     await page.evaluate(async () => {
@@ -36,7 +36,7 @@ export default async function scrapeBigRed(url: string) {
     })
 
     // Wait for the <ul> element containing the data to be fully loaded.
-    await page.waitForSelector('ul.ch-availability-item', { timeout: 10000 })
+    await page.waitForSelector('ul.ch-availability-item', { timeout: 60000 })
 
     // Extract the data from the updated list structure.
     const data = await page.evaluate(() => {
