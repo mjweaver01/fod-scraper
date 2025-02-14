@@ -31,9 +31,9 @@ export default async function scrapeBinnys(url: string) {
 
     // Evaluate the page for the desired data.
     const data = await page.evaluate((locations) => {
+      console.log('Evaluating')
       const table = document.querySelector('.store-list table')
       if (!table) return []
-      console.log('Table found in evaluate.')
       const rows = Array.from(table.querySelectorAll('tbody tr'))
       return rows
         .map((row) => {

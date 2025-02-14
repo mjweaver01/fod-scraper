@@ -20,10 +20,14 @@ export const useScrapeStore = defineStore('scrape', {
     sites() {
       return sites
     },
+    // @ts-ignore
     activeSite() {
+      // @ts-ignore
       return this.results[this.activeTab]
     },
+    // @ts-ignore
     activeSiteData() {
+      // @ts-ignore
       return this.activeSite?.data || []
     },
     allResults() {

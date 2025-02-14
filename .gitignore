@@ -25,3 +25,6 @@ dist-ssr
 
 # Books
 server/books
+
+# Cache
+.cache

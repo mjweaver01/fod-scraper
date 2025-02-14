@@ -40,6 +40,7 @@ export default async function scrapeBigRed(url: string) {
 
     // Extract the data from the updated list structure.
     const data = await page.evaluate(() => {
+      console.log('Evaluating')
       const itemsList = document.querySelector('ul.ch-availability-item')
       if (!itemsList) return []
       const items = Array.from(itemsList.querySelectorAll('li.ch-result-unit'))
