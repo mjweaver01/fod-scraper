@@ -16,26 +16,28 @@
 
       <hr />
 
-      <div class="search">
-        <input type="search" placeholder="Search audiences..." v-model="searchTerm" />
-      </div>
-
-      <div class="controls">
-        <div class="sort-dropdown">
-          <label for="sortDropdown">Sort by Stock Status:</label>
-          <select id="sortDropdown" v-model="selectedSort">
-            <option value="none">None</option>
-            <option value="inFirst">In Stock First</option>
-            <option value="outFirst">Out of Stock First</option>
-          </select>
+      <div class="search-filter">
+        <div class="search">
+          <input type="search" placeholder="Search audiences..." v-model="searchTerm" />
         </div>
-        <div class="filter-dropdown">
-          <label for="stockFilterDropdown">Filter by Stock:</label>
-          <select id="stockFilterDropdown" v-model="selectedStockFilter">
-            <option value="all">All</option>
-            <option value="in">In Stock</option>
-            <option value="out">Out of Stock</option>
-          </select>
+
+        <div class="controls">
+          <div class="sort-dropdown">
+            <label for="sortDropdown">Sort by Stock Status:</label>
+            <select id="sortDropdown" v-model="selectedSort">
+              <option value="none">None</option>
+              <option value="inFirst">In Stock First</option>
+              <option value="outFirst">Out of Stock First</option>
+            </select>
+          </div>
+          <div class="filter-dropdown">
+            <label for="stockFilterDropdown">Filter by Stock:</label>
+            <select id="stockFilterDropdown" v-model="selectedStockFilter">
+              <option value="all">All</option>
+              <option value="in">In Stock</option>
+              <option value="out">Out of Stock</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -238,22 +240,38 @@ export default {
 }
 </script>
 
-<style scoped>
-.search {
-  margin-bottom: 1rem;
+<style lang="scss" scoped>
+.search-filter {
+  display: flex;
+  gap: 1em;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  .sort-dropdown,
+  .filter-dropdown {
+    display: flex;
+    flex-flow: column;
+
+    label {
+      font-size: 0.8rem;
+    }
+  }
 }
 
-/* Styling for the new controls section */
+.search {
+  margin-bottom: 1rem;
+  width: 100%;
+
+  input {
+    width: 100%;
+  }
+}
+
 .controls {
   margin-bottom: 1rem;
   display: flex;
   gap: 1rem;
   align-items: center;
-}
-
-.sort-dropdown label,
-.filter-dropdown label {
-  margin-right: 0.5rem;
 }
 
 .records {

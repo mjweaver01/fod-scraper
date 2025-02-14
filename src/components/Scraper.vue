@@ -106,6 +106,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
+
+  h1 {
+    margin-bottom: 0;
+  }
 }
 
 .scraper-controls {
