@@ -15,8 +15,6 @@ export default async function scrapeBigRed(url: string) {
     await page.goto(url, { waitUntil: 'domcontentloaded' })
     console.log('Page loaded')
 
-    console.log(await page.content())
-
     // Wait for the clickable element to be available before triggering the event
     await page.waitForSelector('.product-availability-container a b', { timeout: 10000 })
 
