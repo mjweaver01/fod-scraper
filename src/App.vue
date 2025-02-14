@@ -4,7 +4,7 @@
       <Nav />
     </div>
     <div class="app">
-      <RouterView />
+      <RouterView v-if="auth?.authenticated || $route.path === '/login'" />
     </div>
   </div>
 </template>

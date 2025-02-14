@@ -1,5 +1,5 @@
 <template>
-  <div class="page scrape-page" v-if="auth?.authenticated">
+  <div class="page scrape-page">
     <Scraper />
   </div>
 </template>
@@ -12,11 +12,6 @@ export default {
   name: 'Home',
   components: {
     Scraper,
-  },
-  computed: {
-    auth() {
-      return useAuthStore()
-    },
   },
 }
 </script>

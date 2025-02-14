@@ -9,6 +9,7 @@
   margin: 0 auto;
   white-space: nowrap;
   text-align: center;
+  text-transform: capitalize;
 
   &.good {
     background: var(--green);
