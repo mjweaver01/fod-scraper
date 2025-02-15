@@ -26,16 +26,13 @@
     "googleapis": "^144.0.0",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
-    "puppeteer": "^24.1.0",
-    "puppeteer-core": "^24.1.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3",
     "vue": "^3.5.3",
     "vue-router": "^4.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.1",
     "@vitejs/plugin-vue": "^5.0.5",
     "prettier": "^3.4.2",
     "sass": "^1.82.0",

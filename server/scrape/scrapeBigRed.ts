@@ -1,74 +1,61 @@
-import { getBrowser } from './browser'
+import { chromium } from 'playwright'
 
 export default async function scrapeBigRed(url: string) {
   try {
-    const browser = await getBrowser()
-    const page = await browser.newPage()
-
-    // Use a custom user agent to mimic a standard (or even mobile) browser.
-    // This helps bypass websites that block scrapers by inspecting headers.
-    const userAgent =
-      'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
-    await page.setUserAgent(userAgent)
-    await page.setViewport({ width: 1920, height: 1080 })
+    const browser = await chromium.launch()
+    const context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3',
+      viewport: { width: 1920, height: 1080 },
+    })
+    const page = await context.newPage()
 
     console.log('Navigating to:', url)
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
-    // Wait for the clickable element to be available before triggering the event
-    await page.waitForSelector('.product-availability-container a b', { timeout: 60000 })
-
-    // Trigger a click on the element to load the dynamic content
-    await page.evaluate(async () => {
-      // Small delay to allow any lazy-loaded content to initialize.
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      const target = document.querySelector('.product-availability-container a b')
-      if (target) {
-        target.dispatchEvent(
-          new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window,
-          }),
-        )
-      }
-    })
+    // Click on the element to load the dynamic content
+    await page.click('.product-availability-container a b')
 
     // Wait for the <ul> element containing the data to be fully loaded.
     await page.waitForSelector('ul.ch-availability-item', { timeout: 60000 })
 
-    // Extract the data from the updated list structure.
-    const data = await page.evaluate(() => {
-      console.log('Evaluating')
-      const itemsList = document.querySelector('ul.ch-availability-item')
-      if (!itemsList) return []
-      const items = Array.from(itemsList.querySelectorAll('li.ch-result-unit'))
-      return items.map((item) => {
-        const merchantNameElem = item.querySelector(
-          'div.ch-location-details > div.ch-merchant-name',
-        )
-        const priceElem = item.querySelector('div.ch-location-details > div.ch-price-unit')
-        const distanceElem = item.querySelector('small.ch-location-wrapper > span.ch-distance')
-        const quantityElem = item.querySelector('small.ch-location-wrapper > span.ch-quantity')
-        const addressElem = item.querySelector('small.ch-location-wrapper > span.ch-address')
+    // Use Playwright's element handles to extract data
+    const items = await page.$$('ul.ch-availability-item li.ch-result-unit')
+    const data = [] as any[]
 
-        return {
-          store: merchantNameElem ? merchantNameElem?.textContent?.trim().replace(/:$/, '') : '',
-          price: priceElem ? priceElem.textContent?.trim() : '',
-          distance: distanceElem ? distanceElem.textContent?.trim() : '',
-          quantity: quantityElem ? quantityElem.textContent?.trim() : '',
-          stock_status:
-            quantityElem && quantityElem.textContent?.trim().includes('0')
-              ? 'Out of Stock'
-              : 'In Stock',
-          in_stock: quantityElem && quantityElem.textContent?.trim().includes('0') ? false : true,
-          address: addressElem ? addressElem.textContent?.trim() : '',
-        }
+    console.log('Evaluating & extracting data')
+
+    for (const item of items) {
+      const merchantNameElem = await item.$('div.ch-location-details > div.ch-merchant-name')
+      const priceElem = await item.$('div.ch-location-details > div.ch-price-unit')
+      const distanceElem = await item.$('small.ch-location-wrapper > span.ch-distance')
+      const quantityElem = await item.$('small.ch-location-wrapper > span.ch-quantity')
+      const addressElem = await item.$('small.ch-location-wrapper > span.ch-address')
+
+      const store = merchantNameElem ? await merchantNameElem.textContent() : ''
+      const price = priceElem ? await priceElem.textContent() : ''
+      const distance = distanceElem ? await distanceElem.textContent() : ''
+      const quantity = quantityElem ? await quantityElem.textContent() : ''
+      const address = addressElem ? await addressElem.textContent() : ''
+
+      const stock_status = quantity && quantity.includes('0') ? 'Out of Stock' : 'In Stock'
+      const in_stock = quantity && !quantity.includes('0')
+
+      data.push({
+        store: store?.trim().replace(/:$/, '') || '',
+        price: price?.trim() || '',
+        distance: distance?.trim() || '',
+        quantity: quantity?.trim() || '',
+        stock_status: stock_status || '',
+        in_stock: in_stock || false,
+        address: address?.trim() || '',
       })
-    })
+    }
 
-    await page.close()
+    console.log(`Data extracted, found ${data.length} items`)
+
+    await browser.close()
     return data
   } catch (error) {
     console.error('Scraping error:', error)

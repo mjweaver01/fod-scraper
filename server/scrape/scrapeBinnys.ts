@@ -1,69 +1,61 @@
-import { getBrowser } from './browser'
+import { chromium } from 'playwright'
 import binnysLocations from './binnysLocations'
 
 export default async function scrapeBinnys(url: string) {
   try {
-    const browser = await getBrowser()
-    const page = await browser.newPage()
-
-    // Use a custom user agent to mimic a mobile browser.
-    const userAgent =
-      'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3'
-    await page.setUserAgent(userAgent)
-    await page.setViewport({ width: 1920, height: 1080 })
+    const browser = await chromium.launch()
+    const context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3',
+      viewport: { width: 1920, height: 1080 },
+    })
+    const page = await context.newPage()
 
     console.log('Navigating to:', url)
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
-    await page.waitForSelector('.js-store-selector', { timeout: 60000 })
+    // Click to trigger data load
+    await page.waitForTimeout(1000)
+    await page.click('#pdp-above-fold .js-store-selector')
 
-    // Dispatch a click to trigger data load and wait briefly.
-    await page.evaluate(() => {
-      const target = document.querySelector('.js-store-selector')
-      if (target) {
-        target.dispatchEvent(
-          new MouseEvent('click', { bubbles: true, cancelable: true, view: window }),
-        )
-      }
-    })
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Wait for the table to be fully loaded
+    await page.waitForSelector('.store-list table tbody tr', { timeout: 60000 })
 
-    // Evaluate the page for the desired data.
-    const data = await page.evaluate((locations) => {
-      console.log('Evaluating')
-      const table = document.querySelector('.store-list table')
-      if (!table) return []
-      const rows = Array.from(table.querySelectorAll('tbody tr'))
-      return rows
-        .map((row) => {
-          const store = row.querySelector('td:first-of-type a')
-          const phone = row.querySelector('td:nth-of-type(2)')
-          const stock_status = row.querySelector('td:nth-of-type(3)')
-          const location = locations.find((l) => store?.textContent?.trim()?.includes(l.name))
-          if (
-            store &&
-            !store.textContent?.trim()?.includes('Ship to Me') &&
-            phone &&
-            stock_status
-          ) {
-            return {
-              store: store.textContent?.trim() || '',
-              phone: phone.textContent?.trim() || '',
-              stock_status: stock_status.textContent?.trim() || '',
-              address: `${location?.addressLine1} ${location?.city}, ${location?.state} ${location?.zipCode}`,
-              in_stock:
-                stock_status.textContent?.trim().includes('In Stock') ||
-                stock_status.textContent?.trim().includes('Left'),
-            }
-          } else {
-            return false
-          }
+    // Use Playwright's element handles to extract data
+    const rows = await page.$$('.store-list table tbody tr')
+    const data = [] as any[]
+
+    console.log('Evaluating & extracting data')
+
+    for (const row of rows) {
+      const storeElem = await row.$('td:first-of-type a')
+      const phoneElem = await row.$('td:nth-of-type(2)')
+      const stockStatusElem = await row.$('td:nth-of-type(3)')
+
+      const store = storeElem ? await storeElem.textContent() : ''
+      const phone = phoneElem ? await phoneElem.textContent() : ''
+      const stockStatus = stockStatusElem ? await stockStatusElem.textContent() : ''
+
+      const location = binnysLocations.find((l) => store?.trim()?.includes(l.name))
+      const address = location
+        ? `${location.addressLine1} ${location.city}, ${location.state} ${location.zipCode}`
+        : ''
+
+      if (store && !store.includes('Ship to Me') && phone && stockStatus) {
+        data.push({
+          store: store?.trim() || '',
+          phone: phone?.trim() || '',
+          stock_status: stockStatus?.trim() || '',
+          address: address || '',
+          in_stock: stockStatus.includes('In Stock') || stockStatus.includes('Left'),
         })
-        .filter(Boolean)
-    }, binnysLocations)
+      }
+    }
 
-    await page.close()
+    console.log(`Data extracted, found ${data.length} items`)
+
+    await browser.close()
     return data
   } catch (error) {
     console.error('Scraping error:', error)
