@@ -31,6 +31,7 @@ export const useScrapeStore = defineStore('scrape', {
       return this.activeSite?.data || []
     },
     allResults() {
+      // @ts-ignore
       return this.results.flatMap((result: any) => {
         if (!result?.data) return []
         return result.data.map((record: any) => ({
@@ -57,6 +58,7 @@ export const useScrapeStore = defineStore('scrape', {
 
     async scrapeActiveSite() {
       this.status = 'scraping'
+      this.results[this.activeTab] = []
       try {
         const results = await this.scrapeSite(this.sites[this.activeTab])
         this.results[this.activeTab] = results
