@@ -11,14 +11,14 @@ export default async function scrapeBigRed(url: string) {
     const page = await context.newPage()
 
     console.log('Navigating to:', url)
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 })
     console.log('Page loaded')
 
     // Click on the element to load the dynamic content
-    await page.click('.product-availability-container a b')
+    await page.click('.product-availability-container a b', { timeout: 120000 })
 
     // Wait for the <ul> element containing the data to be fully loaded.
-    await page.waitForSelector('ul.ch-availability-item', { timeout: 60000 })
+    await page.waitForSelector('ul.ch-availability-item', { timeout: 120000 })
 
     // Use Playwright's element handles to extract data
     const items = await page.$$('ul.ch-availability-item li.ch-result-unit')
