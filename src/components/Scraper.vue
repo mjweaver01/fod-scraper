@@ -154,6 +154,10 @@ export default {
     &.active {
       background: var(--black);
     }
+
+    &:hover {
+      background: var(--dark-gray);
+    }
   }
 }
 
