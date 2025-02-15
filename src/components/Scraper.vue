@@ -40,7 +40,7 @@
         :disabled="scraping"
         @click="scrape.scrapeActiveSite()"
       >
-        Re-scrape {{ scrape.sites[scrape.activeTab].name }}
+        Scrape {{ scrape.sites[scrape.activeTab].name }}
       </button>
     </div>
 
