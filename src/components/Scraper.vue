@@ -135,7 +135,6 @@ export default {
   gap: 1rem;
 }
 
-/* Styles for the Tab Navigation */
 .tabs {
   display: flex;
   gap: 1rem;
@@ -150,6 +149,7 @@ export default {
     color: var(--white);
     border-radius: 5px;
     cursor: pointer;
+    white-space: nowrap;
 
     &.active {
       background: var(--black);
@@ -159,6 +159,10 @@ export default {
       background: var(--dark-gray);
     }
   }
+}
+
+.tab-content {
+  overflow-x: auto;
 }
 
 table {
