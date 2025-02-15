@@ -10,11 +10,10 @@
     "build:frontend": "vite build",
     "build:backend": "tsc -p tsconfig.prod.json",
     "build": "npm run clean && npm run build:frontend && npm run build:backend",
-    "backend:serve": "tsx dist/server/index.js",
-    "prod": "cross-env NODE_ENV=production npm run build && cross-env NODE_ENV=production npm run backend:serve",
+    "backend:serve": "cross-env NODE_ENV=production tsx dist/server/index.js",
+    "prod": "cross-env NODE_ENV=production npm run build && npm run backend:serve",
     "clean": "rm -rf dist",
-    "start": "npm run backend:serve",
-    "heroku-postbuild": "npm run build && mkdir ./.cache && mv /app/.cache/puppeteer ./.cache"
+    "start": "npm run backend:serve"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
