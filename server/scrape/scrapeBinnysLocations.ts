@@ -1,4 +1,4 @@
-import { getBrowser } from './browser'
+import { chromium } from 'playwright'
 
 // Extend the global Window interface to include serverSideModel.
 declare global {
@@ -13,12 +13,17 @@ declare global {
 const URL = 'https://www.binnys.com/store-locator/'
 
 export default async function scrapeBinnysLocations() {
-  // Open a new Puppeteer page.
-  const browser = await getBrowser()
-  const page = await browser.newPage()
+  const browser = await chromium.launch()
+  const context = await browser.newContext({
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3',
+    viewport: { width: 1920, height: 1080 },
+  })
+  const page = await context.newPage()
 
-  // Navigate to the URL and wait until network activity stops.
-  await page.goto(URL, { waitUntil: 'networkidle0', timeout: 60000 })
+  console.log('Navigating to:', URL)
+  await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 60000 })
+  console.log('Page loaded')
 
   // Ensure that the serverSideModel is defined in the page context.
   await page.waitForFunction(() => !!window.serverSideModel)
@@ -28,8 +33,8 @@ export default async function scrapeBinnysLocations() {
     return window.serverSideModel?.storesGroupedByState || null
   })
 
-  // Clean up by closing the page.
-  await page.close()
+  // Clean up by closing the browser.
+  await browser.close()
 
   if (!storesGroupedByState) {
     throw new Error('storesGroupedByState not found on the page')
