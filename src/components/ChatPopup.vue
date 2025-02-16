@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isBig" @click="toggleChat" class="chat-overlay"></div>
+  <div v-if="isBig && showChat" @click="toggleChat" class="chat-overlay"></div>
   <div class="chat-popup" :class="{ 'is-big': isBig }">
     <button v-if="!showChat" class="chat-toggle" @click="toggleChat">
       <i class="pi pi-comment"></i>
