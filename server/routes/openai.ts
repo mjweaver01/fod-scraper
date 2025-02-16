@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { Router, Request, Response } from 'express'
 import OpenAI from 'openai'
+import { prompt } from '../constants'
 
 dotenv.config()
 const router = Router()
@@ -12,7 +13,7 @@ const openai = new OpenAI({
 
 router.post('/stream', async (req: Request, res: Response) => {
   try {
-    const { prompt } = req.body
+    const { prompt, data } = req.body
 
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream')
@@ -22,7 +23,10 @@ router.post('/stream', async (req: Request, res: Response) => {
     // Create a completion request with streaming enabled
     const stream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: prompt.replace('{data}', JSON.stringify(data)) },
+        { role: 'user', content: prompt },
+      ],
       max_tokens: 100,
       stream: true,
     })

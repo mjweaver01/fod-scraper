@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
+import { useScrapeStore } from './scrape'
 
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
     messages: [] as Array<{ role: string; content: string }>,
   }),
+  getters: {
+    scrape: () => useScrapeStore(),
+  },
   actions: {
     addMessage(role: string, content: string) {
       this.messages.push({ role, content })
@@ -20,32 +24,28 @@ export const useConversationStore = defineStore('conversation', {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, data: this.scrape.results }),
       })
 
       // Handle the streaming response
-      const reader = response.body.getReader()
+      const reader = response.body!.getReader()
       const decoder = new TextDecoder('utf-8')
       let done = false
-      let accumulatedMessage = '' // Initialize an empty string to accumulate the message
-      let isFirstChunk = true // Flag to check if it's the first chunk
+      let accumulatedMessage = ''
+      let isFirstChunk = true
 
       while (!done) {
         const { value, done: streamDone } = await reader.read()
         done = streamDone
         const chunk = decoder.decode(value, { stream: true })
 
-        // Clean up the chunk by removing unwanted prefixes
-        const cleanedChunk = chunk.replace(/data:\s*/g, '')
-
-        // Accumulate the cleaned chunk into the message
+        // Comprehensive regex to handle spaces before punctuation
+        const cleanedChunk = chunk
+          .replace(/data:\s*/g, '')
+          .replace(/\s+([.,!?;:’”])/g, '$1')
+          .replace(/\s+([’”])/g, '$1')
         accumulatedMessage += cleanedChunk
 
-        // Remove spaces before punctuation and quotes
-        accumulatedMessage = accumulatedMessage.replace(/\s+([.,!?;:])/g, '$1')
-        accumulatedMessage = accumulatedMessage.replace(/\s+(['"])/g, '$1')
-
-        // Add the assistant message placeholder on the first chunk
         if (isFirstChunk) {
           this.addMessage('assistant', accumulatedMessage)
           isFirstChunk = false
