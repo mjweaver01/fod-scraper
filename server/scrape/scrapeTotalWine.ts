@@ -2,7 +2,9 @@ import { chromium } from 'playwright'
 
 export default async function scrapeTotalWine(url: string) {
   try {
-    const browser = await chromium.launch()
+    const browser = await chromium.launch({
+      // headless: false,
+    })
     const context = await browser.newContext({
       userAgent:
         'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3',
@@ -15,8 +17,10 @@ export default async function scrapeTotalWine(url: string) {
     console.log('Page loaded')
 
     // hide cookie banner
-    await page.click('.onetrust-close-btn-handler', { timeout: 60000 })
-    console.log('Cookie banner hidden')
+    if (await page.$('.onetrust-close-btn-handler')) {
+      await page.click('.onetrust-close-btn-handler', { timeout: 60000 })
+      console.log('Cookie banner hidden')
+    }
 
     // Click on the element to load the dynamic content
     await page.click('div[class*="shoppingOptionsButtonContainer"] button', { timeout: 60000 })
