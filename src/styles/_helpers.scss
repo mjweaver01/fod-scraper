@@ -35,3 +35,14 @@
 .no-margin {
   margin: 0;
 }
+
+.form-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+
+  > div {
+    width: 100%;
+  }
+}

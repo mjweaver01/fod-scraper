@@ -6,7 +6,22 @@
     <div class="form-group">
       <div>
         <label>
-          Optimization Goal:
+          Status
+          <div class="select">
+            <select
+              :value="modelValue.status"
+              @change="onChange('status', $event.target.value)"
+              :disabled="disabled"
+            >
+              <option value="INACTIVE">Inactive</option>
+              <option value="ACTIVE">Active</option>
+            </select>
+          </div>
+        </label>
+      </div>
+      <div>
+        <label>
+          Optimization Goal
           <input
             type="text"
             :value="modelValue.optimization_goal"
@@ -17,7 +32,7 @@
       </div>
       <div>
         <label>
-          Billing Event:
+          Billing Event
           <input
             type="text"
             :value="modelValue.billing_event"
@@ -26,9 +41,11 @@
           />
         </label>
       </div>
+    </div>
+    <div class="form-group">
       <div>
         <label>
-          Bid Amount:
+          Bid Amount
           <input
             type="number"
             :value="modelValue.bid_amount"
@@ -39,7 +56,7 @@
       </div>
       <div>
         <label>
-          Daily Budget:
+          Daily Budget
           <input
             type="number"
             :value="modelValue.daily_budget"
@@ -48,9 +65,11 @@
           />
         </label>
       </div>
+    </div>
+    <div class="form-group">
       <div>
         <label>
-          Campaign ID:
+          Campaign ID
           <input
             type="text"
             :value="modelValue.campaign_id"
@@ -61,7 +80,7 @@
       </div>
       <div>
         <label>
-          Promoted Page ID:
+          Promoted Page ID
           <input
             type="text"
             :value="modelValue.promoted_object.page_id"
@@ -70,22 +89,11 @@
           />
         </label>
       </div>
+    </div>
+    <div class="form-group">
       <div>
         <label>
-          Status:
-          <select
-            :value="modelValue.status"
-            @change="onChange('status', $event.target.value)"
-            :disabled="disabled"
-          >
-            <option value="INACTIVE">Inactive</option>
-            <option value="ACTIVE">Active</option>
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Radius:
+          Radius
           <input
             type="number"
             :value="modelValue.radius"
@@ -96,15 +104,17 @@
       </div>
       <div>
         <label>
-          Distance Unit:
-          <select
-            :value="modelValue.distance_unit"
-            @change="onChange('distance_unit', $event.target.value)"
-            :disabled="disabled"
-          >
-            <option value="mile">Mile</option>
-            <option value="kilometer">Kilometer</option>
-          </select>
+          Distance Unit
+          <div class="select">
+            <select
+              :value="modelValue.distance_unit"
+              @change="onChange('distance_unit', $event.target.value)"
+              :disabled="disabled"
+            >
+              <option value="mile">Mile</option>
+              <option value="kilometer">Kilometer</option>
+            </select>
+          </div>
         </label>
       </div>
     </div>
@@ -148,14 +158,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .common-config {
-}
-.common-config label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-.common-config input,
-.common-config select {
+  padding: 0.5em;
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
 }
 </style>
