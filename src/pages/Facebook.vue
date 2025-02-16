@@ -23,20 +23,24 @@
 
         <div class="controls">
           <div class="sort-dropdown">
-            <label for="sortDropdown">Sort by Stock Status:</label>
-            <select id="sortDropdown" v-model="selectedSort">
-              <option value="none">None</option>
-              <option value="inFirst">In Stock First</option>
-              <option value="outFirst">Out of Stock First</option>
-            </select>
+            <label for="sortDropdown">Sort by Stock Status</label>
+            <div class="select">
+              <select id="sortDropdown" v-model="selectedSort">
+                <option value="none">None</option>
+                <option value="inFirst">In Stock First</option>
+                <option value="outFirst">Out of Stock First</option>
+              </select>
+            </div>
           </div>
           <div class="filter-dropdown">
-            <label for="stockFilterDropdown">Filter by Stock:</label>
-            <select id="stockFilterDropdown" v-model="selectedStockFilter">
-              <option value="all">All</option>
-              <option value="in">In Stock</option>
-              <option value="out">Out of Stock</option>
-            </select>
+            <label for="stockFilterDropdown">Filter by Stock</label>
+            <div class="select">
+              <select id="stockFilterDropdown" v-model="selectedStockFilter">
+                <option value="all">All</option>
+                <option value="in">In Stock</option>
+                <option value="out">Out of Stock</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -264,10 +268,6 @@ export default {
   .filter-dropdown {
     display: flex;
     flex-flow: column;
-
-    label {
-      font-size: 0.8rem;
-    }
   }
 }
 

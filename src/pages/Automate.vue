@@ -2,8 +2,10 @@
   <div class="page automate-page">
     <h1>Automation Scheduler</h1>
     <div class="cron-config">
-      <label for="cron">CRON Expression:</label>
-      <input id="cron" v-model="cronExpression" type="text" placeholder="* * * * *" />
+      <div>
+        <label for="cron">CRON Expression</label>
+        <input id="cron" v-model="cronExpression" type="text" placeholder="* * * * *" />
+      </div>
       <button @click="updateSchedule">Save Schedule</button>
     </div>
     <div class="actions">
@@ -87,8 +89,16 @@ export default {
 <style lang="scss" scoped>
 .cron-config {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 1rem;
   margin-bottom: 1rem;
+
+  > div {
+    width: 100%;
+  }
+
+  button {
+    white-space: nowrap;
+  }
 }
 </style>
