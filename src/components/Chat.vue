@@ -80,12 +80,16 @@ export default {
       this.userInput = this.lastUserMessage
     },
     scrollToBottom() {
-      const container = this.$refs.messagesContainer
-      container.scrollTop = container.scrollHeight
+      this.$nextTick(() => {
+        const container = this.$refs.messagesContainer
+        container.scrollTop = container.scrollHeight
+      })
     },
     handleScroll() {
       const container = this.$refs.messagesContainer
-      const atBottom = container.scrollHeight - container.scrollTop === container.clientHeight
+      const buffer = 20
+      const atBottom =
+        container.scrollHeight - container.scrollTop <= container.clientHeight + buffer
       this.autoScroll = atBottom
     },
   },
