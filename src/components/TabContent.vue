@@ -61,7 +61,6 @@ export default {
   },
   watch: {
     '$route.path'(newPath) {
-      console.log(this.$route.params.index)
       if (this.$route.path !== newPath) {
         this.currentTab = this.$route.params.index
       }

@@ -136,6 +136,7 @@ export default {
 
   .close-chat {
     background-color: var(--red);
+    border-color: var(--red);
   }
 
   .maximize {

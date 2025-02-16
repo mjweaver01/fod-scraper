@@ -65,7 +65,7 @@ export default {
   },
   watch: {
     '$route.params.index'(newIndex) {
-      this.scrape.activeTab = newIndex
+      this.scrape.activeTab = newIndex || 0
     },
   },
 }

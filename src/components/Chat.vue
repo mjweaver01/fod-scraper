@@ -24,7 +24,7 @@
       <input
         ref="chatInput"
         v-model="userInput"
-        @keyup.enter="sendMessage"
+        @keydown.enter.prevent.stop="sendMessage"
         @keyup.up="useLastUserMessage"
         placeholder="Type a message..."
         :disabled="conversation.isStreaming"
@@ -72,9 +72,17 @@ export default {
       this.conversation.sendMessage(this.userInput)
       this.userInput = ''
       this.scrollToBottom()
+
+      this.$nextTick(() => {
+        this.$refs.chatInput.focus()
+      })
     },
     clearConversation() {
       this.conversation.clearMessages()
+
+      this.$nextTick(() => {
+        this.$refs.chatInput.focus()
+      })
     },
     useLastUserMessage() {
       this.userInput = this.lastUserMessage
