@@ -27,7 +27,6 @@ router.post('/stream', async (req: Request, res: Response) => {
         { role: 'system', content: prompt.replace('{data}', JSON.stringify(data)) },
         { role: 'user', content: question },
       ],
-      max_tokens: 400,
       stream: true,
     })
 
