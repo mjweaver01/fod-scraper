@@ -157,6 +157,5 @@ export default {
 }
 .common-config input,
 .common-config select {
-  margin-left: 0.5rem;
 }
 </style>

@@ -1,11 +1,19 @@
 <template>
   <div v-if="isBig" @click="toggleChat" class="chat-overlay"></div>
   <div class="chat-popup" :class="{ 'is-big': isBig }">
-    <button v-if="!showChat" class="chat-toggle" @click="toggleChat">Chat</button>
+    <button v-if="!showChat" class="chat-toggle" @click="toggleChat">
+      <i class="pi pi-comment"></i>
+    </button>
     <div v-if="showChat" class="chat-popup-container">
       <div class="chat-popup-header">
-        <button class="big-toggle" @click="toggleBigSmall">{{ isBig ? 'Small' : 'Big' }}</button>
-        <button class="close-chat" @click="toggleChat">Close</button>
+        <button class="big-toggle" @click="toggleBigSmall">
+          <i v-if="!isBig" class="pi pi-window-maximize maximize"></i>
+          <i v-if="isBig" class="pi pi-window-minimize minimize"></i>
+        </button>
+        <h4 class="no-margin">Chat</h4>
+        <button class="close-chat" @click="toggleChat">
+          <i class="pi pi-times"></i>
+        </button>
       </div>
       <Chat ref="chatComponent" />
     </div>
@@ -49,18 +57,28 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
 }
 
 .chat-toggle {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 1rem;
+  right: 1rem;
   background-color: var(--blue);
+  font-size: 1.5rem;
   color: var(--white);
   border: none;
-  border-radius: 5px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--light-blue) !important;
+  }
 }
 
 .chat-popup-container {
@@ -104,24 +122,28 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.5rem;
 
   .big-toggle,
   .close-chat {
-    margin: 5px;
-    padding: 5px 10px;
-    background-color: var(--blue);
-    color: var(--white);
-    border: none;
-    border-radius: 5px;
-    background-color: var(--red);
-    color: var(--white);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
   }
 
-  .big-toggle {
-    background-color: var(--green);
+  .close-chat {
+    background-color: var(--red);
+  }
+
+  .maximize {
+    transform: rotate(-90deg);
+  }
+
+  .minimize {
+    transform: rotate(90deg);
   }
 }
 </style>

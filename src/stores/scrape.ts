@@ -17,9 +17,6 @@ export const useScrapeStore = defineStore('scrape', {
     auth() {
       return useAuthStore()
     },
-    sites() {
-      return sites
-    },
     // @ts-ignore
     activeSite() {
       // @ts-ignore

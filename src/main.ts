@@ -5,6 +5,7 @@ import VueShowdownPlugin from 'vue-showdown'
 import './styles/index.scss'
 import App from './App.vue'
 import { routes } from './routes'
+import 'primeicons/primeicons.css'
 
 const router = createRouter({
   history: createWebHistory(),

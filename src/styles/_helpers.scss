@@ -1,7 +1,6 @@
-.stock-status,
-.scraper-status {
+.pill {
   font-weight: 400;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   background: var(--gray);
   color: var(--white);
   padding: 0.25rem 0.5rem;
@@ -22,4 +21,17 @@
     background: var(--yellow);
     color: var(--red);
   }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.no-margin {
+  margin: 0;
 }

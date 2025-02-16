@@ -41,75 +41,86 @@
         </div>
       </div>
 
-      <table v-if="displayRecords.length" class="records-table">
-        <thead>
-          <tr>
-            <th>Store</th>
-            <th>Product</th>
-            <th>Address</th>
-            <th>Stock Status</th>
-            <th>Actions</th>
-            <th>Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="(record, index) in displayRecords" :key="index">
+      <div class="records-table-container">
+        <table v-if="displayRecords.length" class="records-table">
+          <thead>
             <tr>
-              <td>{{ record.store }}</td>
-              <td>{{ record.name }}</td>
-              <td>{{ record.address || 'No address provided' }}</td>
-              <td>
-                <span class="stock-status" :class="scrape.computeStockStatus(record.stock_status)">
-                  {{ record.stock_status }}
-                </span>
-              </td>
-              <td>
-                <button
-                  @click="facebook.pushAudience(index, record)"
-                  :disabled="
-                    facebook.pushingAll ||
-                    (facebook.pushStatus[index] && facebook.pushStatus[index].loading)
-                  "
-                >
-                  Push Audience
-                </button>
-                <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
-                  Pushing...
-                </div>
-                <button @click="toggleAccordion(index)" :disabled="facebook.pushingAll">
-                  {{ isAccordionOpen(index) ? 'Hide' : 'Show' }} Config
-                </button>
-              </td>
-              <td class="response-container">
-                <div
-                  v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
-                  class="response"
-                >
-                  <pre>{{ facebook.pushStatus[index].response }}</pre>
-                </div>
-                <div
-                  v-if="facebook.pushStatus[index] && facebook.pushStatus[index].error"
-                  class="error"
-                >
-                  {{ facebook.pushStatus[index].error }}
-                </div>
-              </td>
+              <th>Store</th>
+              <th>Product</th>
+              <th>Address</th>
+              <th>Stock Status</th>
+              <th>Actions</th>
+              <th>Response</th>
             </tr>
-            <tr v-if="isAccordionOpen(index)" class="accordion-content">
-              <td colspan="6">
-                <AdsetConfig
-                  :record="record"
-                  :modelValue="facebook.recordConfigs[index] || facebook.defaultConfig"
-                  :disabled="facebook.pushingAll"
-                  @update:modelValue="(val) => (facebook.recordConfigs[index] = val)"
-                />
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-      <div v-else>
-        <p>No scraped records available.</p>
+          </thead>
+          <tbody>
+            <template v-for="(record, index) in displayRecords" :key="index">
+              <tr>
+                <td>{{ record.store }}</td>
+                <td>{{ record.name }}</td>
+                <td>{{ record.address || 'No address provided' }}</td>
+                <td>
+                  <span
+                    class="pill stock-status"
+                    :class="scrape.computeStockStatus(record.stock_status)"
+                  >
+                    {{ record.stock_status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button
+                      @click="facebook.pushAudience(index, record)"
+                      :disabled="
+                        facebook.pushingAll ||
+                        (facebook.pushStatus[index] && facebook.pushStatus[index].loading)
+                      "
+                    >
+                      Push Audience
+                    </button>
+                    <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
+                      Pushing...
+                    </div>
+                    <button
+                      :class="{ hover: isAccordionOpen(index) }"
+                      @click="toggleAccordion(index)"
+                      :disabled="facebook.pushingAll"
+                    >
+                      {{ isAccordionOpen(index) ? 'Hide' : 'Show' }} Config
+                    </button>
+                  </div>
+                </td>
+                <td class="response-container">
+                  <div
+                    v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
+                    class="response"
+                  >
+                    <pre>{{ facebook.pushStatus[index].response }}</pre>
+                  </div>
+                  <div
+                    v-if="facebook.pushStatus[index] && facebook.pushStatus[index].error"
+                    class="error"
+                  >
+                    {{ facebook.pushStatus[index].error }}
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="isAccordionOpen(index)" class="accordion-content">
+                <td colspan="6">
+                  <AdsetConfig
+                    :record="record"
+                    :modelValue="facebook.recordConfigs[index] || facebook.defaultConfig"
+                    :disabled="facebook.pushingAll"
+                    @update:modelValue="(val) => (facebook.recordConfigs[index] = val)"
+                  />
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <div v-else>
+          <p>No scraped records available.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -280,6 +291,10 @@ export default {
   margin-bottom: 2rem;
 }
 
+.records-table-container {
+  overflow-x: auto;
+}
+
 .records-table {
   width: 100%;
   border-collapse: collapse;
@@ -291,6 +306,18 @@ export default {
   border: 1px solid var(--light-gray);
   padding: 0.5rem;
   text-align: left;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.records-table button {
+  padding: 0.25rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  width: 100%;
 }
 
 .stock-status {

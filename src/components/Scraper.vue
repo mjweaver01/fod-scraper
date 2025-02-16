@@ -1,33 +1,5 @@
 <template>
   <div class="scraper-wrapper">
-    <div class="scraper-header">
-      <h1>Scrape ({{ scrape.sites.length }} Products/Locations)</h1>
-      <div class="scraper-status" :class="computeStatus(scrape.status)">{{ scrape.status }}</div>
-    </div>
-    <div class="scraper-controls">
-      <button @click="scrape.scrapeSites()" :disabled="scraping">Scrape All Sites</button>
-      <button
-        v-if="scrape.results.length > 0"
-        :disabled="scraping || true"
-        @click="scrape.saveToDB"
-      >
-        Save to DB
-      </button>
-    </div>
-
-    <hr />
-
-    <div class="tabs">
-      <button
-        v-for="(result, index) in scrape.sites"
-        :key="index"
-        :class="{ active: scrape.activeTab === index }"
-        @click="scrape.activeTab = index"
-      >
-        {{ result.name }}
-      </button>
-    </div>
-
     <div class="scraper-time-container">
       <div v-if="scraping"><strong>Scraping...</strong></div>
       <div v-else-if="scrape.activeSite?.time">
@@ -61,7 +33,7 @@
               {{ item.address }}
             </td>
             <td>
-              <span class="stock-status" :class="scrape.computeStockStatus(item.stock_status)">
+              <span class="pill stock-status" :class="scrape.computeStockStatus(item.stock_status)">
                 {{ item.stock_status }}
               </span>
             </td>
@@ -87,82 +59,16 @@ export default {
       return this.scrape.status === 'scraping'
     },
   },
-  methods: {
-    computeStatus(status) {
-      if (!status) return ''
-
-      if (status === 'scraping') {
-        return 'warning'
-      } else if (status === 'saved') {
-        return 'good'
-      }
-    },
-  },
-  watch: {
-    // Whenever new scrape results are loaded, reset the active tab.
-    'scrape.results'(newResults) {
-      if (newResults.length > 0) {
-        this.scrape.activeTab = 0
-      }
-    },
-  },
 }
 </script>
 
 <style lang="scss" scoped>
-.scraper-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-
-  h1 {
-    margin-bottom: 0;
-  }
-}
-
-.scraper-controls {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
 .scraper-time-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
   gap: 1rem;
-}
-
-.tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
-  overflow-x: auto;
-
-  button {
-    padding: 0.5rem 1rem;
-    border: none;
-    background: var(--gray);
-    color: var(--white);
-    border-radius: 5px;
-    cursor: pointer;
-    white-space: nowrap;
-
-    &.active {
-      background: var(--black);
-    }
-
-    &:hover {
-      background: var(--dark-gray);
-    }
-  }
-}
-
-.tab-content {
-  overflow-x: auto;
 }
 
 table {
@@ -186,9 +92,5 @@ table {
 
 .stock-status {
   display: block;
-}
-
-.scraper-status {
-  margin: 0;
 }
 </style>

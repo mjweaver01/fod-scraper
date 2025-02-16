@@ -34,8 +34,9 @@ export default {
     updateSchedule() {
       localStorage.setItem('automationCron', this.cronExpression)
       this.message = `Schedule updated to: ${this.cronExpression}`
-      // TODO: Update the schedule in the database.
+      // TODO: Update the schedule in a database.
     },
+
     async runAutomation() {
       this.running = true
       this.message = 'Starting automation...'
@@ -83,24 +84,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .cron-config {
-  margin-bottom: 1.5rem;
-}
-
-.cron-config input {
-  margin-right: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-}
-
-.actions button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-}
-
-.message {
-  margin-top: 1rem;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 </style>

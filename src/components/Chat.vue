@@ -112,7 +112,7 @@ export default {
   }
 
   .input-container {
-    padding: 1em;
+    padding: 0.5rem;
     position: relative;
 
     .clear-conversation {

@@ -17,6 +17,8 @@ $wide: 1200px;
   --light-yellow: #fff8d7;
   --orange: #ff8c00;
   --blue: #306cf4;
+  --light-blue: #3e8cf8;
+  --dark-blue: #00308f;
   --black: #000;
   --light-gray: #e5e5ea;
   --dark-gray: #333;
@@ -30,4 +32,8 @@ $wide: 1200px;
   --background: var(--white);
   --background-dark: #1a1a1a;
   --text: var(--black);
+  // Theme
+  --primary: var(--black);
+  --light-primary: var(--light-gray);
+  --dark-primary: var(--dark-gray);
 }

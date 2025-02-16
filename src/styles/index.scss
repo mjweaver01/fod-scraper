@@ -1,6 +1,5 @@
 @use '@/styles/variables.scss' as *;
 @use '@/styles/helpers.scss' as *;
-
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
 * {
@@ -23,9 +22,80 @@ ol {
 }
 
 input,
+textarea,
+select,
 button,
-select {
-  padding: 0.5rem;
+.button {
+  display: block;
+  padding: 1em;
+  width: 100%;
+  background: var(--background);
+  border: 1px solid var(--primary);
+  color: var(--text);
+  border-radius: 5px;
+  font-size: 1rem;
+
+  &:focus {
+    border-color: var(--blue);
+  }
+}
+
+button,
+.button {
+  width: auto;
+}
+
+button,
+.button {
+  background: var(--primary);
+  color: var(--white);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.1s ease-in-out;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: var(--light-primary);
+    border-color: var(--light-primary);
+  }
+
+  &:hover:not([disabled]),
+  .hover {
+    background: var(--dark-primary);
+    border-color: var(--dark-primary);
+  }
+
+  &[type='submit'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.select {
+  position: relative;
+
+  select {
+    padding-right: 1.75em;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  &:after {
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    margin-top: -2px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--primary);
+  }
 }
 
 .page {
