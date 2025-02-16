@@ -6,16 +6,19 @@
     <div class="app">
       <RouterView v-if="auth?.authenticated || $route.path === '/login'" />
     </div>
+    <ChatPopup />
   </div>
 </template>
 
 <script>
 import { useAuthStore } from '@/stores/auth'
 import Nav from '@/components/Nav.vue'
+import ChatPopup from '@/components/ChatPopup.vue'
 
 export default {
   components: {
     Nav,
+    ChatPopup,
   },
   async beforeMount() {
     await this.checkAuth()

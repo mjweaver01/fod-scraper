@@ -12,8 +12,8 @@ import authRoute from './routes/auth'
 import scrapeRoute from './routes/scrape'
 import saveRoute from './routes/save'
 import pushToFacebookRoute from './routes/pushToFacebook'
+import openaiRoute from './routes/openai'
 
-// Create the Express app
 const app = express()
 
 app.use(
@@ -27,12 +27,13 @@ app.use(bodyParser.json({ limit: '2mb' }))
 app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }))
 
 /* ---------------------------
-   Mount your API routes first 
+   Mount API routes
 --------------------------- */
 app.use('/auth', authRoute)
 app.use('/scrape', scrapeRoute)
 app.use('/save', saveRoute)
 app.use('/push-to-facebook', pushToFacebookRoute)
+app.use('/openai', openaiRoute)
 
 const isDev = process.env.NODE_ENV !== 'production'
 

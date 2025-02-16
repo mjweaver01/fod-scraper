@@ -1,4 +1,7 @@
+import dotenv from 'dotenv'
 import { Router, Request, Response } from 'express'
+
+dotenv.config()
 const router = Router()
 
 router.post('/', (req: Request, res: Response) => {
