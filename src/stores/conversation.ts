@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useAuthStore } from './auth'
 import { useScrapeStore } from './scrape'
 
 export const useConversationStore = defineStore('conversation', {
@@ -7,6 +8,7 @@ export const useConversationStore = defineStore('conversation', {
     isStreaming: false,
   }),
   getters: {
+    auth: () => useAuthStore(),
     scrape: () => useScrapeStore(),
   },
   actions: {
@@ -25,7 +27,11 @@ export const useConversationStore = defineStore('conversation', {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question, data: this.scrape.results }),
+        body: JSON.stringify({
+          password: this.auth.password,
+          question,
+          data: this.scrape.results,
+        }),
       })
 
       // Handle the streaming response

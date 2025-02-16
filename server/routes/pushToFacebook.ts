@@ -1,11 +1,22 @@
+import dotenv from 'dotenv'
 import { Router, Request, Response } from 'express'
 import fetch from 'node-fetch'
 
+dotenv.config()
 const router = Router()
 
 router.post('/', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
   try {
-    const payload = req.body // Expect payload to follow your FacebookAdSetPayload interface
     const adAccountId = process.env.AD_ACCOUNT_ID
     const accessToken = process.env.ACCESS_TOKEN
 

@@ -12,9 +12,17 @@ const openai = new OpenAI({
 })
 
 router.post('/stream', async (req: Request, res: Response) => {
-  try {
-    const { question, data } = req.body
+  const { question, data, password } = req.body
 
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')

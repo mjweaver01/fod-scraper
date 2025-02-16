@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useAuthStore } from './auth'
 
 /**
  * Interface representing the configuration options for Facebook Ad Sets.
@@ -82,6 +83,9 @@ export const useFacebookStore = defineStore('facebook', {
     // Indicates if the store is currently pushing all audiences.
     pushingAll: false,
   }),
+  getters: {
+    auth: () => useAuthStore(),
+  },
   actions: {
     /**
      * Constructs the Facebook Ad Set payload by merging the provided config with the default.
@@ -151,7 +155,10 @@ export const useFacebookStore = defineStore('facebook', {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({
+            password: this.auth.password,
+            payload,
+          }),
         })
         const data = await res.json()
         this.pushStatus[index] = {
