@@ -29,7 +29,8 @@
     "tsx": "^4.19.2",
     "typescript": "^5.5.3",
     "vue": "^3.5.3",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "vue-showdown": "^4.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",

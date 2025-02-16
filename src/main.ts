@@ -1,6 +1,7 @@
 import { createApp, markRaw } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { createPinia, setMapStoreSuffix } from 'pinia'
+import VueShowdownPlugin from 'vue-showdown'
 import './styles/index.scss'
 import App from './App.vue'
 import { routes } from './routes'
@@ -19,6 +20,7 @@ const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
+app.use(VueShowdownPlugin)
 
 if (import.meta.env.DEV) {
   app.config.errorHandler = (err, instance, info) => {

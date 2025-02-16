@@ -12,11 +12,11 @@ export const useConversationStore = defineStore('conversation', {
     addMessage(role: string, content: string) {
       this.messages.push({ role, content })
     },
-    async sendMessage(prompt: string) {
-      if (!prompt.trim()) return
+    async sendMessage(question: string) {
+      if (!question.trim()) return
 
       // Add user message to the store
-      this.addMessage('user', prompt)
+      this.addMessage('user', question)
 
       // Send the message to the server
       const response = await fetch('/openai/stream', {
@@ -24,7 +24,7 @@ export const useConversationStore = defineStore('conversation', {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt, data: this.scrape.results }),
+        body: JSON.stringify({ question, data: this.scrape.results }),
       })
 
       // Handle the streaming response
@@ -38,13 +38,7 @@ export const useConversationStore = defineStore('conversation', {
         const { value, done: streamDone } = await reader.read()
         done = streamDone
         const chunk = decoder.decode(value, { stream: true })
-
-        // Comprehensive regex to handle spaces before punctuation
-        const cleanedChunk = chunk
-          .replace(/data:\s*/g, '')
-          .replace(/\s+([.,!?;:’”])/g, '$1')
-          .replace(/\s+([’”])/g, '$1')
-        accumulatedMessage += cleanedChunk
+        accumulatedMessage += chunk
 
         if (isFirstChunk) {
           this.addMessage('assistant', accumulatedMessage)

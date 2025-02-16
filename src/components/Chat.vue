@@ -10,9 +10,7 @@
           'assistant-message': message.role === 'assistant',
         }"
       >
-        <div class="message">
-          {{ message.content }}
-        </div>
+        <VueShowdown class="message" :markdown="message.content" />
       </div>
     </div>
     <span
@@ -22,18 +20,29 @@
     >
       Clear Conversation
     </span>
-    <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Type a message..." />
+    <input
+      ref="chatInput"
+      v-model="userInput"
+      @keyup.enter="sendMessage"
+      @keyup.up="useLastUserMessage"
+      placeholder="Type a message..."
+    />
   </div>
 </template>
 
 <script>
 import { useConversationStore } from '@/stores/conversation'
+import { VueShowdown } from 'vue-showdown'
 
 export default {
   name: 'Chat',
+  components: {
+    VueShowdown,
+  },
   data() {
     return {
       userInput: '',
+      lastUserMessage: '',
     }
   },
   computed: {
@@ -45,85 +54,92 @@ export default {
     async sendMessage() {
       if (!this.userInput.trim()) return
 
-      // Use the store's sendMessage method
+      this.lastUserMessage = this.userInput
       await this.conversation.sendMessage(this.userInput)
-
-      // Clear user input
       this.userInput = ''
     },
     clearConversation() {
       this.conversation.clearMessages()
     },
+    useLastUserMessage() {
+      this.userInput = this.lastUserMessage
+    },
   },
 }
 </script>
 
-<style lang="scss" scoped>
-.messages-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0 1em 1em;
-  overflow-y: auto;
-  max-height: 300px;
-  gap: 1em;
-}
+<style lang="scss">
+.chat-container {
+  .messages-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1em 1em;
+    overflow-y: auto;
+    gap: 1em;
+  }
 
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid var(--light-gray);
-  border-radius: 0;
-  border-left: none;
-  border-right: none;
-  border-bottom: none;
-}
+  input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--light-gray);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
 
-.clear-conversation {
-  cursor: pointer;
-  font-size: 0.8em;
-  padding: 2px;
-}
+  .clear-conversation {
+    cursor: pointer;
+    font-size: 0.8em;
+    padding: 2px;
+  }
 
-.message-container {
-  display: flex;
-}
-
-.message {
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #f0f0f0;
-}
-
-.user-message {
-  justify-content: flex-end;
+  .message-container {
+    display: flex;
+  }
 
   .message {
-    text-align: right;
-    background-color: #007bff;
-    color: #fff;
+    padding: 0.5em;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+
+    li:not(:last-child) p,
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
-}
 
-.assistant-message {
-  justify-content: flex-start;
+  .user-message {
+    justify-content: flex-end;
 
-  .message {
-    text-align: left;
+    .message {
+      text-align: right;
+      background-color: #007bff;
+      color: #fff;
+    }
   }
-}
 
-button {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
+  .assistant-message {
+    justify-content: flex-start;
 
-button:hover {
-  background-color: #ff1a1a;
+    .message {
+      text-align: left;
+    }
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ff1a1a;
+    }
+  }
 }
 </style>

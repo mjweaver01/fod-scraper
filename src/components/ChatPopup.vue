@@ -3,7 +3,7 @@
     <button class="chat-toggle" @click="toggleChat">Chat</button>
     <div v-if="showChat" class="chat-overlay">
       <button class="close-chat" @click="toggleChat">Close</button>
-      <Chat />
+      <Chat ref="chatComponent" />
     </div>
   </div>
 </template>
@@ -23,12 +23,17 @@ export default {
   methods: {
     toggleChat() {
       this.showChat = !this.showChat
+      if (this.showChat) {
+        this.$nextTick(() => {
+          this.$refs.chatComponent.$refs.chatInput.focus()
+        })
+      }
     },
   },
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .chat-toggle {
   position: fixed;
   bottom: 20px;
@@ -44,14 +49,17 @@ export default {
 .chat-overlay {
   position: fixed;
   bottom: 0;
-  right: 0;
+  right: 1em;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 300px;
-  height: 400px;
+  width: 100%;
+  max-width: 350px;
+  height: auto;
   background-color: var(--white);
   border: 1px solid var(--light-gray);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -66,5 +74,12 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.messages-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid var(--light-gray);
+  border-bottom: 1px solid var(--light-gray);
 }
 </style>

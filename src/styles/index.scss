@@ -16,7 +16,9 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+ul,
+ol {
   margin-bottom: 1rem;
 }
 
@@ -35,4 +37,9 @@ hr {
   margin: 1rem 0;
   border: 0;
   border-top: 1px solid var(--light-gray);
+}
+
+ul,
+ol {
+  padding-left: 1rem;
 }

@@ -13,7 +13,7 @@ const openai = new OpenAI({
 
 router.post('/stream', async (req: Request, res: Response) => {
   try {
-    const { prompt, data } = req.body
+    const { question, data } = req.body
 
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream')
@@ -25,16 +25,16 @@ router.post('/stream', async (req: Request, res: Response) => {
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: prompt.replace('{data}', JSON.stringify(data)) },
-        { role: 'user', content: prompt },
+        { role: 'user', content: question },
       ],
-      max_tokens: 100,
+      max_tokens: 400,
       stream: true,
     })
 
     // Stream the response
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content || ''
-      res.write(`data: ${content}\n\n`)
+      res.write(content)
     }
 
     res.end()
