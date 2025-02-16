@@ -34,11 +34,12 @@ export default {
     TabContent,
   },
   mounted() {
-    this.scrape.activeTab = this.$route.params.index || 0
+    this.scrape.activeTab =
+      typeof this.$route.params.index === 'undefined' || this.$route.params.index === 'undefined'
+        ? 0
+        : this.$route.params.index
 
-    if (!this.$route.params.index) {
-      this.$router.push(`/scrape/${this.scrape.currentIndex}`)
-    }
+    this.$router.push(`/scrape/${this.scrape.activeTab}`)
   },
   computed: {
     scrape() {
@@ -64,8 +65,12 @@ export default {
     },
   },
   watch: {
-    '$route.params.index'(newIndex) {
-      this.scrape.activeTab = newIndex || 0
+    '$route.params.index'(sentIndex) {
+      if (typeof sentIndex === 'undefined' || sentIndex === 'undefined') {
+        this.$router.push(`/scrape/0`)
+      } else {
+        this.scrape.activeTab = sentIndex
+      }
     },
   },
 }

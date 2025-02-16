@@ -57,7 +57,12 @@ button,
   }
 
   &:hover:not([disabled]),
-  .hover {
+  &.hover {
+    background: var(--mid-primary);
+    border-color: var(--mid-primary);
+  }
+
+  &:active:not([disabled]) {
     background: var(--dark-primary);
     border-color: var(--dark-primary);
   }

@@ -3,7 +3,7 @@
     <router-link to="/"><img src="/fod.png" alt="logo" /></router-link>
     <ul v-if="auth?.authenticated">
       <li>
-        <router-link to="/scrape/0" activeClass="active">Scrape</router-link>
+        <router-link to="/scrape" activeClass="active">Scrape</router-link>
       </li>
       <li>
         <router-link to="/facebook" activeClass="active">Push</router-link>
