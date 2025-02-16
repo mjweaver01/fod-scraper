@@ -42,6 +42,27 @@
               </select>
             </div>
           </div>
+          <div class="filter-dropdown">
+            <label for="storeFilterDropdown">Filter by Store</label>
+            <div class="select">
+              <select id="storeFilterDropdown" v-model="selectedStoreFilter">
+                <option value="all">All Stores</option>
+                <option v-for="option in scrape.sites" :key="option.name" :value="option.name">
+                  {{ option.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div
+            v-if="
+              selectedStoreFilter !== 'all' ||
+              selectedStockFilter !== 'all' ||
+              searchTerm !== '' ||
+              selectedSort !== 'none'
+            "
+          >
+            <button @click="resetFilters">Reset</button>
+          </div>
         </div>
       </div>
 
@@ -140,6 +161,7 @@ export default {
       searchTerm: '',
       selectedSort: 'none',
       selectedStockFilter: 'all',
+      selectedStoreFilter: 'all',
       accordionState: {},
     }
   },
@@ -192,6 +214,11 @@ export default {
         records = records.filter((record) => !record.in_stock)
       }
 
+      // Apply store filter
+      if (this.selectedStoreFilter !== 'all') {
+        records = records.filter((record) => record.name === this.selectedStoreFilter)
+      }
+
       // Apply sorting dropdown for stock status.
       // "In Stock First" will put records where record.in_stock is truthy at the top.
       // "Out of Stock First" will do the opposite.
@@ -231,6 +258,12 @@ export default {
     isAccordionOpen(index) {
       return this.accordionState[index] || false
     },
+    resetFilters() {
+      this.searchTerm = ''
+      this.selectedSort = 'none'
+      this.selectedStockFilter = 'all'
+      this.selectedStoreFilter = 'all'
+    },
   },
   watch: {
     scrapedRecords: {
@@ -255,6 +288,7 @@ export default {
 <style lang="scss" scoped>
 .search-filter {
   display: flex;
+  flex-flow: column;
   gap: 1em;
   justify-content: space-between;
   align-items: flex-end;
@@ -263,6 +297,10 @@ export default {
   .filter-dropdown {
     display: flex;
     flex-flow: column;
+  }
+
+  @media (min-width: $tablet) {
+    flex-flow: row;
   }
 }
 
@@ -279,7 +317,16 @@ export default {
   margin-bottom: 1rem;
   display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-end;
+  width: 100%;
+
+  > div {
+    flex-grow: 1;
+  }
+
+  label {
+    white-space: nowrap;
+  }
 }
 
 .records {
