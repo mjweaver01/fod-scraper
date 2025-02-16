@@ -98,14 +98,9 @@
                   <div
                     v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
                     class="response"
+                    :class="facebook.pushStatus[index].response.error ? 'error' : 'success'"
                   >
-                    <pre>{{ facebook.pushStatus[index].response }}</pre>
-                  </div>
-                  <div
-                    v-if="facebook.pushStatus[index] && facebook.pushStatus[index].error"
-                    class="error"
-                  >
-                    {{ facebook.pushStatus[index].error }}
+                    <p class="small no-margin">{{ facebook.pushStatus[index].response.message }}</p>
                   </div>
                 </td>
               </tr>
@@ -333,13 +328,12 @@ export default {
   background-color: var(--light-gray);
 }
 
-.response,
-.error {
-  margin-top: 0.5rem;
-}
-
 .error {
   color: var(--red);
+}
+
+.success {
+  color: var(--green);
 }
 
 .global-loading {
