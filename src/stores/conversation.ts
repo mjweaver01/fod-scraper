@@ -17,6 +17,7 @@ export const useConversationStore = defineStore('conversation', {
       if (!question.trim()) return
 
       this.addMessage('user', question)
+      this.addMessage('assistant', 'Thinking...')
       this.isStreaming = true
 
       const response = await fetch('/openai/stream', {
@@ -32,21 +33,13 @@ export const useConversationStore = defineStore('conversation', {
       const decoder = new TextDecoder('utf-8')
       let done = false
       let accumulatedMessage = ''
-      let isFirstChunk = true
 
       while (!done) {
         const { value, done: streamDone } = await reader.read()
         done = streamDone
         const chunk = decoder.decode(value, { stream: true })
         accumulatedMessage += chunk
-
-        if (isFirstChunk) {
-          this.addMessage('assistant', accumulatedMessage)
-          isFirstChunk = false
-        } else {
-          // Update the current assistant message in real-time
-          this.messages[this.messages.length - 1].content = accumulatedMessage
-        }
+        this.messages[this.messages.length - 1].content = accumulatedMessage
       }
 
       this.isStreaming = false
