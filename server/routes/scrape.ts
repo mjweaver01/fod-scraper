@@ -3,6 +3,8 @@ import scrapeBinnys from '../scrape/scrapeBinnys'
 import scrapeBigRed from '../scrape/scrapeBigRed'
 import scrapeTotalWine from '../scrape/scrapeTotalWine'
 import scrapeLiquorBarn from '../scrape/scrapeLiquorBarn'
+import scrapeGays from '../scrape/scrapeGays'
+import scrapeCapNCork from '../scrape/scrapeCapNCork'
 
 const router = Router()
 
@@ -15,6 +17,8 @@ router.post('/', async (req: Request, res: Response) => {
     bigred: scrapeBigRed,
     totalwine: scrapeTotalWine,
     liquorbarn: scrapeLiquorBarn,
+    gays: scrapeGays,
+    capncork: scrapeCapNCork,
   }
 
   if (password === process.env.AUTH_SECRET) {
