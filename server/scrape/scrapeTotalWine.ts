@@ -14,6 +14,10 @@ export default async function scrapeTotalWine(url: string) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
+    // hide cookie banner
+    await page.click('.onetrust-close-btn-handler', { timeout: 60000 })
+    console.log('Cookie banner hidden')
+
     // Click on the element to load the dynamic content
     await page.click('div[class*="shoppingOptionsButtonContainer"] button', { timeout: 60000 })
 
