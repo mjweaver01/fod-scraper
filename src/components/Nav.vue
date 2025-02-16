@@ -54,6 +54,7 @@ nav {
   ul {
     display: flex;
     gap: 1rem;
+    margin: 0;
 
     li {
       list-style: none;
