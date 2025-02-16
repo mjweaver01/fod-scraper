@@ -12,14 +12,14 @@ export default async function scrapeBinnys(url: string) {
     const page = await context.newPage()
 
     console.log('Navigating to:', url)
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 })
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
 
     // Click to trigger data load
-    await page.click('#pdp-above-fold .js-store-selector', { timeout: 120000 })
+    await page.click('#pdp-above-fold .js-store-selector', { timeout: 60000 })
 
     // Wait for the table to be fully loaded
-    await page.waitForSelector('.store-list table tbody tr', { timeout: 120000 })
+    await page.waitForSelector('.store-list table tbody tr', { timeout: 60000 })
 
     // Use Playwright's element handles to extract data
     const rows = await page.$$('.store-list table tbody tr')

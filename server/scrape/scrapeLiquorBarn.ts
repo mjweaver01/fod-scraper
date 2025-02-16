@@ -1,6 +1,6 @@
 import { chromium } from 'playwright'
 
-export default async function scrapeBigRed(url: string) {
+export default async function scrapeLiquorBarn(url: string) {
   try {
     const browser = await chromium.launch()
     const context = await browser.newContext({
@@ -13,6 +13,10 @@ export default async function scrapeBigRed(url: string) {
     console.log('Navigating to:', url)
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
+
+    // click confirm age
+    await page.click('.confirm-age-check', { timeout: 60000 })
+    console.log('Confirmed age')
 
     // Click on the element to load the dynamic content
     await page.click('.product-availability-container a b', { timeout: 60000 })

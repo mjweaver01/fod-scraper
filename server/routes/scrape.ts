@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express'
 import scrapeBinnys from '../scrape/scrapeBinnys'
 import scrapeBigRed from '../scrape/scrapeBigRed'
+import scrapeTotalWine from '../scrape/scrapeTotalWine'
+import scrapeLiquorBarn from '../scrape/scrapeLiquorBarn'
 
 const router = Router()
 
@@ -11,6 +13,8 @@ router.post('/', async (req: Request, res: Response) => {
   const scrapeClients: { [key: string]: any } = {
     binnys: scrapeBinnys,
     bigred: scrapeBigRed,
+    totalwine: scrapeTotalWine,
+    liquorbarn: scrapeLiquorBarn,
   }
 
   if (password === process.env.AUTH_SECRET) {

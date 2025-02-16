@@ -78,6 +78,7 @@ export default {
 .tab-headers {
   overflow: auto;
   border: 1px solid var(--primary);
+  border-right: none;
   display: none;
 
   @media (min-width: $tablet) {
@@ -99,10 +100,6 @@ export default {
   @media (min-width: $tablet) {
     padding: 17.75px;
     height: 53px; //SET SAME HEIGHT AS SEARCH
-  }
-
-  &:last-child {
-    border-right: none;
   }
 
   @media (min-width: $mobile) {
