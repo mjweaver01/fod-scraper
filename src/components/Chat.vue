@@ -1,6 +1,6 @@
 <template>
   <div class="chat-container">
-    <div class="messages-container">
+    <div class="messages-container" ref="messagesContainer" @scroll="handleScroll">
       <div
         v-for="(message, index) in conversation.messages"
         :key="index"
@@ -13,20 +13,23 @@
         <VueShowdown class="message" :markdown="message.content" />
       </div>
     </div>
-    <span
-      v-if="conversation.messages.length > 0"
-      @click="clearConversation"
-      class="clear-conversation"
-    >
-      Clear Conversation
-    </span>
-    <input
-      ref="chatInput"
-      v-model="userInput"
-      @keyup.enter="sendMessage"
-      @keyup.up="useLastUserMessage"
-      placeholder="Type a message..."
-    />
+    <div class="input-container">
+      <span
+        v-if="conversation.messages.length > 0"
+        @click="clearConversation"
+        class="clear-conversation"
+      >
+        Clear Conversation
+      </span>
+      <input
+        ref="chatInput"
+        v-model="userInput"
+        @keyup.enter="sendMessage"
+        @keyup.up="useLastUserMessage"
+        placeholder="Type a message..."
+        :disabled="conversation.isStreaming"
+      />
+    </div>
   </div>
 </template>
 
@@ -43,6 +46,7 @@ export default {
     return {
       userInput: '',
       lastUserMessage: '',
+      autoScroll: true,
     }
   },
   computed: {
@@ -50,13 +54,24 @@ export default {
       return useConversationStore()
     },
   },
+  watch: {
+    'conversation.messages': {
+      handler() {
+        if (this.autoScroll) {
+          this.scrollToBottom()
+        }
+      },
+      deep: true,
+    },
+  },
   methods: {
-    async sendMessage() {
+    sendMessage() {
       if (!this.userInput.trim()) return
 
       this.lastUserMessage = this.userInput
-      await this.conversation.sendMessage(this.userInput)
+      this.conversation.sendMessage(this.userInput)
       this.userInput = ''
+      this.scrollToBottom()
     },
     clearConversation() {
       this.conversation.clearMessages()
@@ -64,35 +79,50 @@ export default {
     useLastUserMessage() {
       this.userInput = this.lastUserMessage
     },
+    scrollToBottom() {
+      const container = this.$refs.messagesContainer
+      container.scrollTop = container.scrollHeight
+    },
+    handleScroll() {
+      const container = this.$refs.messagesContainer
+      const atBottom = container.scrollHeight - container.scrollTop === container.clientHeight
+      this.autoScroll = atBottom
+    },
   },
 }
 </script>
 
 <style lang="scss">
 .chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
   .messages-container {
     display: flex;
     flex-direction: column;
-    padding: 0 1em 1em;
+    padding: 1em;
     overflow-y: auto;
     gap: 1em;
   }
 
-  input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid var(--light-gray);
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-  }
+  .input-container {
+    padding: 1em;
+    position: relative;
 
-  .clear-conversation {
-    cursor: pointer;
-    font-size: 0.8em;
-    padding: 2px;
+    .clear-conversation {
+      cursor: pointer;
+      font-size: 0.8em;
+    }
+
+    input {
+      width: 100%;
+      padding: 1em;
+      border-radius: 5px;
+      border: 1px solid var(--light-gray);
+      border-radius: 0;
+    }
   }
 
   .message-container {

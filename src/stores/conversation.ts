@@ -4,6 +4,7 @@ import { useScrapeStore } from './scrape'
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
     messages: [] as Array<{ role: string; content: string }>,
+    isStreaming: false,
   }),
   getters: {
     scrape: () => useScrapeStore(),
@@ -15,10 +16,9 @@ export const useConversationStore = defineStore('conversation', {
     async sendMessage(question: string) {
       if (!question.trim()) return
 
-      // Add user message to the store
       this.addMessage('user', question)
+      this.isStreaming = true
 
-      // Send the message to the server
       const response = await fetch('/openai/stream', {
         method: 'POST',
         headers: {
@@ -48,6 +48,8 @@ export const useConversationStore = defineStore('conversation', {
           this.messages[this.messages.length - 1].content = accumulatedMessage
         }
       }
+
+      this.isStreaming = false
     },
     clearMessages() {
       this.messages = []
