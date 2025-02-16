@@ -1,6 +1,5 @@
 <template>
   <div class="top login-page">
-    <Hero />
     <div class="login-form">
       <h1>Login</h1>
       <form @submit.prevent="login">
@@ -15,6 +14,7 @@
         <button type="submit">Log in</button>
       </form>
     </div>
+    <div class="login-error" v-if="triedLogin">{{ auth?.error }}</div>
   </div>
 </template>
 
@@ -22,6 +22,11 @@
 import { useAuthStore } from '@/stores/auth'
 
 export default {
+  data() {
+    return {
+      triedLogin: false,
+    }
+  },
   computed: {
     auth() {
       return useAuthStore()
@@ -29,11 +34,11 @@ export default {
   },
   methods: {
     async login() {
+      this.triedLogin = true
+
       await this.auth?.authUser()
       if (this.auth?.authenticated) {
         this.$router.push('/')
-      } else {
-        alert(authed?.message ?? 'Could not log in')
       }
     },
   },
@@ -57,6 +62,7 @@ export default {
   color: var(--red);
   margin: 0;
   text-align: center;
+  margin-top: 1em;
 }
 
 .reset-password {
