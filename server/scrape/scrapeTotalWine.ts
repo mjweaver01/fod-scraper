@@ -4,6 +4,7 @@ export default async function scrapeTotalWine(url: string) {
   try {
     const browser = await chromium.launch({
       // headless: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const context = await browser.newContext({
       userAgent:
