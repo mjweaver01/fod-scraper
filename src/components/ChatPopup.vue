@@ -1,4 +1,5 @@
 <template>
+  <div v-if="isBig" @click="toggleChat" class="chat-overlay"></div>
   <div class="chat-popup" :class="{ 'is-big': isBig }">
     <button v-if="!showChat" class="chat-toggle" @click="toggleChat">Chat</button>
     <div v-if="showChat" class="chat-popup-container">
@@ -41,6 +42,15 @@ export default {
 </script>
 
 <style lang="scss">
+.chat-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 .chat-toggle {
   position: fixed;
   bottom: 20px;
@@ -80,13 +90,13 @@ export default {
 }
 
 .chat-popup.is-big .chat-popup-container {
-  max-width: calc(100% - 2em);
+  max-width: calc(100% - 6em);
   left: 50%;
   right: unset;
   transform: translateX(-50%);
 
   .messages-container {
-    max-height: 80vh;
+    max-height: 60vh;
   }
 }
 
