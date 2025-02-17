@@ -3,7 +3,7 @@ import { chromium } from 'playwright'
 export default async function scrapeTotalWine(url: string) {
   try {
     const browser = await chromium.launch({
-      // headless: false,
+      headless: false,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const context = await browser.newContext({
@@ -16,15 +16,27 @@ export default async function scrapeTotalWine(url: string) {
     console.log('Navigating to:', url)
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
     console.log('Page loaded')
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    // if captcha return
+    if (await page.$('div[id*="captcha-wrapper"]')) {
+      console.log('Hit captcha')
+      await page.close()
+      return []
+    }
 
     // hide cookie banner
-    if (await page.$('.onetrust-close-btn-handler')) {
-      await page.click('.onetrust-close-btn-handler', { timeout: 60000 })
+    if (await page.$('div[id*="onetrust-close-btn-container"]')) {
+      await page.click('div[id*="onetrust-close-btn-container"] button', { timeout: 60000 })
       console.log('Cookie banner hidden')
     }
 
     // Click on the element to load the dynamic content
-    await page.click('div[class*="shoppingOptionsButtonContainer"] button', { timeout: 60000 })
+    await page.click(
+      'section[class*="selectedOptionWrapper"] div[class*="shoppingOptionsButtonContainer"] button',
+      { timeout: 60000 },
+    )
+    console.log('loading stock info')
 
     await page.waitForSelector('button[anclick="change_store_modal_view_all"]', { timeout: 60000 })
 

@@ -1,7 +1,7 @@
 <template>
   <div class="page scrape-page">
     <div class="scrape-header">
-      <h1 class="no-margin">Scrape ({{ scrape.sites.length }} Products/Locations)</h1>
+      <h1 class="no-margin">Scrape ({{ scrape.sites.length }})</h1>
       <div class="pill scrape-status" :class="computeStatus(scrape.status)">
         {{ scrape.status }}
       </div>
