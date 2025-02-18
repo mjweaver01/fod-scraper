@@ -1,3 +1,6 @@
+export const userAgent =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
+
 export const prompt = `
   You are a data analyst and social media buyer.
   You are given a list of products, their stock status, and their location.

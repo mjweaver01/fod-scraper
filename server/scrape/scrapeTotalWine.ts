@@ -1,4 +1,5 @@
 import { chromium } from 'playwright'
+import { userAgent } from '../constants'
 
 export default async function scrapeTotalWine(url: string) {
   try {
@@ -7,8 +8,7 @@ export default async function scrapeTotalWine(url: string) {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const context = await browser.newContext({
-      userAgent:
-        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.3',
+      userAgent,
       viewport: { width: 1920, height: 1080 },
     })
     const page = await context.newPage()
