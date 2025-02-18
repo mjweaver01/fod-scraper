@@ -150,7 +150,7 @@ export const useFacebookStore = defineStore('facebook', {
       const payload = this.constructAudiencePayload(record, config)
 
       try {
-        const res = await fetch('/push-to-facebook', {
+        const res = await fetch('/facebook/push', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

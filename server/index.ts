@@ -11,7 +11,7 @@ dotenv.config()
 import authRoute from './routes/auth'
 import scrapeRoute from './routes/scrape'
 import saveRoute from './routes/save'
-import pushToFacebookRoute from './routes/pushToFacebook'
+import facebookRoute from './routes/facebook'
 import openaiRoute from './routes/openai'
 
 const app = express()
@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }))
 app.use('/auth', authRoute)
 app.use('/scrape', scrapeRoute)
 app.use('/save', saveRoute)
-app.use('/push-to-facebook', pushToFacebookRoute)
+app.use('/facebook', facebookRoute)
 app.use('/openai', openaiRoute)
 
 const isDev = process.env.NODE_ENV !== 'production'

@@ -5,7 +5,7 @@ import fetch from 'node-fetch'
 dotenv.config()
 const router = Router()
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/push', async (req: Request, res: Response) => {
   const { payload, password } = req.body
 
   if (password !== process.env.AUTH_SECRET) {
@@ -64,6 +64,30 @@ router.post('/', async (req: Request, res: Response) => {
       error: true,
     })
   }
+})
+
+router.get('/campaigns', async (req: Request, res: Response) => {
+  const adAccountId = process.env.AD_ACCOUNT_ID
+  const accessToken = process.env.ACCESS_TOKEN
+
+  if (!adAccountId || !accessToken) {
+    return res.status(500).json({
+      code: 500,
+      message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+      error: true,
+    })
+  }
+
+  const url = `https://graph.facebook.com/v22.0/act_${adAccountId}/campaigns?access_token=${accessToken}`
+  const fbResponse = await fetch(url)
+  const fbResult = await fbResponse.json()
+
+  return res.json({
+    code: 200,
+    message: 'Campaigns fetched successfully',
+    data: fbResult,
+    error: false,
+  })
 })
 
 export default router
