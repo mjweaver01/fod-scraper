@@ -27,7 +27,6 @@
         @keydown.enter.prevent.stop="sendMessage"
         @keyup.up="useLastUserMessage"
         placeholder="Type a message..."
-        :disabled="conversation.isStreaming"
       />
     </div>
   </div>
@@ -66,7 +65,7 @@ export default {
   },
   methods: {
     sendMessage() {
-      if (!this.userInput.trim()) return
+      if (!this.userInput.trim() || this.conversation.isStreaming) return
 
       this.lastUserMessage = this.userInput
       this.conversation.sendMessage(this.userInput)

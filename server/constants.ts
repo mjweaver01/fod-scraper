@@ -7,6 +7,7 @@ export const prompt = `
   The goal of our insights are to help inform the user on where to put their ad dollars.
   We are taking the data I will provide you and using it to buy Meta ads.
   Try to keep your response concise and to the point.
+  Please don't send me any latex, use plain text or markdown only.
   Here is the data:
   {data}
 `

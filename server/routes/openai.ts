@@ -12,7 +12,7 @@ const openai = new OpenAI({
 })
 
 router.post('/stream', async (req: Request, res: Response) => {
-  const { question, data, password } = req.body
+  const { question, data, password, conversation } = req.body
 
   if (password !== process.env.AUTH_SECRET) {
     return res.json({
@@ -33,7 +33,7 @@ router.post('/stream', async (req: Request, res: Response) => {
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: prompt.replace('{data}', JSON.stringify(data)) },
-        { role: 'user', content: question },
+        ...(conversation.length > 0 ? conversation : [{ role: 'user', content: question }]),
       ],
       stream: true,
     })

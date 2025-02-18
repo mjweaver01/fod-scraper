@@ -31,9 +31,11 @@ export const useConversationStore = defineStore('conversation', {
         },
         body: JSON.stringify({
           password: this.auth.password,
+          conversation: this.messages.length > 2 ? this.messages.slice(0, -1) : [],
           question,
-          data:
-            this.importedData.importedResults.length > 0
+          data: window.location.pathname.includes('scrape')
+            ? this.scrape.results
+            : this.importedData.importedResults.length > 0
               ? this.importedData.importedResults
               : this.scrape.results,
         }),
