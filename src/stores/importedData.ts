@@ -2,10 +2,19 @@ import { defineStore } from 'pinia'
 
 export const useImportedDataStore = defineStore('importedData', {
   state: () => ({
-    importedResults: [],
+    importedResults: [] as Array<{
+      name: string
+      store: string
+      address: string
+      stock_status: string
+      quantity: number
+      in_stock: boolean
+    }>,
   }),
   actions: {
-    importCSV(file) {
+    importCSV(file: File) {
+      this.importedResults = []
+
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = (event) => {
@@ -18,17 +27,20 @@ export const useImportedDataStore = defineStore('importedData', {
               .slice(1)
               .map((row) => {
                 const values = row.split(',')
-                const record = headers.reduce((acc, header, index) => {
-                  acc[header.trim()] = values[index]?.trim()
-                  return acc
-                }, {})
+                const record = headers.reduce(
+                  (acc: Record<string, any>, header, index) => {
+                    acc[header.trim()] = values[index]?.trim()
+                    return acc
+                  },
+                  {} as Record<string, any>,
+                )
 
                 return {
                   name: record['Product Name'],
                   store: record['Store Name'],
                   address: `${record['Store Street']}, ${record['Store City']}, ${record['Store State']} ${record['Store Zip']}`,
                   stock_status: record['Current Inventory'] > 0 ? 'In Stock' : 'Out of Stock',
-                  quantity: record['Current Inventory'],
+                  quantity: Number(record['Current Inventory']),
                   in_stock: record['Current Inventory'] > 0,
                 }
               })
@@ -37,7 +49,7 @@ export const useImportedDataStore = defineStore('importedData', {
                   record.name && record.store && record.address && record.in_stock !== undefined,
               )
 
-            this.importedResults = csvData
+            this.importedResults = [...this.importedResults, ...csvData]
 
             resolve(this.importedResults)
           } else {

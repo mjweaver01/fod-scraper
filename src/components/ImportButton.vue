@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input class="import-button" type="file" @change="handleFileUpload" accept=".csv" />
+    <input class="import-button" type="file" @change="handleFileUpload" accept=".csv" multiple />
   </div>
 </template>
 
@@ -8,26 +8,27 @@
 import { useImportedDataStore } from '@/stores/importedData'
 
 export default {
-  setup() {
-    const importedDataStore = useImportedDataStore()
-
-    const handleFileUpload = (event) => {
-      const file = event.target.files[0]
-      if (file) {
-        importedDataStore
-          .importCSV(file)
-          .then(() => {
-            console.log('CSV data imported successfully')
-          })
-          .catch((error) => {
-            console.error('Error importing CSV:', error)
-          })
+  computed: {
+    importedData() {
+      return useImportedDataStore()
+    },
+  },
+  methods: {
+    handleFileUpload(event) {
+      const files = event.target.files
+      if (files.length > 0) {
+        Array.from(files).forEach((file) => {
+          this.importedData
+            .importCSV(file)
+            .then(() => {
+              console.log(`CSV data from ${file.name} imported successfully`)
+            })
+            .catch((error) => {
+              console.error(`Error importing CSV from ${file.name}:`, error)
+            })
+        })
       }
-    }
-
-    return {
-      handleFileUpload,
-    }
+    },
   },
 }
 </script>
