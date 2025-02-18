@@ -5,7 +5,7 @@
     <div class="records">
       <button
         class="push-all"
-        @click="facebook.pushAllAudiences(displayRecords)"
+        @click="pushAllAudiences"
         :disabled="facebook.pushingAll || displayRecords.length === 0"
       >
         Push All Audiences
@@ -263,6 +263,11 @@ export default {
       this.selectedSort = 'none'
       this.selectedStockFilter = 'all'
       this.selectedStoreFilter = 'all'
+    },
+    pushAllAudiences() {
+      if (alert('Are you sure you want to push all audiences?')) {
+        this.facebook.pushAllAudiences(this.displayRecords)
+      }
     },
   },
   watch: {
