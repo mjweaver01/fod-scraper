@@ -123,7 +123,7 @@
 
 <script>
 export default {
-  name: 'CommonConfig',
+  name: 'AdsetConfig',
   props: {
     record: {
       type: Object,

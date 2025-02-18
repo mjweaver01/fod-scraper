@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { useScrapeStore } from './scrape'
+import { useImportedDataStore } from './importedData'
 
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
@@ -10,6 +11,7 @@ export const useConversationStore = defineStore('conversation', {
   getters: {
     auth: () => useAuthStore(),
     scrape: () => useScrapeStore(),
+    importedData: () => useImportedDataStore(),
   },
   actions: {
     addMessage(role: string, content: string) {
@@ -30,7 +32,10 @@ export const useConversationStore = defineStore('conversation', {
         body: JSON.stringify({
           password: this.auth.password,
           question,
-          data: this.scrape.results,
+          data:
+            this.importedData.importedResults.length > 0
+              ? this.importedData.importedResults
+              : this.scrape.results,
         }),
       })
 

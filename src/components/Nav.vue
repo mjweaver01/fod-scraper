@@ -6,7 +6,10 @@
         <router-link to="/scrape" activeClass="active">Scrape</router-link>
       </li>
       <li>
-        <router-link to="/facebook" activeClass="active">Push</router-link>
+        <router-link to="/scrape-facebook" activeClass="active">FB (Scrape)</router-link>
+      </li>
+      <li>
+        <router-link to="/imported-facebook" activeClass="active">FB (Import)</router-link>
       </li>
       <li>
         <router-link to="/automate" activeClass="active">Automate</router-link>
