@@ -82,6 +82,8 @@ export const useFacebookStore = defineStore('facebook', {
     pushStatus: {} as Record<number, { loading: boolean; error: string | null; response: any }>,
     // Indicates if the store is currently pushing all audiences.
     pushingAll: false,
+    campaigns: [] as any[],
+    fetchingCampaigns: false,
   }),
   getters: {
     auth: () => useAuthStore(),
@@ -185,6 +187,19 @@ export const useFacebookStore = defineStore('facebook', {
       const promises = records.map((record, index) => this.pushAudience(index, record))
       await Promise.all(promises)
       this.pushingAll = false
+    },
+
+    /**
+     * Fetches all campaigns from Facebook.
+     */
+    async fetchAllCampaigns() {
+      if (this.campaigns.length) return
+
+      this.fetchingCampaigns = true
+      const res = await fetch('/facebook/campaigns')
+      const data = await res.json()
+      this.campaigns = data.data
+      this.fetchingCampaigns = false
     },
   },
 })

@@ -165,6 +165,9 @@ export default {
       accordionState: {},
     }
   },
+  mounted() {
+    this.facebook.fetchAllCampaigns()
+  },
   computed: {
     scrape() {
       return useScrapeStore()

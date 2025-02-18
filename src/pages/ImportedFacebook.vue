@@ -171,6 +171,9 @@ export default {
       accordionState: {},
     }
   },
+  mounted() {
+    this.facebook.fetchAllCampaigns()
+  },
   computed: {
     importedData() {
       return useImportedDataStore()

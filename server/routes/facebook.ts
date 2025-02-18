@@ -82,6 +82,14 @@ router.get('/campaigns', async (req: Request, res: Response) => {
   const fbResponse = await fetch(url)
   const fbResult = await fbResponse.json()
 
+  if (fbResult.error) {
+    return res.status(500).json({
+      code: 500,
+      message: fbResult.error.message,
+      error: true,
+    })
+  }
+
   return res.json({
     code: 200,
     message: 'Campaigns fetched successfully',
