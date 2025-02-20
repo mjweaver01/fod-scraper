@@ -129,9 +129,11 @@
                 <td colspan="6">
                   <AdsetConfig
                     :record="record"
-                    :modelValue="facebook.recordConfigs[index] || facebook.defaultConfig"
+                    :modelValue="facebook.recordConfigs[record.address.toLocaleString()]"
                     :disabled="facebook.pushingAll"
-                    @update:modelValue="(val) => (facebook.recordConfigs[index] = val)"
+                    @update:modelValue="
+                      (val) => (facebook.recordConfigs[record.address.toLocaleString()] = val)
+                    "
                   />
                 </td>
               </tr>
@@ -163,6 +165,17 @@ export default {
       selectedStockFilter: 'all',
       selectedStoreFilter: 'all',
       accordionState: {},
+    }
+  },
+  setup() {
+    const facebookStore = useFacebookStore()
+
+    // Fetch campaigns and promoted pages when the component is mounted
+    facebookStore.fetchCampaigns()
+    facebookStore.fetchPromotedPages()
+
+    return {
+      facebookStore,
     }
   },
   computed: {
@@ -274,10 +287,10 @@ export default {
     scrapedRecords: {
       handler(newRecords) {
         // Initialize record-specific configuration in the Facebook store if not already set.
-        newRecords.forEach((record, index) => {
-          if (!this.facebook.recordConfigs[index]) {
+        newRecords.forEach((record) => {
+          if (!this.facebook.recordConfigs[record.address.toLocaleString()]) {
             const presetStatus = record.in_stock ? 'ACTIVE' : 'INACTIVE'
-            this.facebook.recordConfigs[index] = {
+            this.facebook.recordConfigs[record.address.toLocaleString()] = {
               ...this.facebook.defaultConfig,
               status: presetStatus,
             }
