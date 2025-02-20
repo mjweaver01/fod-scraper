@@ -346,6 +346,8 @@ export default {
 
   > button {
     flex-grow: 1;
+    flex-basis: 5%;
+    white-space: nowrap;
   }
 }
 
