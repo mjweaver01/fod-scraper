@@ -70,23 +70,37 @@
       <div>
         <label>
           Campaign ID
-          <input
-            type="text"
-            :value="modelValue.campaign_id"
-            @input="onChange('campaign_id', $event.target.value)"
-            :disabled="disabled"
-          />
+          <div class="select">
+            <select
+              :value="modelValue.campaign_id"
+              @change="onChange('campaign_id', $event.target.value)"
+              :disabled="disabled"
+            >
+              <option
+                v-for="campaign in facebook.campaigns"
+                :key="campaign.id"
+                :value="campaign.id"
+              >
+                {{ campaign.name }}
+              </option>
+            </select>
+          </div>
         </label>
       </div>
       <div>
         <label>
           Promoted Page ID
-          <input
-            type="text"
-            :value="modelValue.promoted_object.page_id"
-            @input="onPromotedObjectChange($event.target.value)"
-            :disabled="disabled"
-          />
+          <div class="select">
+            <select
+              :value="modelValue.promoted_object.page_id"
+              @change="onPromotedObjectChange($event.target.value)"
+              :disabled="disabled"
+            >
+              <option v-for="page in facebook.promotedPages" :key="page.id" :value="page.id">
+                {{ page.name }}
+              </option>
+            </select>
+          </div>
         </label>
       </div>
     </div>
@@ -122,6 +136,8 @@
 </template>
 
 <script>
+import { useFacebookStore } from '@/stores/facebook'
+
 export default {
   name: 'AdsetConfig',
   props: {
@@ -136,6 +152,11 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    facebook() {
+      return useFacebookStore()
     },
   },
   methods: {

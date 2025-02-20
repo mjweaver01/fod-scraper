@@ -152,6 +152,28 @@
           <p>No imported records available.</p>
         </div>
       </div>
+
+      <div class="campaigns">
+        <label for="campaignSelect">Select Campaign</label>
+        <select id="campaignSelect" v-model="facebookStore.selectedCampaign">
+          <option
+            v-for="campaign in facebookStore.campaigns"
+            :key="campaign.id"
+            :value="campaign.id"
+          >
+            {{ campaign.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="promoted-pages">
+        <label for="pageSelect">Select Promoted Page</label>
+        <select id="pageSelect" v-model="facebookStore.selectedPage">
+          <option v-for="page in facebookStore.promotedPages" :key="page.id" :value="page.id">
+            {{ page.name }}
+          </option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
@@ -177,8 +199,16 @@ export default {
       accordionState: {},
     }
   },
-  mounted() {
-    this.facebook.fetchAllCampaigns()
+  setup() {
+    const facebookStore = useFacebookStore()
+
+    // Fetch campaigns and promoted pages when the component is mounted
+    facebookStore.fetchCampaigns()
+    facebookStore.fetchPromotedPages()
+
+    return {
+      facebookStore,
+    }
   },
   computed: {
     importedData() {

@@ -98,4 +98,35 @@ router.get('/campaigns', async (req: Request, res: Response) => {
   })
 })
 
+router.get('/promoted-pages', async (req: Request, res: Response) => {
+  const accessToken = process.env.ACCESS_TOKEN
+
+  if (!accessToken) {
+    return res.status(500).json({
+      code: 500,
+      message: 'Missing Facebook configuration (ACCESS_TOKEN).',
+      error: true,
+    })
+  }
+
+  const url = `https://graph.facebook.com/v22.0/me/accounts?access_token=${accessToken}`
+  const fbResponse = await fetch(url)
+  const fbResult = await fbResponse.json()
+
+  if (fbResult.error) {
+    return res.status(500).json({
+      code: 500,
+      message: fbResult.error.message,
+      error: true,
+    })
+  }
+
+  return res.json({
+    code: 200,
+    message: 'Promoted pages fetched successfully',
+    data: fbResult,
+    error: false,
+  })
+})
+
 export default router

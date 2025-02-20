@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
+import { ref } from 'vue'
 
 /**
  * Interface representing the configuration options for Facebook Ad Sets.
@@ -82,8 +83,9 @@ export const useFacebookStore = defineStore('facebook', {
     pushStatus: {} as Record<number, { loading: boolean; error: string | null; response: any }>,
     // Indicates if the store is currently pushing all audiences.
     pushingAll: false,
-    campaigns: [] as any[],
+    campaigns: ref([]),
     fetchingCampaigns: false,
+    promotedPages: ref([]),
   }),
   getters: {
     auth: () => useAuthStore(),
@@ -189,7 +191,7 @@ export const useFacebookStore = defineStore('facebook', {
       this.pushingAll = false
     },
 
-    /**
+    /**x
      * Fetches all campaigns from Facebook.
      */
     async fetchAllCampaigns() {
@@ -200,6 +202,30 @@ export const useFacebookStore = defineStore('facebook', {
       const data = await res.json()
       this.campaigns = data.data
       this.fetchingCampaigns = false
+    },
+
+    async fetchCampaigns() {
+      try {
+        const response = await fetch('/facebook/campaigns')
+        const data = await response.json()
+        if (!data.error) {
+          this.campaigns = data.data
+        }
+      } catch (error) {
+        console.error('Error fetching campaigns:', error)
+      }
+    },
+
+    async fetchPromotedPages() {
+      try {
+        const response = await fetch('/facebook/promoted-pages')
+        const data = await response.json()
+        if (!data.error) {
+          this.promotedPages = data.data
+        }
+      } catch (error) {
+        console.error('Error fetching promoted pages:', error)
+      }
     },
   },
 })
