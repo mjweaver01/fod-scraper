@@ -2,7 +2,9 @@ import { defineStore } from 'pinia'
 
 export const useImportedDataStore = defineStore('importedData', {
   state: () => ({
-    importedResults: [] as Array<{
+    importedResults: (window.localStorage.getItem('importedResults')
+      ? JSON.parse(window.localStorage.getItem('importedResults') || '[]')
+      : []) as Array<{
       name: string
       store: string
       address: string
@@ -50,6 +52,7 @@ export const useImportedDataStore = defineStore('importedData', {
               )
 
             this.importedResults = [...this.importedResults, ...csvData]
+            window.localStorage.setItem('importedResults', JSON.stringify(this.importedResults))
 
             resolve(this.importedResults)
           } else {
@@ -59,6 +62,11 @@ export const useImportedDataStore = defineStore('importedData', {
         reader.onerror = () => reject(new Error('Error reading file'))
         reader.readAsText(file)
       })
+    },
+
+    clearImportedResults() {
+      this.importedResults = []
+      window.localStorage.removeItem('importedResults')
     },
   },
 })

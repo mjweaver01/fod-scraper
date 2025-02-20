@@ -3,7 +3,7 @@
     <h1>Push Facebook Audiences - From Import</h1>
 
     <div class="records">
-      <div class="controls">
+      <div class="controls top-controls">
         <button
           class="push-all"
           @click="pushAllAudiences"
@@ -12,6 +12,12 @@
           Push All Audiences
         </button>
         <ImportButton />
+        <button
+          v-if="importedData.importedResults.length"
+          @click="importedData.clearImportedResults"
+        >
+          Clear Imported Results
+        </button>
       </div>
       <div v-if="facebook.pushingAll" class="global-loading">
         Pushing all audiences, please wait...
@@ -333,6 +339,14 @@ export default {
 
 .records {
   margin-bottom: 2rem;
+}
+
+.top-controls {
+  flex-wrap: wrap;
+
+  > button {
+    flex-grow: 1;
+  }
 }
 
 .records-table-container {
