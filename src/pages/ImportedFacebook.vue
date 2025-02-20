@@ -107,9 +107,6 @@
                     >
                       Push Audience
                     </button>
-                    <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
-                      Pushing...
-                    </div>
                     <button
                       :class="{ hover: isAccordionOpen(index) }"
                       @click="toggleAccordion(index)"
@@ -126,6 +123,9 @@
                     :class="facebook.pushStatus[index].response.error ? 'error' : 'success'"
                   >
                     <p class="small no-margin">{{ facebook.pushStatus[index].response.message }}</p>
+                  </div>
+                  <div v-if="facebook.pushStatus[index] && facebook.pushStatus[index].loading">
+                    <p class="small no-margin">Pushing...</p>
                   </div>
                 </td>
               </tr>
