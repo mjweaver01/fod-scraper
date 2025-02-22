@@ -204,18 +204,6 @@ export const useFacebookStore = defineStore('facebook', {
       this.fetchingCampaigns = false
     },
 
-    async fetchCampaigns() {
-      try {
-        const response = await fetch('/facebook/campaigns')
-        const data = await response.json()
-        if (!data.error) {
-          this.campaigns = data.data
-        }
-      } catch (error) {
-        console.error('Error fetching campaigns:', error)
-      }
-    },
-
     async fetchPromotedPages() {
       try {
         const response = await fetch('/facebook/promoted-pages')

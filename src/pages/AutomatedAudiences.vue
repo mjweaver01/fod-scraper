@@ -138,8 +138,7 @@ export default {
 
   mounted() {
     // Fetch groups and campaigns
-    this.audienceGroups.fetchGroups()
-    this.facebook.fetchCampaigns()
+    this.facebook.fetchAllCampaigns()
   },
 
   computed: {

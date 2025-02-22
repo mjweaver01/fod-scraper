@@ -5,6 +5,9 @@ import fetch from 'node-fetch'
 dotenv.config()
 const router = Router()
 
+const adAccountId = process.env.AD_ACCOUNT_ID
+const accessToken = process.env.ACCESS_TOKEN
+
 router.post('/push', async (req: Request, res: Response) => {
   const { payload, password } = req.body
 
@@ -17,9 +20,6 @@ router.post('/push', async (req: Request, res: Response) => {
   }
 
   try {
-    const adAccountId = process.env.AD_ACCOUNT_ID
-    const accessToken = process.env.ACCESS_TOKEN
-
     if (!adAccountId || !accessToken) {
       return res.status(500).json({
         code: 500,
@@ -67,9 +67,6 @@ router.post('/push', async (req: Request, res: Response) => {
 })
 
 router.get('/campaigns', async (req: Request, res: Response) => {
-  const adAccountId = process.env.AD_ACCOUNT_ID
-  const accessToken = process.env.ACCESS_TOKEN
-
   if (!adAccountId || !accessToken) {
     return res.status(500).json({
       code: 500,
@@ -78,24 +75,65 @@ router.get('/campaigns', async (req: Request, res: Response) => {
     })
   }
 
-  const url = `https://graph.facebook.com/v22.0/act_${adAccountId}/campaigns?access_token=${accessToken}`
-  const fbResponse = await fetch(url)
-  const fbResult = await fbResponse.json()
+  try {
+    // Get all campaign data through insights endpoint
+    const insightsUrl = `https://graph.facebook.com/v17.0/${adAccountId}/insights`
+    const params = new URLSearchParams({
+      level: 'campaign',
+      fields: 'campaign_id,campaign_name,objective,status,spend,impressions,clicks,reach,ctr',
+      date_preset: 'last_30d',
+      access_token: accessToken,
+    })
 
-  if (fbResult.error) {
+    const insightsResponse = await fetch(`${insightsUrl}?${params}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    const insightsResult = await insightsResponse.json()
+
+    if (insightsResult.error) {
+      return res.status(500).json({
+        code: 500,
+        message: insightsResult.error.message,
+        error: true,
+      })
+    }
+
+    // Transform the data to match the expected format
+    const transformedData = insightsResult.data.map((campaign: any) => ({
+      id: campaign.campaign_id,
+      name: campaign.campaign_name,
+      status: campaign.status,
+      objective: campaign.objective,
+      insights: {
+        spend: campaign.spend || '0',
+        impressions: campaign.impressions || 0,
+        clicks: campaign.clicks || 0,
+        reach: campaign.reach || 0,
+        ctr: campaign.ctr || '0',
+      },
+    }))
+
+    return res.json({
+      code: 200,
+      message: 'Campaigns and insights fetched successfully',
+      data: {
+        data: transformedData,
+        paging: insightsResult.paging,
+      },
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error fetching campaigns:', error)
     return res.status(500).json({
       code: 500,
-      message: fbResult.error.message,
+      message: error.message || 'Internal Server Error',
       error: true,
     })
   }
-
-  return res.json({
-    code: 200,
-    message: 'Campaigns fetched successfully',
-    data: fbResult,
-    error: false,
-  })
 })
 
 router.get('/promoted-pages', async (req: Request, res: Response) => {
