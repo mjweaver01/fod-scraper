@@ -6,21 +6,18 @@
       <button
         @click="audienceGroups.createGroups"
         :disabled="!hasRecords || audienceGroups.creatingGroups"
-        class="btn btn-primary"
       >
         {{ audienceGroups.creatingGroups ? 'Creating Groups...' : 'Create Audience Groups' }}
       </button>
       <button
         @click="audienceGroups.clearGroups"
         :disabled="!hasGroups || audienceGroups.pushingGroups"
-        class="btn btn-danger"
       >
         Clear All Groups
       </button>
       <button
         @click="audienceGroups.pushGroupsToFacebook"
         :disabled="!hasGroups || audienceGroups.pushingGroups"
-        class="btn btn-success"
       >
         {{ audienceGroups.pushingGroups ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
@@ -100,7 +97,9 @@
                   <td>{{ location.address }}</td>
                   <td>{{ location.zipCode }}</td>
                   <td>{{ location.quantity }}</td>
-                  <td>{{ location.stock_status }}</td>
+                  <td>
+                    {{ location.stock_status }}
+                  </td>
                 </tr>
               </tbody>
             </table>
