@@ -1,25 +1,34 @@
 .pill {
   font-weight: 400;
-  border-radius: 20px;
+  font-size: 0.8rem;
+  border-radius: 5px;
   background: var(--gray);
-  color: var(--white);
+  color: var(--border-color);
+  border: 1px solid var(--border-color);
   padding: 0.25rem 1rem;
   margin: 0 auto;
   white-space: nowrap;
   text-align: center;
   text-transform: capitalize;
 
-  &.good {
-    background: var(--green);
+  &.good,
+  &.active {
+    background-color: var(--light-green);
+    border-color: var(--green);
+    color: var(--green);
   }
 
-  &.bad {
-    background: var(--red);
+  &.bad,
+  &.inactive {
+    background-color: var(--light-red);
+    border-color: var(--red);
+    color: var(--red);
   }
 
   &.warning {
-    background: var(--yellow);
-    color: var(--red);
+    background-color: var(--light-yellow);
+    border-color: var(--yellow);
+    color: var(--yellow);
   }
 }
 

@@ -2,17 +2,8 @@
   <nav>
     <router-link to="/"><img src="/fod.png" alt="logo" /></router-link>
     <ul v-if="auth?.authenticated">
-      <li>
-        <router-link to="/scrape" activeClass="active">Scrape</router-link>
-      </li>
-      <li>
-        <router-link to="/scrape-facebook" activeClass="active">FB (Scrape)</router-link>
-      </li>
-      <li>
-        <router-link to="/imported-facebook" activeClass="active">FB (Import)</router-link>
-      </li>
-      <li>
-        <router-link to="/automate" activeClass="active">Automate</router-link>
+      <li v-for="route in navRoutes" :key="route.path">
+        <router-link :to="route.path" activeClass="active">{{ route.name }}</router-link>
       </li>
       <li><a href="#" @click="logout">Logout</a></li>
     </ul>
@@ -24,8 +15,14 @@
 
 <script>
 import { useAuthStore } from '@/stores/auth'
-
+import { navRoutes } from '@/routes'
 export default {
+  name: 'Nav',
+  data() {
+    return {
+      navRoutes,
+    }
+  },
   computed: {
     auth() {
       return useAuthStore()

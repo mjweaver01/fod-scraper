@@ -1,6 +1,6 @@
 <template>
   <div class="page facebook-page">
-    <h1>Push Facebook Audiences - From Import</h1>
+    <h1 v-if="showActions">Push Facebook Audiences - From Import</h1>
 
     <div class="records">
       <div class="controls top-controls">
@@ -8,6 +8,7 @@
           class="push-all"
           @click="pushAllAudiences"
           :disabled="facebook.pushingAll || displayRecords.length === 0"
+          v-if="showActions"
         >
           Push All Audiences
         </button>
@@ -83,8 +84,8 @@
               <th>Address</th>
               <th>Stock Status</th>
               <th>Quantity</th>
-              <th>Actions</th>
-              <th>Response</th>
+              <th v-if="showActions">Actions</th>
+              <th v-if="showActions">Response</th>
             </tr>
           </thead>
           <tbody>
@@ -102,7 +103,7 @@
                   </span>
                 </td>
                 <td>{{ record.quantity }}</td>
-                <td>
+                <td v-if="showActions">
                   <div class="actions">
                     <button
                       @click="facebook.pushAudience(index, record)"
@@ -122,7 +123,7 @@
                     </button>
                   </div>
                 </td>
-                <td class="response-container">
+                <td v-if="showActions" class="response-container">
                   <div
                     v-if="facebook.pushStatus[index] && facebook.pushStatus[index].response"
                     class="response"
@@ -187,10 +188,16 @@ import AdsetConfig from '@/components/AdsetConfig.vue'
 import ImportButton from '@/components/ImportButton.vue'
 
 export default {
-  name: 'Facebook',
+  name: 'ImportedFacebook',
   components: {
     AdsetConfig,
     ImportButton,
+  },
+  props: {
+    showActions: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
