@@ -77,7 +77,7 @@ router.get('/campaigns', async (req: Request, res: Response) => {
 
   try {
     // Get all campaign data through insights endpoint
-    const insightsUrl = `https://graph.facebook.com/v17.0/${adAccountId}/insights`
+    const insightsUrl = `https://graph.facebook.com/v22.0/act_${adAccountId}/insights`
     const params = new URLSearchParams({
       level: 'campaign',
       fields: 'campaign_id,campaign_name,objective,status,spend,impressions,clicks,reach,ctr',
