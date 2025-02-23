@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import { Router, Request, Response } from 'express'
 import { AdAccount, FacebookAdsApi, CustomAudience } from 'facebook-nodejs-business-sdk'
+import crypto from 'crypto'
 
 dotenv.config()
 const router = Router()
@@ -36,7 +37,6 @@ router.post('/push-audience', async (req: Request, res: Response) => {
       name: payload.name,
       subtype: payload.subtype,
       description: payload.description,
-      customer_file_source: payload.customer_file_source,
     }
 
     const audience = await adAccount.createCustomAudience([], audienceData)
@@ -145,6 +145,41 @@ router.get('/adsets', async (req: Request, res: Response) => {
   }
 })
 
+router.post('/push-adset', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
+    const adAccount = new AdAccount(adAccountId)
+
+    console.log(payload)
+
+    // Create ad set with targeting
+    const adSet = await adAccount.createAdSet(payload)
+
+    return res.json({
+      code: 200,
+      message: 'Ad set pushed successfully',
+      data: adSet,
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error pushing ad set:', error)
+    return res.status(500).json({
+      code: 500,
+      message: error.message || 'Internal Server Error',
+      error: true,
+    })
+  }
+})
+
 router.get('/custom-audiences', async (req: Request, res: Response) => {
   if (!adAccountId || !accessToken) {
     return res.status(500).json({
@@ -173,5 +208,72 @@ router.get('/custom-audiences', async (req: Request, res: Response) => {
     })
   }
 })
+
+router.post('/push-custom-audience', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
+    if (!adAccountId || !accessToken) {
+      return res.status(500).json({
+        code: 500,
+        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+        error: true,
+      })
+    }
+
+    const adAccount = new AdAccount(adAccountId)
+
+    // Create the custom audience
+    const audienceData = {
+      name: payload.name,
+      subtype: payload.subtype,
+      description: payload.description,
+      customer_file_source: 'USER_PROVIDED_ONLY',
+    }
+
+    const audience = await adAccount.createCustomAudience([], audienceData)
+
+    // Prepare and hash user data
+    const users = payload.users.map((user: any) => ({
+      fn: hashData(user.first_name),
+      ln: hashData(user.last_name),
+      country: hashData(user.country),
+      zip: hashData(user.zip),
+      city: hashData(user.city),
+      st: hashData(user.state),
+      address: hashData(user.address),
+    }))
+
+    // Add users to the custom audience
+    await audience.addUsers(users, CustomAudience.Schema.MultiKeySchema)
+
+    return res.json({
+      code: 200,
+      message: 'Custom audience pushed successfully with address locations',
+      data: audience,
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error pushing custom audience:', error)
+    return res.status(500).json({
+      code: 500,
+      message: error.message || 'Internal Server Error',
+      error: true,
+    })
+  }
+})
+
+// Helper function to hash data
+function hashData(data: string): string {
+  return crypto.createHash('sha256').update(data.toLowerCase().trim()).digest('hex')
+}
 
 export default router

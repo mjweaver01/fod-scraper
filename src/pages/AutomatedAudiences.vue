@@ -115,15 +115,39 @@
           </div>
         </div>
 
-        <button
-          @click="facebook.pushAudience(indexedDB, group)"
-          :disabled="audienceGroups.pushingGroups"
-        >
-          Push {{ group.name.split(' - ')[0] }}
-          {{
-            group.name.split(' - ')[1].replace('Field of Dreams', '').replace('Field Of Dreams', '')
-          }}
-        </button>
+        <div class="controls">
+          <button
+            @click="facebook.pushCustomAudience(index, group)"
+            :disabled="audienceGroups.pushingGroups"
+          >
+            Push {{ group.name.split(' - ')[0] }}
+            {{
+              group.name
+                .split(' - ')[1]
+                .replace('Field of Dreams', '')
+                .replace('Field Of Dreams', '')
+            }}
+          </button>
+          <p
+            v-if="facebook.pushStatus[index]"
+            class="pill"
+            :class="
+              facebook.pushStatus[index]?.error || facebook.pushStatus[index]?.response?.error
+                ? 'error'
+                : facebook.pushStatus[index]?.response
+                  ? 'success'
+                  : ''
+            "
+          >
+            {{
+              facebook.pushStatus[index]?.loading
+                ? 'Loading...'
+                : (facebook.pushStatus[index]?.response?.message ??
+                  facebook.pushStatus[index]?.response ??
+                  facebook.pushStatus[index]?.error)
+            }}
+          </p>
+        </div>
       </div>
     </div>
 

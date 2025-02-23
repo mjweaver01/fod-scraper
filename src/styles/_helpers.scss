@@ -12,14 +12,16 @@
   text-transform: capitalize;
 
   &.good,
-  &.active {
+  &.active,
+  &.success {
     background-color: var(--light-green);
     border-color: var(--green);
     color: var(--green);
   }
 
   &.bad,
-  &.inactive {
+  &.inactive,
+  &.error {
     background-color: var(--light-red);
     border-color: var(--red);
     color: var(--red);

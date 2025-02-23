@@ -65,8 +65,20 @@ export interface FacebookAdSetPayload {
  * Interface representing the minimal record required to construct an audience.
  */
 export interface AudienceRecord {
+  name: string
   store: string
   address: string
+  custom_locations: Array<{
+    address_string: string
+    radius: number
+    distance_unit: string
+  }>
+  locations: Array<{
+    address: string
+    zipCode: string
+    quantity: number
+    stock_status: string
+  }>
   // Add any additional properties as needed.
 }
 
@@ -98,19 +110,9 @@ export const useFacebookStore = defineStore('facebook', {
     auth: () => useAuthStore(),
   },
   actions: {
-    /**
-     * Constructs the Facebook Ad Set payload by merging the provided config with the default.
-     *
-     * @param record - The audience record containing at least the store name and address.
-     * @param config - An optional configuration for the record.
-     * @returns The complete payload to be submitted to Facebook.
-     */
-    constructAudiencePayload(
-      record: AudienceRecord,
-      config?: FacebookConfig,
-    ): FacebookAdSetPayload {
-      // Merge provided config with default, handling nested objects as needed.
-      const finalConfig: FacebookConfig = {
+    constructAdsetPayload(record: AudienceRecord, config?: FacebookConfig): FacebookAdSetPayload {
+      // Use the provided config or default to the store's default configuration
+      const finalConfig = {
         ...this.defaultConfig,
         ...(config || {}),
         promoted_object: {
@@ -118,31 +120,32 @@ export const useFacebookStore = defineStore('facebook', {
           ...(config?.promoted_object || {}),
         },
       }
-      return {
-        name: `${record.store} Audience`,
+
+      // Construct the payload with necessary fields
+      const finalPayload = {
+        name: `${record.name} Audience`,
         optimization_goal: finalConfig.optimization_goal,
         billing_event: finalConfig.billing_event,
         bid_amount: finalConfig.bid_amount,
         daily_budget: finalConfig.daily_budget,
-        campaign_id: finalConfig.campaign_id,
+        // campaign_id: finalConfig.campaign_id,
         targeting: {
           geo_locations: {
-            custom_locations: [
-              {
-                address_string: record.address,
-                radius: finalConfig.radius,
-                distance_unit: finalConfig.distance_unit,
-              },
-            ],
+            custom_locations: record.locations.map((location) => ({
+              address_string: location.address,
+              radius: finalConfig.radius, // Assuming radius is constant for all locations
+              distance_unit: finalConfig.distance_unit, // Assuming distance unit is constant for all locations
+            })),
           },
         },
         status: finalConfig.status,
-        promoted_object: {
-          page_id: finalConfig.promoted_object.page_id,
-        },
+        // promoted_object: {
+        //   page_id: finalConfig.promoted_object.page_id,
+        // },
       }
-    },
 
+      return finalPayload
+    },
     /**
      * Pushes a single audience record to Facebook.
      *
@@ -158,10 +161,10 @@ export const useFacebookStore = defineStore('facebook', {
         response: null,
       }
 
-      const payload = this.constructAudiencePayload(record, config)
+      const payload = this.constructAdsetPayload(record, config)
 
       try {
-        const res = await fetch('/facebook/push', {
+        const res = await fetch('/facebook/push-adset', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -197,6 +200,43 @@ export const useFacebookStore = defineStore('facebook', {
       await Promise.all(promises)
       this.pushingAll = false
     },
+
+    // async pushCustomAudience(index: number, record: AudienceRecord) {
+    //   const config = this.recordConfigs[index] || this.defaultConfig
+    //   // Update the push status for this record.
+    //   this.pushStatus[index] = {
+    //     loading: true,
+    //     error: null,
+    //     response: null,
+    //   }
+
+    //   const payload = this.constructCustomAudiencePayload(record, config)
+
+    //   try {
+    //     const res = await fetch('/facebook/push-custom-audience', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //         password: this.auth.password,
+    //         payload,
+    //       }),
+    //     })
+    //     const data = await res.json()
+    //     this.pushStatus[index] = {
+    //       loading: false,
+    //       error: null,
+    //       response: data,
+    //     }
+    //   } catch (err: any) {
+    //     this.pushStatus[index] = {
+    //       loading: false,
+    //       error: err.message,
+    //       response: null,
+    //     }
+    //   }
+    // },
 
     /**x
      * Fetches all campaigns from Facebook.
@@ -254,6 +294,76 @@ export const useFacebookStore = defineStore('facebook', {
       const res = await fetch('/facebook/custom-audiences')
       const data = await res.json()
       this.customAudiences = data.data
+    },
+
+    constructCustomAudiencePayload(record: AudienceRecord, config?: FacebookConfig): any {
+      // Use the provided config or default to the store's default configuration
+      const finalConfig = {
+        ...this.defaultConfig,
+        ...(config || {}),
+        promoted_object: {
+          ...this.defaultConfig.promoted_object,
+          ...(config?.promoted_object || {}),
+        },
+      }
+
+      // Construct the payload with necessary fields for a custom audience
+      return {
+        name: record.name,
+        description: record.name + ' Audience',
+        subtype: 'CUSTOM',
+        customer_file_source: 'USER_PROVIDED_ONLY',
+        retention_days: 30,
+        rule: {
+          geo_locations: {
+            custom_locations: record.locations.map((location) => ({
+              address_string: location.address,
+              radius: finalConfig.radius,
+              distance_unit: finalConfig.distance_unit,
+            })),
+          },
+        },
+        use_in_campaigns: true,
+        // Add other parameters as needed
+      }
+    },
+
+    async pushCustomAudience(index: number, record: AudienceRecord) {
+      const config = this.recordConfigs[index] || this.defaultConfig
+      // Update the push status for this record.
+      this.pushStatus[index] = {
+        loading: true,
+        error: null,
+        response: null,
+      }
+
+      const payload = this.constructCustomAudiencePayload(record, config)
+      console.log('payload', payload)
+
+      try {
+        const res = await fetch('/facebook/push-custom-audience', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            password: this.auth.password,
+            payload,
+          }),
+        })
+        const data = await res.json()
+        this.pushStatus[index] = {
+          loading: false,
+          error: null,
+          response: data,
+        }
+      } catch (err: any) {
+        this.pushStatus[index] = {
+          loading: false,
+          error: err.message,
+          response: null,
+        }
+      }
     },
   },
 })

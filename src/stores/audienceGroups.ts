@@ -73,7 +73,9 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
   state: () => ({
     creatingGroups: false,
     pushingGroups: false,
-    groups: [] as LocationGroup[],
+    groups: (localStorage.getItem('audienceGroups')
+      ? JSON.parse(localStorage.getItem('audienceGroups') || '')
+      : []) as LocationGroup[],
     onlyInStock: true,
   }),
 
@@ -199,6 +201,7 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
         }
         return a.state.localeCompare(b.state)
       })
+      localStorage.setItem('audienceGroups', JSON.stringify(this.groups))
 
       this.creatingGroups = false
     },
