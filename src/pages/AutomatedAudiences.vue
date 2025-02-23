@@ -138,9 +138,10 @@ export default {
 
   mounted() {
     // Fetch audiences instead of campaigns
-    this.facebook.fetchAllAudiences()
-    this.facebook.fetchAllCampaigns()
-    this.facebook.fetchAllCustomAudiences()
+    this.facebook.fetchAudiences()
+    this.facebook.fetchCampaigns()
+    this.facebook.fetchCustomAudiences()
+    this.facebook.fetchAdSets()
   },
 
   computed: {

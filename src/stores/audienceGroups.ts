@@ -15,6 +15,60 @@ interface LocationGroup {
   status: 'ACTIVE' | 'INACTIVE'
 }
 
+// Matches full state name pattern
+const stateNames = {
+  Alabama: 'AL',
+  Alaska: 'AK',
+  Arizona: 'AZ',
+  Arkansas: 'AR',
+  California: 'CA',
+  Colorado: 'CO',
+  Connecticut: 'CT',
+  Delaware: 'DE',
+  Florida: 'FL',
+  Georgia: 'GA',
+  Hawaii: 'HI',
+  Idaho: 'ID',
+  Illinois: 'IL',
+  Indiana: 'IN',
+  Iowa: 'IA',
+  Kansas: 'KS',
+  Kentucky: 'KY',
+  Louisiana: 'LA',
+  Maine: 'ME',
+  Maryland: 'MD',
+  Massachusetts: 'MA',
+  Michigan: 'MI',
+  Minnesota: 'MN',
+  Mississippi: 'MS',
+  Missouri: 'MO',
+  Montana: 'MT',
+  Nebraska: 'NE',
+  Nevada: 'NV',
+  'New Hampshire': 'NH',
+  'New Jersey': 'NJ',
+  'New Mexico': 'NM',
+  'New York': 'NY',
+  'North Carolina': 'NC',
+  'North Dakota': 'ND',
+  Ohio: 'OH',
+  Oklahoma: 'OK',
+  Oregon: 'OR',
+  Pennsylvania: 'PA',
+  'Rhode Island': 'RI',
+  'South Carolina': 'SC',
+  'South Dakota': 'SD',
+  Tennessee: 'TN',
+  Texas: 'TX',
+  Utah: 'UT',
+  Vermont: 'VT',
+  Virginia: 'VA',
+  Washington: 'WA',
+  'West Virginia': 'WV',
+  Wisconsin: 'WI',
+  Wyoming: 'WY',
+}
+
 export const useAudienceGroupsStore = defineStore('audienceGroups', {
   state: () => ({
     creatingGroups: false,
@@ -34,60 +88,6 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
       // Matches state abbreviation pattern: ", XX " or ", XX," or ", XX"
       const stateAbbreviationMatch = address.match(/,\s*([A-Z]{2})(?:\s|,|$)/)
 
-      // Matches full state name pattern
-      const stateNames = {
-        Alabama: 'AL',
-        Alaska: 'AK',
-        Arizona: 'AZ',
-        Arkansas: 'AR',
-        California: 'CA',
-        Colorado: 'CO',
-        Connecticut: 'CT',
-        Delaware: 'DE',
-        Florida: 'FL',
-        Georgia: 'GA',
-        Hawaii: 'HI',
-        Idaho: 'ID',
-        Illinois: 'IL',
-        Indiana: 'IN',
-        Iowa: 'IA',
-        Kansas: 'KS',
-        Kentucky: 'KY',
-        Louisiana: 'LA',
-        Maine: 'ME',
-        Maryland: 'MD',
-        Massachusetts: 'MA',
-        Michigan: 'MI',
-        Minnesota: 'MN',
-        Mississippi: 'MS',
-        Missouri: 'MO',
-        Montana: 'MT',
-        Nebraska: 'NE',
-        Nevada: 'NV',
-        'New Hampshire': 'NH',
-        'New Jersey': 'NJ',
-        'New Mexico': 'NM',
-        'New York': 'NY',
-        'North Carolina': 'NC',
-        'North Dakota': 'ND',
-        Ohio: 'OH',
-        Oklahoma: 'OK',
-        Oregon: 'OR',
-        Pennsylvania: 'PA',
-        'Rhode Island': 'RI',
-        'South Carolina': 'SC',
-        'South Dakota': 'SD',
-        Tennessee: 'TN',
-        Texas: 'TX',
-        Utah: 'UT',
-        Vermont: 'VT',
-        Virginia: 'VA',
-        Washington: 'WA',
-        'West Virginia': 'WV',
-        Wisconsin: 'WI',
-        Wyoming: 'WY',
-      }
-
       const stateNameMatch = Object.keys(stateNames).find((state) =>
         new RegExp(`\\b${state}\\b`, 'i').test(address),
       )
@@ -99,6 +99,10 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
       } else {
         return 'Unknown'
       }
+    },
+
+    getStateFromCode(code: string): string {
+      return Object.keys(stateNames).find((state) => stateNames[state] === code) || code
     },
 
     async createGroups() {
@@ -130,8 +134,10 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
 
         // Create location groups for each state
         for (const [state, stateRecords] of Object.entries(stateGroups)) {
+          const stateName = this.getStateFromCode(state)
+
           const group = {
-            name: `${state} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
+            name: `${stateName} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
             state,
             locations: stateRecords,
             audienceId: '', // Will be set later
@@ -193,6 +199,8 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
             zip_code: location.zipCode,
             quantity: location.quantity,
             stock_status: location.stock_status,
+            radius: 10,
+            distance_unit: 'mile',
           })),
         }
 

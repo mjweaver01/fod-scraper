@@ -91,6 +91,8 @@ export const useFacebookStore = defineStore('facebook', {
     fetchingAudiences: false,
     customAudiences: ref([]),
     fetchingCustomAudiences: false,
+    adSets: ref([]),
+    fetchingAdSets: false,
   }),
   getters: {
     auth: () => useAuthStore(),
@@ -199,7 +201,7 @@ export const useFacebookStore = defineStore('facebook', {
     /**x
      * Fetches all campaigns from Facebook.
      */
-    async fetchAllCampaigns() {
+    async fetchCampaigns() {
       if (this.campaigns.length) return
 
       this.fetchingCampaigns = true
@@ -225,7 +227,17 @@ export const useFacebookStore = defineStore('facebook', {
       this.fetchingPromotedPages = false
     },
 
-    async fetchAllAudiences() {
+    async fetchAdSets() {
+      if (this.adSets.length) return
+
+      this.fetchingAdSets = true
+      const res = await fetch('/facebook/adsets')
+      const data = await res.json()
+      this.adSets = data.data
+      this.fetchingAdSets = false
+    },
+
+    async fetchAudiences() {
       if (this.audiences.length) return
 
       this.fetchingAudiences = true
@@ -235,7 +247,7 @@ export const useFacebookStore = defineStore('facebook', {
       this.fetchingAudiences = false
     },
 
-    async fetchAllCustomAudiences() {
+    async fetchCustomAudiences() {
       if (this.customAudiences.length) return
 
       this.fetchingCustomAudiences = true
