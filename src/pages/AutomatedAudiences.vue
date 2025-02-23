@@ -25,6 +25,7 @@
       <SliderToggle
         :value="audienceGroups.onlyInStock"
         label="Only create audiences for in-stock products"
+        labelMaxWidth="150px"
       />
     </div>
     <hr />
@@ -72,7 +73,11 @@
     </div>
 
     <div v-if="audienceGroups.groups.length" class="groups">
-      <div v-for="group in displayGroups" :key="group.state + group.status" class="group-card">
+      <div
+        v-for="(group, index) in displayGroups"
+        :key="group.state + group.status"
+        class="group-card"
+      >
         <div class="group-header">
           <h3>{{ group.name }}</h3>
           <span :class="['pill', group.status.toLowerCase()]">
@@ -109,6 +114,16 @@
             </table>
           </div>
         </div>
+
+        <button
+          @click="facebook.pushAudience(indexedDB, group)"
+          :disabled="audienceGroups.pushingGroups"
+        >
+          Push {{ group.name.split(' - ')[0] }}
+          {{
+            group.name.split(' - ')[1].replace('Field of Dreams', '').replace('Field Of Dreams', '')
+          }}
+        </button>
       </div>
     </div>
 
@@ -288,7 +303,7 @@ export default {
 }
 
 .locations-list {
-  margin-top: 1em;
+  margin: 1em 0;
 }
 
 .locations-table {

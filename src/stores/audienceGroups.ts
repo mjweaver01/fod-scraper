@@ -206,38 +206,5 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
     async clearGroups() {
       this.groups = []
     },
-
-    async pushGroupsToFacebook() {
-      this.pushingGroups = true
-
-      for (const group of this.groups) {
-        // Create merged audience configuration
-        const config = {
-          ...this.facebook.defaultConfig,
-          audience_id: group.audienceId,
-          status: group.status,
-          custom_audiences: group.locations.map((location) => ({
-            address: location.address,
-            zip_code: location.zipCode,
-            quantity: location.quantity,
-            stock_status: location.stock_status,
-            radius: 10,
-            distance_unit: 'mile',
-          })),
-        }
-
-        // Push group as a single audience with multiple addresses
-        await this.facebook.pushAudience(
-          group.state,
-          {
-            name: `${group.state} - ${group.status} - ${group.locations.length} Locations`,
-            custom_audiences: config.custom_audiences,
-          },
-          config,
-        )
-      }
-
-      this.pushingGroups = false
-    },
   },
 })

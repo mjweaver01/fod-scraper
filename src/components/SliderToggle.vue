@@ -56,6 +56,10 @@ export default {
     height: 0;
   }
 
+  label {
+    cursor: pointer;
+  }
+
   .slider {
     position: relative;
     display: inline-block;
