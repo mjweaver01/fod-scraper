@@ -17,8 +17,8 @@ export default {
   text-align: center;
 
   img {
-    width: 100px;
-    height: 100px;
+    width: 125px;
+    height: 125px;
   }
 }
 </style>

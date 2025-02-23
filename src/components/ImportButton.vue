@@ -35,6 +35,6 @@ export default {
 
 <style>
 .import-button {
-  padding: 0.85em;
+  padding: 0.55em;
 }
 </style>

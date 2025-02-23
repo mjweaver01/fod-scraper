@@ -92,8 +92,6 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
         new RegExp(`\\b${state}\\b`, 'i').test(address),
       )
 
-      console.log(stateAbbreviationMatch)
-
       if (stateAbbreviationMatch) {
         return stateAbbreviationMatch[1]
       } else if (stateNameMatch) {

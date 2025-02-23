@@ -1,6 +1,7 @@
 <template>
   <div class="page automated-audiences-page">
     <h1>Automated Audience Groups</h1>
+
     <hr />
     <div class="controls">
       <button
@@ -22,6 +23,7 @@
         {{ audienceGroups.pushingGroups ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
     </div>
+    <hr />
 
     <div v-if="audienceGroups.groups.length" class="search-filter">
       <div class="search">
@@ -281,13 +283,17 @@ export default {
 
 .locations-table {
   overflow: auto;
-  max-height: 250px;
+  max-height: 245px;
+
+  thead {
+    position: sticky;
+    top: 0;
+  }
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 
   th,
   td {
