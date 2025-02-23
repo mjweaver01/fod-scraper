@@ -25,6 +25,13 @@
     </div>
     <hr />
 
+    <div class="controls">
+      <label>
+        <input type="checkbox" v-model="audienceGroups.onlyInStock" />
+        Only create audiences for in-stock products
+      </label>
+    </div>
+
     <div v-if="audienceGroups.groups.length" class="search-filter">
       <div class="search">
         <input type="search" placeholder="Search groups..." v-model="searchTerm" />

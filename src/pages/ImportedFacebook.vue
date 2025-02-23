@@ -212,7 +212,7 @@ export default {
     const facebookStore = useFacebookStore()
 
     // Fetch campaigns and promoted pages when the component is mounted
-    facebookStore.fetchAllCampaigns()
+    facebookStore.fetchCampaigns()
     facebookStore.fetchPromotedPages()
 
     return {

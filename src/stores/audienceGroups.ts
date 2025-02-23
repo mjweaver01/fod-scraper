@@ -74,6 +74,7 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
     creatingGroups: false,
     pushingGroups: false,
     groups: [] as LocationGroup[],
+    onlyInStock: true,
   }),
 
   getters: {
@@ -120,8 +121,11 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
       // Create all groups first
       const unsortedGroups = []
 
-      // For each stock status, group by state
+      // For each stock status, group by state and then by product
       for (const [stockStatus, stockRecords] of Object.entries(stockGroups)) {
+        // Skip out of stock groups if onlyInStock is true
+        if (this.onlyInStock && stockStatus === 'out_stock') continue
+
         // Group records by state
         const stateGroups = stockRecords.reduce((acc, record) => {
           const state = this.getStateFromAddress(record.address)
@@ -132,41 +136,57 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
           return acc
         }, {})
 
-        // Create location groups for each state
+        // For each state, group by product
         for (const [state, stateRecords] of Object.entries(stateGroups)) {
-          const stateName = this.getStateFromCode(state)
+          const productGroups = stateRecords.reduce((acc, record) => {
+            const product = record.name || 'Unknown Product' // Default value for undefined product
+            if (!acc[product]) {
+              acc[product] = []
+            }
+            acc[product].push(record)
+            return acc
+          }, {})
 
-          const group = {
-            name: `${stateName} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
-            state,
-            locations: stateRecords,
-            audienceId: '', // Will be set later
-            status: stockStatus === 'in_stock' ? 'ACTIVE' : 'INACTIVE',
-          }
+          // Create location groups for each product
+          for (const [product, productRecords] of Object.entries(productGroups)) {
+            const stateName = this.getStateFromCode(state)
 
-          // Find matching audience for this state and status
-          const audience = this.facebook.audiences.find((a) => {
-            const audienceName = a.name.toLowerCase()
-            return (
-              // Match state in audience name
-              audienceName.includes(state.toLowerCase()) &&
-              // Match status (in stock/out of stock)
-              audienceName.includes(stockStatus === 'in_stock' ? 'in' : 'out')
-            )
-          })
+            const group = {
+              name: `${stateName} ${product} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
+              state,
+              locations: productRecords,
+              audienceId: '', // Will be set later
+              status: stockStatus === 'in_stock' ? 'ACTIVE' : 'INACTIVE',
+            }
 
-          // Fallback audience matching just by state
-          const stateAudience = !audience
-            ? this.facebook.audiences.find((a) =>
-                a.name.toLowerCase().includes(state.toLowerCase()),
+            // Find matching audience for this state, product, and status
+            const audience = this.facebook.audiences.find((a) => {
+              const audienceName = a.name.toLowerCase()
+              return (
+                // Match state in audience name
+                audienceName.includes(state.toLowerCase()) &&
+                // Match product in audience name
+                audienceName.includes(product.toLowerCase()) &&
+                // Match status (in stock/out of stock)
+                audienceName.includes(stockStatus === 'in_stock' ? 'in' : 'out')
               )
-            : null
+            })
 
-          // Set audience ID with fallbacks
-          group.audienceId =
-            audience?.id || stateAudience?.id || this.facebook.audiences[0]?.id || ''
+            // Fallback audience matching just by state and product
+            const stateProductAudience = !audience
+              ? this.facebook.audiences.find(
+                  (a) =>
+                    a.name.toLowerCase().includes(state.toLowerCase()) &&
+                    a.name.toLowerCase().includes(product.toLowerCase()),
+                )
+              : null
 
-          unsortedGroups.push(group)
+            // Set audience ID with fallbacks
+            group.audienceId =
+              audience?.id || stateProductAudience?.id || this.facebook.audiences[0]?.id || ''
+
+            unsortedGroups.push(group)
+          }
         }
       }
 
