@@ -68,7 +68,6 @@ router.get('/audiences', async (req: Request, res: Response) => {
 
   try {
     const adAccount = new AdAccount(adAccountId)
-    console.log(adAccount)
 
     const audiences = await adAccount.getCustomAudiences(['id', 'name', 'description'])
 
