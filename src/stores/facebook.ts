@@ -86,6 +86,11 @@ export const useFacebookStore = defineStore('facebook', {
     campaigns: ref([]),
     fetchingCampaigns: false,
     promotedPages: ref([]),
+    fetchingPromotedPages: false,
+    audiences: ref([]),
+    fetchingAudiences: false,
+    customAudiences: ref([]),
+    fetchingCustomAudiences: false,
   }),
   getters: {
     auth: () => useAuthStore(),
@@ -205,6 +210,9 @@ export const useFacebookStore = defineStore('facebook', {
     },
 
     async fetchPromotedPages() {
+      if (this.promotedPages.length) return
+
+      this.fetchingPromotedPages = true
       try {
         const response = await fetch('/facebook/promoted-pages')
         const data = await response.json()
@@ -214,6 +222,26 @@ export const useFacebookStore = defineStore('facebook', {
       } catch (error) {
         console.error('Error fetching promoted pages:', error)
       }
+      this.fetchingPromotedPages = false
+    },
+
+    async fetchAllAudiences() {
+      if (this.audiences.length) return
+
+      this.fetchingAudiences = true
+      const res = await fetch('/facebook/audiences')
+      const data = await res.json()
+      this.audiences = data.data
+      this.fetchingAudiences = false
+    },
+
+    async fetchAllCustomAudiences() {
+      if (this.customAudiences.length) return
+
+      this.fetchingCustomAudiences = true
+      const res = await fetch('/facebook/custom-audiences')
+      const data = await res.json()
+      this.customAudiences = data.data
     },
   },
 })

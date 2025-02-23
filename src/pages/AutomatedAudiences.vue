@@ -17,7 +17,7 @@
       </button>
       <button
         @click="audienceGroups.pushGroupsToFacebook"
-        :disabled="!hasGroups || audienceGroups.pushingGroups"
+        :disabled="!hasGroups || audienceGroups.pushingGroups || true"
       >
         {{ audienceGroups.pushingGroups ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
@@ -76,12 +76,10 @@
 
         <div class="group-details">
           <p><strong>State:</strong> {{ group.state }}</p>
-          <p><strong>Campaign:</strong> {{ getCampaignName(group.campaignId) }}</p>
           <p><strong>Total Locations:</strong> {{ group.locations.length }}</p>
         </div>
 
         <div class="locations-list">
-          <h4>Locations</h4>
           <div class="locations-table">
             <table>
               <thead>
@@ -137,8 +135,10 @@ export default {
   },
 
   mounted() {
-    // Fetch groups and campaigns
+    // Fetch audiences instead of campaigns
+    this.facebook.fetchAllAudiences()
     this.facebook.fetchAllCampaigns()
+    this.facebook.fetchAllCustomAudiences()
   },
 
   computed: {
@@ -178,8 +178,7 @@ export default {
           return (
             this.fuzzyMatch(search, group.name) ||
             this.fuzzyMatch(search, group.state) ||
-            this.fuzzyMatch(search, group.status) ||
-            this.fuzzyMatch(search, this.getCampaignName(group.campaignId))
+            this.fuzzyMatch(search, group.status)
           )
         })
       }

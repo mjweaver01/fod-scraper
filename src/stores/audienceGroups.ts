@@ -11,7 +11,7 @@ interface LocationGroup {
     quantity: number
     stock_status: string
   }>
-  campaignId: string
+  audienceId: string
   status: 'ACTIVE' | 'INACTIVE'
 }
 
@@ -32,8 +32,75 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
     // Extract state from address string
     getStateFromAddress(address: string): string {
       // Matches state abbreviation pattern: ", XX " or ", XX," or ", XX"
-      const stateMatch = address.match(/,\s*([A-Z]{2})(?:\s|,|$)/)
-      return stateMatch ? stateMatch[1] : 'Unknown'
+      const stateAbbreviationMatch = address.match(/,\s*([A-Z]{2})(?:\s|,|$)/)
+
+      // Matches full state name pattern
+      const stateNames = {
+        Alabama: 'AL',
+        Alaska: 'AK',
+        Arizona: 'AZ',
+        Arkansas: 'AR',
+        California: 'CA',
+        Colorado: 'CO',
+        Connecticut: 'CT',
+        Delaware: 'DE',
+        Florida: 'FL',
+        Georgia: 'GA',
+        Hawaii: 'HI',
+        Idaho: 'ID',
+        Illinois: 'IL',
+        Indiana: 'IN',
+        Iowa: 'IA',
+        Kansas: 'KS',
+        Kentucky: 'KY',
+        Louisiana: 'LA',
+        Maine: 'ME',
+        Maryland: 'MD',
+        Massachusetts: 'MA',
+        Michigan: 'MI',
+        Minnesota: 'MN',
+        Mississippi: 'MS',
+        Missouri: 'MO',
+        Montana: 'MT',
+        Nebraska: 'NE',
+        Nevada: 'NV',
+        'New Hampshire': 'NH',
+        'New Jersey': 'NJ',
+        'New Mexico': 'NM',
+        'New York': 'NY',
+        'North Carolina': 'NC',
+        'North Dakota': 'ND',
+        Ohio: 'OH',
+        Oklahoma: 'OK',
+        Oregon: 'OR',
+        Pennsylvania: 'PA',
+        'Rhode Island': 'RI',
+        'South Carolina': 'SC',
+        'South Dakota': 'SD',
+        Tennessee: 'TN',
+        Texas: 'TX',
+        Utah: 'UT',
+        Vermont: 'VT',
+        Virginia: 'VA',
+        Washington: 'WA',
+        'West Virginia': 'WV',
+        Wisconsin: 'WI',
+        Wyoming: 'WY',
+      }
+
+      const stateNameMatch = Object.keys(stateNames).find((state) =>
+        new RegExp(`\\b${state}\\b`, 'i').test(address),
+      )
+
+      console.log(stateAbbreviationMatch)
+
+      if (stateAbbreviationMatch) {
+        return stateAbbreviationMatch[1]
+      } else if (stateNameMatch) {
+        return stateNames[stateNameMatch]
+      } else {
+        return 'Unknown'
+      }
     },
 
     async createGroups() {
@@ -69,31 +136,31 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
             name: `${state} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
             state,
             locations: stateRecords,
-            campaignId: '', // Will be set later
+            audienceId: '', // Will be set later
             status: stockStatus === 'in_stock' ? 'ACTIVE' : 'INACTIVE',
           }
 
-          // Find matching campaign for this state and status
-          const campaign = this.facebook.campaigns.find((c) => {
-            const campaignName = c.name.toLowerCase()
+          // Find matching audience for this state and status
+          const audience = this.facebook.audiences.find((a) => {
+            const audienceName = a.name.toLowerCase()
             return (
-              // Match state in campaign name
-              campaignName.includes(state.toLowerCase()) &&
+              // Match state in audience name
+              audienceName.includes(state.toLowerCase()) &&
               // Match status (in stock/out of stock)
-              campaignName.includes(stockStatus === 'in_stock' ? 'in' : 'out')
+              audienceName.includes(stockStatus === 'in_stock' ? 'in' : 'out')
             )
           })
 
-          // Fallback campaign matching just by state
-          const stateCampaign = !campaign
-            ? this.facebook.campaigns.find((c) =>
-                c.name.toLowerCase().includes(state.toLowerCase()),
+          // Fallback audience matching just by state
+          const stateAudience = !audience
+            ? this.facebook.audiences.find((a) =>
+                a.name.toLowerCase().includes(state.toLowerCase()),
               )
             : null
 
-          // Set campaign ID with fallbacks
-          group.campaignId =
-            campaign?.id || stateCampaign?.id || this.facebook.campaigns[0]?.id || ''
+          // Set audience ID with fallbacks
+          group.audienceId =
+            audience?.id || stateAudience?.id || this.facebook.audiences[0]?.id || ''
 
           unsortedGroups.push(group)
         }
@@ -121,7 +188,7 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
         // Create merged audience configuration
         const config = {
           ...this.facebook.defaultConfig,
-          campaign_id: group.campaignId,
+          audience_id: group.audienceId,
           status: group.status,
           custom_audiences: group.locations.map((location) => ({
             address: location.address,
