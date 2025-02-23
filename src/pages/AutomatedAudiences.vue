@@ -22,22 +22,19 @@
       >
         {{ audienceGroups.pushingGroups ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
+      <SliderToggle
+        :value="audienceGroups.onlyInStock"
+        label="Only create audiences for in-stock products"
+      />
     </div>
     <hr />
-
-    <div class="controls">
-      <label>
-        <input type="checkbox" v-model="audienceGroups.onlyInStock" />
-        Only create audiences for in-stock products
-      </label>
-    </div>
 
     <div v-if="audienceGroups.groups.length" class="search-filter">
       <div class="search">
         <input type="search" placeholder="Search groups..." v-model="searchTerm" />
       </div>
 
-      <div class="controls">
+      <div class="controls nested-controls">
         <div class="sort-dropdown">
           <label for="sortDropdown">Sort by Status</label>
           <div class="select">
@@ -130,9 +127,14 @@ import { mapState } from 'pinia'
 import { useAudienceGroupsStore } from '@/stores/audienceGroups'
 import { useFacebookStore } from '@/stores/facebook'
 import { useImportedDataStore } from '@/stores/importedData'
+import SliderToggle from '@/components/SliderToggle.vue'
 
 export default {
   name: 'AutomatedAudiences',
+
+  components: {
+    SliderToggle,
+  },
 
   data() {
     return {
@@ -259,14 +261,14 @@ export default {
 
 <style lang="scss" scoped>
 .automated-audiences {
-  padding: 20px;
+  padding: 1em;
 }
 
 .group-card {
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  margin-bottom: 20px;
-  padding: 20px;
+  border-radius: 0.5em;
+  margin-bottom: 1em;
+  padding: 1em;
   background: var(--background);
 }
 
@@ -274,7 +276,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
+  margin-bottom: 1em;
 }
 
 .pill {
@@ -282,11 +284,11 @@ export default {
 }
 
 .group-details {
-  margin-bottom: 20px;
+  margin-bottom: 1em;
 }
 
 .locations-list {
-  margin-top: 15px;
+  margin-top: 1em;
 }
 
 .locations-table {
@@ -318,8 +320,9 @@ table {
 
 .controls {
   display: flex;
+  align-items: center;
   gap: 1rem;
-  margin-bottom: 20px;
+  width: 100%;
 }
 
 .search-filter {
@@ -328,24 +331,19 @@ table {
   gap: 1em;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 20px;
+  margin: 1em 0;
 }
 
 .search {
-  margin-bottom: 1rem;
   width: 100%;
 }
 
-.controls {
-  margin-bottom: 1rem;
-  display: flex;
-  gap: 1rem;
+.nested-controls {
   align-items: flex-end;
-  width: 100%;
-}
 
-.controls > div {
-  flex-grow: 1;
+  > div {
+    flex-grow: 1;
+  }
 }
 
 .sort-dropdown,

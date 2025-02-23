@@ -152,7 +152,7 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
             const stateName = this.getStateFromCode(state)
 
             const group = {
-              name: `${stateName} ${product} ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
+              name: `${stateName} - ${product} - ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
               state,
               locations: productRecords,
               audienceId: '', // Will be set later
