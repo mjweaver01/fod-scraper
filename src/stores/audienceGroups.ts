@@ -129,6 +129,8 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
         // Group records by state
         const stateGroups = stockRecords.reduce((acc, record) => {
           const state = this.getStateFromAddress(record.address)
+          // Skip records with "Unknown" state
+          if (state === 'Unknown') return acc
           if (!acc[state]) {
             acc[state] = []
           }
