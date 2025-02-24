@@ -1,6 +1,11 @@
 <template>
   <div class="slider-toggle">
-    <input type="checkbox" :id="toggleId" v-model="checked" @change="emitChange" />
+    <input
+      type="checkbox"
+      :id="toggleId"
+      :checked="modelValue"
+      @change="$emit('update:modelValue', $event.target.checked)"
+    />
     <label :for="toggleId" class="slider"></label>
     <label :for="toggleId" class="slider-label" :style="{ maxWidth: labelMaxWidth }">{{
       label
@@ -12,7 +17,7 @@
 export default {
   name: 'SliderToggle',
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
@@ -27,14 +32,8 @@ export default {
   },
   data() {
     return {
-      checked: this.value,
       toggleId: `slider-toggle-${Math.random().toString(36).substr(2, 9)}`, // Unique ID for each instance
     }
-  },
-  methods: {
-    emitChange() {
-      this.$emit('input', this.checked)
-    },
   },
 }
 </script>

@@ -23,7 +23,8 @@
         </option>
       </select>
       <SliderToggle
-        :value="adsetGroups.onlyInStock"
+        v-model="adsetGroups.onlyInStock"
+        @update:modelValue="adsetGroups.clearGroups"
         label="Only create for in-stock products"
         labelMaxWidth="150px"
       />

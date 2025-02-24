@@ -2,11 +2,18 @@
 
 # 🌽 FOD Automation
 
-Create audiences based on stock statuses and states, and push them to Facebook Campaigns
+Create Meta adsets based on stock statuses and states
 
 ## 🚧 TODO
 
-- Push new audiences to Facebook
+- for adsets
+
+  - add form to modify all adset fields
+
+- for ai
+
+  - sift through campaigns/stock and find trends
+  - 1 week / 30 day trends
 
 ## 🏁 Quickstart
 
@@ -14,13 +21,3 @@ Create audiences based on stock statuses and states, and push them to Facebook C
 ## one-liner
 nvm use && yarn && yarn d
 ```
-
-## 📝 Notes
-
-andy has high level campaigns
-pull campaign, try to assign store to campaign
-assign bid and budget from campaign
-
-for ai:
-sift through campaigns/stock and find trends
-1 week / 30 day trends
