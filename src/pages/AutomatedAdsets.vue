@@ -16,17 +16,22 @@
       <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll || true">
         {{ facebook.pushingAll ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
-      <select v-model="facebook.selectedCampaignId">
-        <option value="" disabled selected>Select Campaign</option>
-        <option v-for="campaign in facebook.campaigns" :key="campaign.id" :value="campaign.id">
-          {{ campaign.name }}
-        </option>
-      </select>
+      <div>
+        <label for="campaignSelect">Select Campaign</label>
+        <div class="select">
+          <select v-model="facebook.selectedCampaignId" @change="adsetGroups.clearGroups">
+            <option value="" disabled selected>Select Campaign</option>
+            <option v-for="campaign in facebook.campaigns" :key="campaign.id" :value="campaign.id">
+              {{ campaign.name }}
+            </option>
+          </select>
+        </div>
+      </div>
       <SliderToggle
         v-model="adsetGroups.onlyInStock"
         @update:modelValue="adsetGroups.clearGroups"
-        label="Only create for in-stock products"
-        labelMaxWidth="150px"
+        label="Only generate in-stock adsets"
+        labelMaxWidth="110px"
       />
     </div>
     <hr />
@@ -371,7 +376,7 @@ table {
 
 .controls {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 1rem;
   width: 100%;
 }
