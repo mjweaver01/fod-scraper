@@ -257,6 +257,51 @@ router.post('/push-custom-audience', async (req: Request, res: Response) => {
   }
 })
 
+router.post('/create-campaign', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
+    if (!adAccountId || !accessToken) {
+      return res.status(500).json({
+        code: 500,
+        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+        error: true,
+      })
+    }
+
+    const adAccount = new AdAccount(adAccountId)
+
+    // Create the campaign using the payload
+    const campaign = await adAccount.createCampaign([], {
+      name: payload.name,
+      objective: payload.objective,
+      status: payload.status,
+    })
+
+    return res.json({
+      code: 200,
+      message: 'Campaign created successfully',
+      data: campaign,
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error creating campaign:', error)
+    return res.status(500).json({
+      code: 500,
+      message: error.message || 'Internal Server Error',
+      error: true,
+    })
+  }
+})
+
 // Helper function to hash data
 function hashData(data: string): string {
   return crypto.createHash('sha256').update(data.toLowerCase().trim()).digest('hex')

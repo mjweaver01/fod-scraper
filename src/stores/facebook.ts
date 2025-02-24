@@ -121,20 +121,20 @@ export const useFacebookStore = defineStore('facebook', {
       }
 
       return {
-        name: `${record.name} Audience`,
+        name: `${record.name} Ad Set`,
         optimization_goal: finalConfig.optimization_goal,
         billing_event: finalConfig.billing_event,
         bid_amount: finalConfig.bid_amount,
         daily_budget: finalConfig.daily_budget,
-        targeting: {
-          geo_locations: {
-            custom_locations: record.custom_locations.map((location) => ({
-              address_string: location.address_string,
-              radius: location.radius,
-              distance_unit: location.distance_unit,
-            })),
-          },
-        },
+        // targeting: {
+        //   geo_locations: {
+        //     custom_locations: record.custom_locations.map((location) => ({
+        //       address_string: location.address_string,
+        //       radius: location.radius,
+        //       distance_unit: location.distance_unit,
+        //     })),
+        //   },
+        // },
         status: finalConfig.status,
         promoted_object: {
           page_id: finalConfig.promoted_object.page_id,
