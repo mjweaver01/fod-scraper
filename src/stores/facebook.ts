@@ -162,6 +162,7 @@ export const useFacebookStore = defineStore('facebook', {
           }),
         })
         const data = await res.json()
+        await this.fetchAdSets()
         this.pushStatus[index] = {
           loading: false,
           error: null,
@@ -218,8 +219,6 @@ export const useFacebookStore = defineStore('facebook', {
     },
 
     async fetchAdSets() {
-      if (this.adSets.length) return
-
       this.fetchingAdSets = true
       const res = await fetch('/facebook/adsets')
       const data = await res.json()
@@ -228,8 +227,6 @@ export const useFacebookStore = defineStore('facebook', {
     },
 
     async fetchAudiences() {
-      if (this.audiences.length) return
-
       this.fetchingAudiences = true
       const res = await fetch('/facebook/audiences')
       const data = await res.json()
@@ -238,8 +235,6 @@ export const useFacebookStore = defineStore('facebook', {
     },
 
     async fetchCustomAudiences() {
-      if (this.customAudiences.length) return
-
       this.fetchingCustomAudiences = true
       const res = await fetch('/facebook/custom-audiences')
       const data = await res.json()
