@@ -17,6 +17,7 @@
         {{ facebook.pushingAll ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
       <select v-model="facebook.selectedCampaignId">
+        <option value="" disabled selected>Select Campaign</option>
         <option v-for="campaign in facebook.campaigns" :key="campaign.id" :value="campaign.id">
           {{ campaign.name }}
         </option>
@@ -184,7 +185,7 @@ export default {
 
   async mounted() {
     await this.facebook.fetchCampaigns()
-    await this.facebook.fetchAdSets()
+    // await this.facebook.fetchAdSets()
     this.facebook.selectedCampaignId = this.facebook.campaigns[0].id
   },
 
