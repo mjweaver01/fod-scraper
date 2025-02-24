@@ -69,12 +69,12 @@ const stateNames = {
   Wyoming: 'WY',
 }
 
-export const useAudienceGroupsStore = defineStore('audienceGroups', {
+export const useAdsetGroupsStore = defineStore('adsetGroups', {
   state: () => ({
     creatingGroups: false,
     pushingGroups: false,
-    groups: (localStorage.getItem('audienceGroups')
-      ? JSON.parse(localStorage.getItem('audienceGroups') || '')
+    groups: (localStorage.getItem('adsetGroups')
+      ? JSON.parse(localStorage.getItem('adsetGroups') || '')
       : []) as LocationGroup[],
     onlyInStock: true,
   }),
@@ -202,13 +202,14 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
         }
         return a.state.localeCompare(b.state)
       })
-      localStorage.setItem('audienceGroups', JSON.stringify(this.groups))
+      localStorage.setItem('adsetGroups', JSON.stringify(this.groups))
 
       this.creatingGroups = false
     },
 
     async clearGroups() {
       this.groups = []
+      localStorage.removeItem('adsetGroups')
     },
   },
 })

@@ -1,19 +1,16 @@
 <template>
-  <div class="page automated-audiences-page">
+  <div class="page automated-adsets-page">
     <h1>Automated Adsets</h1>
 
     <hr />
     <div class="controls">
       <button
-        @click="audienceGroups.createGroups"
-        :disabled="!hasRecords || audienceGroups.creatingGroups"
+        @click="adsetGroups.createGroups"
+        :disabled="!hasRecords || adsetGroups.creatingGroups"
       >
-        {{ audienceGroups.creatingGroups ? 'Creating Groups...' : 'Create Groups' }}
+        {{ adsetGroups.creatingGroups ? 'Creating Groups...' : 'Create Groups' }}
       </button>
-      <button
-        @click="audienceGroups.clearGroups"
-        :disabled="!hasGroups || audienceGroups.pushingGroups"
-      >
+      <button @click="adsetGroups.clearGroups" :disabled="!hasGroups || adsetGroups.pushingGroups">
         Clear All Groups
       </button>
       <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll || true">
@@ -25,14 +22,14 @@
         </option>
       </select>
       <SliderToggle
-        :value="audienceGroups.onlyInStock"
+        :value="adsetGroups.onlyInStock"
         label="Only create for in-stock products"
         labelMaxWidth="150px"
       />
     </div>
     <hr />
 
-    <div v-if="audienceGroups.groups.length" class="search-filter">
+    <div v-if="adsetGroups.groups.length" class="search-filter">
       <div class="search">
         <input type="search" placeholder="Search groups..." v-model="searchTerm" />
       </div>
@@ -74,7 +71,7 @@
       </div>
     </div>
 
-    <div v-if="audienceGroups.groups.length" class="groups">
+    <div v-if="adsetGroups.groups.length" class="groups">
       <div
         v-for="(group, index) in displayGroups"
         :key="group.state + group.status"
@@ -164,14 +161,13 @@
 </template>
 
 <script>
-import { mapState } from 'pinia'
-import { useAudienceGroupsStore } from '@/stores/audienceGroups'
+import { useAdsetGroupsStore } from '@/stores/adsetGroups'
 import { useFacebookStore } from '@/stores/facebook'
 import { useImportedDataStore } from '@/stores/importedData'
 import SliderToggle from '@/components/SliderToggle.vue'
 
 export default {
-  name: 'AutomatedAudiences',
+  name: 'AutomatedAdsets',
 
   components: {
     SliderToggle,
@@ -187,9 +183,6 @@ export default {
   },
 
   async mounted() {
-    // Fetch audiences instead of campaigns
-    // this.facebook.fetchAudiences()
-    // this.facebook.fetchCustomAudiences()
     await this.facebook.fetchCampaigns()
     await this.facebook.fetchAdSets()
     this.facebook.selectedCampaignId = this.facebook.campaigns[0].id
@@ -202,8 +195,8 @@ export default {
     facebook() {
       return useFacebookStore()
     },
-    audienceGroups() {
-      return useAudienceGroupsStore()
+    adsetGroups() {
+      return useAdsetGroupsStore()
     },
 
     hasRecords() {
@@ -211,7 +204,7 @@ export default {
     },
 
     hasGroups() {
-      return this.audienceGroups.groups.length > 0
+      return this.adsetGroups.groups.length > 0
     },
 
     hasActiveFilters() {
@@ -224,7 +217,7 @@ export default {
     },
 
     filteredGroups() {
-      let groups = this.audienceGroups.groups
+      let groups = this.adsetGroups.groups
 
       if (this.searchTerm.trim()) {
         const search = this.searchTerm.trim().toLowerCase()
@@ -302,7 +295,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.automated-audiences {
+.automated-adsets {
   padding: 1em;
 }
 

@@ -12,51 +12,6 @@ const accessToken = process.env.ACCESS_TOKEN
 // Initialize the Facebook Ads API
 FacebookAdsApi.init(accessToken)
 
-router.post('/push-audience', async (req: Request, res: Response) => {
-  const { payload, password } = req.body
-
-  if (password !== process.env.AUTH_SECRET) {
-    return res.json({
-      code: 401,
-      message: 'Unauthorized',
-      error: true,
-    })
-  }
-
-  try {
-    if (!adAccountId || !accessToken) {
-      return res.status(500).json({
-        code: 500,
-        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
-        error: true,
-      })
-    }
-
-    const adAccount = new AdAccount(adAccountId)
-    const audienceData = {
-      name: payload.name,
-      subtype: payload.subtype,
-      description: payload.description,
-    }
-
-    const audience = await adAccount.createCustomAudience([], audienceData)
-
-    return res.json({
-      code: 200,
-      message: 'Audience pushed successfully',
-      data: audience,
-      error: false,
-    })
-  } catch (error: any) {
-    console.error('Error in pushToFacebook:', error)
-    return res.status(500).json({
-      code: 500,
-      message: 'Internal Server Error',
-      error: true,
-    })
-  }
-})
-
 router.get('/audiences', async (req: Request, res: Response) => {
   if (!adAccountId || !accessToken) {
     return res.status(500).json({
@@ -301,10 +256,5 @@ router.post('/create-campaign', async (req: Request, res: Response) => {
     })
   }
 })
-
-// Helper function to hash data
-function hashData(data: string): string {
-  return crypto.createHash('sha256').update(data.toLowerCase().trim()).digest('hex')
-}
 
 export default router

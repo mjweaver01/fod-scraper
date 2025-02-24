@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { useScrapeStore } from './scrape'
 import { useImportedDataStore } from './importedData'
+import { useAdsetGroupsStore } from './adsetGroups'
 
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
@@ -12,6 +13,7 @@ export const useConversationStore = defineStore('conversation', {
     auth: () => useAuthStore(),
     scrape: () => useScrapeStore(),
     importedData: () => useImportedDataStore(),
+    adsetGroups: () => useAdsetGroupsStore(),
   },
   actions: {
     addMessage(role: string, content: string) {
@@ -35,9 +37,14 @@ export const useConversationStore = defineStore('conversation', {
           question,
           data: window.location.pathname.includes('scrape')
             ? this.scrape.results
-            : this.importedData.importedResults.length > 0
-              ? this.importedData.importedResults
-              : this.scrape.results,
+            : window.location.pathname.includes('adsets')
+              ? `
+              Here is the raw data: ${JSON.stringify(this.importedData.importedResults)}\n\n
+              Here are the adsets: ${JSON.stringify(this.adsetGroups.groups)}
+              `
+              : this.importedData.importedResults.length > 0
+                ? this.importedData.importedResults
+                : this.scrape.results,
         }),
       })
 

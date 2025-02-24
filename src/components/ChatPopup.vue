@@ -10,7 +10,15 @@
           <i v-if="!isBig" class="pi pi-window-maximize maximize"></i>
           <i v-if="isBig" class="pi pi-window-minimize minimize"></i>
         </button>
-        <h4 class="no-margin">Chat ({{ $route.path.includes('scrape') ? 'Scrape' : 'Import' }})</h4>
+        <h4 class="no-margin">
+          Chat ({{
+            $route.path.includes('scrape')
+              ? 'Scrape'
+              : $route.path.includes('adsets')
+                ? 'Adsets'
+                : 'Import'
+          }})
+        </h4>
         <button class="close-chat" @click="toggleChat">
           <i class="pi pi-times"></i>
         </button>

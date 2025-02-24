@@ -6,7 +6,7 @@ import ScrapeFacebook from '@/pages/ScrapeFacebook.vue'
 import Automate from '@/pages/Automate.vue'
 import Scraper from '@/components/Scraper.vue'
 import ImportedFacebook from '@/pages/ImportedFacebook.vue'
-import AutomatedAudiences from '@/pages/AutomatedAudiences.vue'
+import AutomatedAdsets from '@/pages/AutomatedAdsets.vue'
 import NotFound from '@/pages/404.vue'
 
 export const routes = [
@@ -16,7 +16,7 @@ export const routes = [
   { path: '/login', component: Login },
   { path: '/scrape-facebook', component: ScrapeFacebook },
   { path: '/imported-facebook', component: ImportedFacebook },
-  { path: '/automated-adsets', component: AutomatedAudiences },
+  { path: '/automated-adsets', component: AutomatedAdsets },
   { path: '/automate', component: Automate },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
