@@ -111,7 +111,6 @@ export const useFacebookStore = defineStore('facebook', {
   },
   actions: {
     constructAdsetPayload(record: AudienceRecord, config?: FacebookConfig): FacebookAdSetPayload {
-      // Use the provided config or default to the store's default configuration
       const finalConfig = {
         ...this.defaultConfig,
         ...(config || {}),
@@ -121,30 +120,26 @@ export const useFacebookStore = defineStore('facebook', {
         },
       }
 
-      // Construct the payload with necessary fields
-      const finalPayload = {
+      return {
         name: `${record.name} Audience`,
         optimization_goal: finalConfig.optimization_goal,
         billing_event: finalConfig.billing_event,
         bid_amount: finalConfig.bid_amount,
         daily_budget: finalConfig.daily_budget,
-        // campaign_id: finalConfig.campaign_id,
         targeting: {
           geo_locations: {
-            custom_locations: record.locations.map((location) => ({
-              address_string: location.address,
-              radius: finalConfig.radius, // Assuming radius is constant for all locations
-              distance_unit: finalConfig.distance_unit, // Assuming distance unit is constant for all locations
+            custom_locations: record.custom_locations.map((location) => ({
+              address_string: location.address_string,
+              radius: location.radius,
+              distance_unit: location.distance_unit,
             })),
           },
         },
         status: finalConfig.status,
-        // promoted_object: {
-        //   page_id: finalConfig.promoted_object.page_id,
-        // },
+        promoted_object: {
+          page_id: finalConfig.promoted_object.page_id,
+        },
       }
-
-      return finalPayload
     },
     /**
      * Pushes a single audience record to Facebook.
@@ -154,7 +149,6 @@ export const useFacebookStore = defineStore('facebook', {
      */
     async pushAudience(index: number, record: AudienceRecord) {
       const config = this.recordConfigs[index] || this.defaultConfig
-      // Update the push status for this record.
       this.pushStatus[index] = {
         loading: true,
         error: null,
@@ -314,15 +308,15 @@ export const useFacebookStore = defineStore('facebook', {
         subtype: 'CUSTOM',
         customer_file_source: 'USER_PROVIDED_ONLY',
         retention_days: 30,
-        rule: {
-          geo_locations: {
-            custom_locations: record.locations.map((location) => ({
-              address_string: location.address,
-              radius: finalConfig.radius,
-              distance_unit: finalConfig.distance_unit,
-            })),
-          },
-        },
+        users: record.locations.map((location) => ({
+          first_name: location.address.split(' ')[0], // Example: Extract first name from address
+          last_name: location.address.split(' ')[1], // Example: Extract last name from address
+          country: 'US', // Example: Set a default country
+          zip: location.zipCode,
+          city: location.address.split(',')[1]?.trim(), // Example: Extract city from address
+          state: location.address.split(',')[2]?.trim(), // Example: Extract state from address
+          address: location.address,
+        })),
         use_in_campaigns: true,
         // Add other parameters as needed
       }

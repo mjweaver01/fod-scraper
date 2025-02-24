@@ -157,21 +157,27 @@ router.post('/push-adset', async (req: Request, res: Response) => {
   }
 
   try {
+    if (!adAccountId || !accessToken) {
+      return res.status(500).json({
+        code: 500,
+        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+        error: true,
+      })
+    }
+
     const adAccount = new AdAccount(adAccountId)
 
-    console.log(payload)
-
-    // Create ad set with targeting
-    const adSet = await adAccount.createAdSet(payload)
+    // Create the ad set using the payload directly
+    const adSet = await adAccount.createAdSet([], payload)
 
     return res.json({
       code: 200,
-      message: 'Ad set pushed successfully',
+      message: 'Ad set created successfully',
       data: adSet,
       error: false,
     })
   } catch (error: any) {
-    console.error('Error pushing ad set:', error)
+    console.error('Error creating ad set:', error)
     return res.status(500).json({
       code: 500,
       message: error.message || 'Internal Server Error',
@@ -231,29 +237,14 @@ router.post('/push-custom-audience', async (req: Request, res: Response) => {
 
     const adAccount = new AdAccount(adAccountId)
 
-    // Create the custom audience
-    const audienceData = {
+    // Create the custom audience using the payload directly
+    const audience = await adAccount.createCustomAudience([], {
       name: payload.name,
       subtype: payload.subtype,
       description: payload.description,
-      customer_file_source: 'USER_PROVIDED_ONLY',
-    }
-
-    const audience = await adAccount.createCustomAudience([], audienceData)
-
-    // Prepare and hash user data
-    const users = payload.users.map((user: any) => ({
-      fn: hashData(user.first_name),
-      ln: hashData(user.last_name),
-      country: hashData(user.country),
-      zip: hashData(user.zip),
-      city: hashData(user.city),
-      st: hashData(user.state),
-      address: hashData(user.address),
-    }))
-
-    // Add users to the custom audience
-    await audience.addUsers(users, CustomAudience.Schema.MultiKeySchema)
+      customer_file_source: payload.customer_file_source,
+      targeting: payload.targeting,
+    })
 
     return res.json({
       code: 200,
