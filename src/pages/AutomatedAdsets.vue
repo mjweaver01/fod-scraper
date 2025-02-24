@@ -80,8 +80,14 @@
       >
         <div class="group-header">
           <h3>{{ group.name }}</h3>
-          <span :class="['pill', group.status.toLowerCase()]">
-            {{ group.status }}
+          <span
+            :class="[
+              'pill',
+              group.status.toLowerCase(),
+              liveAdsets.find((adset) => adset.name === group.name) ? 'active' : '',
+            ]"
+          >
+            {{ liveAdsets.find((adset) => adset.name === group.name) ? 'LIVE' : group.status }}
           </span>
         </div>
 
@@ -118,7 +124,10 @@
         <div class="controls">
           <button
             @click="facebook.pushAdset(index, group)"
-            :disabled="facebook.pushStatus[index]?.loading"
+            :disabled="
+              facebook.pushStatus[index]?.loading ||
+              liveAdsets.find((adset) => adset.name === group.name)
+            "
           >
             Push {{ group.name.split(' - ')[0] }}
             {{
@@ -185,8 +194,9 @@ export default {
 
   async mounted() {
     await this.facebook.fetchCampaigns()
-    // await this.facebook.fetchAdSets()
     this.facebook.selectedCampaignId = this.facebook.campaigns[0].id
+
+    await this.facebook.fetchAdSets()
   },
 
   computed: {
@@ -265,6 +275,12 @@ export default {
       }
 
       return groups
+    },
+
+    liveAdsets() {
+      return this.facebook.adSets.filter((adset) =>
+        this.adsetGroups.groups.some((group) => group.name === adset.name),
+      )
     },
   },
 

@@ -28,7 +28,7 @@ export const defaultFacebookConfig: FacebookConfig = {
   bid_amount: 200,
   daily_budget: 500,
   campaign_id: '',
-  status: 'INACTIVE', // default to inactive until manually activated
+  status: 'PAUSED',
   promoted_object: {
     page_id: '',
   },
@@ -122,7 +122,8 @@ export const useFacebookStore = defineStore('facebook', {
             })),
           },
         },
-        status: record.status,
+        status: 'PAUSED',
+        // status: record.status,
         // promoted_object: {
         //   page_id: this.defaultConfig.promoted_object.page_id,
         // },
@@ -135,6 +136,10 @@ export const useFacebookStore = defineStore('facebook', {
      * @param record - The audience record.
      */
     async pushAdset(index: number, record: AudienceRecord) {
+      if (this.adSets.find((adset) => adset.name === record.name)) {
+        return 'Adset already exists'
+      }
+
       const config = this.recordConfigs[index] || this.defaultConfig
       this.pushStatus[index] = {
         loading: true,
