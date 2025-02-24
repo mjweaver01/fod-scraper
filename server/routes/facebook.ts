@@ -238,13 +238,8 @@ router.post('/push-custom-audience', async (req: Request, res: Response) => {
     const adAccount = new AdAccount(adAccountId)
 
     // Create the custom audience using the payload directly
-    const audience = await adAccount.createCustomAudience([], {
-      name: payload.name,
-      subtype: payload.subtype,
-      description: payload.description,
-      customer_file_source: payload.customer_file_source,
-      targeting: payload.targeting,
-    })
+    const audience = await adAccount.createCustomAudience([], payload)
+    console.log(audience)
 
     return res.json({
       code: 200,
