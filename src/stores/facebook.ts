@@ -66,13 +66,7 @@ export interface FacebookAdSetPayload {
  */
 export interface AudienceRecord {
   name: string
-  store: string
-  address: string
-  custom_locations: Array<{
-    address_string: string
-    radius: number
-    distance_unit: string
-  }>
+  status: string
   locations: Array<{
     address: string
     zipCode: string
@@ -97,6 +91,7 @@ export const useFacebookStore = defineStore('facebook', {
     pushingAll: false,
     campaigns: ref([]),
     fetchingCampaigns: false,
+    selectedCampaignId: '',
     promotedPages: ref([]),
     fetchingPromotedPages: false,
     audiences: ref([]),
@@ -111,34 +106,26 @@ export const useFacebookStore = defineStore('facebook', {
   },
   actions: {
     constructAdsetPayload(record: AudienceRecord, config?: FacebookConfig): FacebookAdSetPayload {
-      const finalConfig = {
-        ...this.defaultConfig,
-        ...(config || {}),
-        promoted_object: {
-          ...this.defaultConfig.promoted_object,
-          ...(config?.promoted_object || {}),
-        },
-      }
-
       return {
-        name: `${record.name} Ad Set`,
-        optimization_goal: finalConfig.optimization_goal,
-        billing_event: finalConfig.billing_event,
-        bid_amount: finalConfig.bid_amount,
-        daily_budget: finalConfig.daily_budget,
-        // targeting: {
-        //   geo_locations: {
-        //     custom_locations: record.custom_locations.map((location) => ({
-        //       address_string: location.address_string,
-        //       radius: location.radius,
-        //       distance_unit: location.distance_unit,
-        //     })),
-        //   },
-        // },
-        status: finalConfig.status,
-        promoted_object: {
-          page_id: finalConfig.promoted_object.page_id,
+        name: record.name,
+        optimization_goal: this.defaultConfig.optimization_goal,
+        campaign_id: this.selectedCampaignId,
+        billing_event: this.defaultConfig.billing_event,
+        bid_amount: this.defaultConfig.bid_amount,
+        daily_budget: this.defaultConfig.daily_budget,
+        targeting: {
+          geo_locations: {
+            custom_locations: record.locations.map((location) => ({
+              address_string: location.address,
+              radius: 5,
+              distance_unit: 'mile',
+            })),
+          },
         },
+        status: record.status,
+        // promoted_object: {
+        //   page_id: this.defaultConfig.promoted_object.page_id,
+        // },
       }
     },
     /**
@@ -147,7 +134,7 @@ export const useFacebookStore = defineStore('facebook', {
      * @param index - The index of the record (used to handle record-specific config and status).
      * @param record - The audience record.
      */
-    async pushAudience(index: number, record: AudienceRecord) {
+    async pushAdset(index: number, record: AudienceRecord) {
       const config = this.recordConfigs[index] || this.defaultConfig
       this.pushStatus[index] = {
         loading: true,
@@ -156,6 +143,7 @@ export const useFacebookStore = defineStore('facebook', {
       }
 
       const payload = this.constructAdsetPayload(record, config)
+      console.log('payload', payload)
 
       try {
         const res = await fetch('/facebook/push-adset', {
@@ -188,9 +176,9 @@ export const useFacebookStore = defineStore('facebook', {
      *
      * @param records - An array of audience records to be pushed.
      */
-    async pushAllAudiences(records: AudienceRecord[]) {
+    async pushAllAdsets(records: AudienceRecord[]) {
       this.pushingAll = true
-      const promises = records.map((record, index) => this.pushAudience(index, record))
+      const promises = records.map((record, index) => this.pushAdset(index, record))
       await Promise.all(promises)
       this.pushingAll = false
     },

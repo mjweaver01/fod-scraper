@@ -1,6 +1,6 @@
 <template>
   <div class="page automated-audiences-page">
-    <h1>Automated Audience Groups</h1>
+    <h1>Automated Adsets</h1>
 
     <hr />
     <div class="controls">
@@ -8,7 +8,7 @@
         @click="audienceGroups.createGroups"
         :disabled="!hasRecords || audienceGroups.creatingGroups"
       >
-        {{ audienceGroups.creatingGroups ? 'Creating Groups...' : 'Create Audience Groups' }}
+        {{ audienceGroups.creatingGroups ? 'Creating Groups...' : 'Create Groups' }}
       </button>
       <button
         @click="audienceGroups.clearGroups"
@@ -16,15 +16,17 @@
       >
         Clear All Groups
       </button>
-      <button
-        @click="audienceGroups.pushGroupsToFacebook"
-        :disabled="!hasGroups || audienceGroups.pushingGroups || true"
-      >
-        {{ audienceGroups.pushingGroups ? 'Pushing Groups...' : 'Push All Groups' }}
+      <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll || true">
+        {{ facebook.pushingAll ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
+      <select v-model="facebook.selectedCampaignId">
+        <option v-for="campaign in facebook.campaigns" :key="campaign.id" :value="campaign.id">
+          {{ campaign.name }}
+        </option>
+      </select>
       <SliderToggle
         :value="audienceGroups.onlyInStock"
-        label="Only create audiences for in-stock products"
+        label="Only create for in-stock products"
         labelMaxWidth="150px"
       />
     </div>
@@ -117,8 +119,8 @@
 
         <div class="controls">
           <button
-            @click="facebook.pushCustomAudience(index, group)"
-            :disabled="audienceGroups.pushingGroups"
+            @click="facebook.pushAdset(index, group)"
+            :disabled="facebook.pushStatus[index]?.loading"
           >
             Push {{ group.name.split(' - ')[0] }}
             {{
@@ -156,7 +158,7 @@
     </div>
 
     <div v-else class="no-groups mt-4">
-      <p>Click 'Create Audience Groups' to generate groups from your data.</p>
+      <p>Click 'Create Groups' to generate groups from your data.</p>
     </div>
   </div>
 </template>
@@ -184,12 +186,13 @@ export default {
     }
   },
 
-  mounted() {
+  async mounted() {
     // Fetch audiences instead of campaigns
-    this.facebook.fetchAudiences()
-    this.facebook.fetchCampaigns()
-    this.facebook.fetchCustomAudiences()
-    this.facebook.fetchAdSets()
+    // this.facebook.fetchAudiences()
+    // this.facebook.fetchCustomAudiences()
+    await this.facebook.fetchCampaigns()
+    await this.facebook.fetchAdSets()
+    this.facebook.selectedCampaignId = this.facebook.campaigns[0].id
   },
 
   computed: {
@@ -362,6 +365,10 @@ table {
   align-items: center;
   gap: 1rem;
   width: 100%;
+}
+
+select {
+  width: 200px;
 }
 
 .search-filter {

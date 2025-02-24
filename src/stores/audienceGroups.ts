@@ -4,13 +4,13 @@ import { useImportedDataStore } from './importedData'
 
 interface LocationGroup {
   name: string
-  state: string
   locations: Array<{
     address: string
     zipCode: string
     quantity: number
     stock_status: string
   }>
+  campaignId: string
   audienceId: string
   status: 'ACTIVE' | 'INACTIVE'
 }
@@ -158,6 +158,7 @@ export const useAudienceGroupsStore = defineStore('audienceGroups', {
             const group = {
               name: `${stateName} - ${product} - ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
               state,
+              campaignId: this.facebook.selectedCampaignId,
               locations: productRecords,
               audienceId: '', // Will be set later
               status: stockStatus === 'in_stock' ? 'ACTIVE' : 'INACTIVE',

@@ -16,7 +16,7 @@ export const routes = [
   { path: '/login', component: Login },
   { path: '/scrape-facebook', component: ScrapeFacebook },
   { path: '/imported-facebook', component: ImportedFacebook },
-  { path: '/automated-audiences', component: AutomatedAudiences },
+  { path: '/automated-adsets', component: AutomatedAudiences },
   { path: '/automate', component: Automate },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ]
@@ -24,5 +24,5 @@ export const routes = [
 export const navRoutes = [
   { path: '/', name: 'Home' },
   { path: '/import', name: 'Import' },
-  { path: '/automated-audiences', name: 'Automated Audiences' },
+  { path: '/automated-adsets', name: 'Automated Adsets' },
 ]
