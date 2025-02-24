@@ -69,7 +69,6 @@ export interface AudienceRecord {
   status: string
   locations: Array<{
     address: string
-    zipCode: string
     quantity: number
     stock_status: string
   }>

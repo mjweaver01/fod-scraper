@@ -103,7 +103,6 @@
               <thead>
                 <tr>
                   <th>Address</th>
-                  <th>Zip Code</th>
                   <th>Quantity</th>
                   <th>Stock Status</th>
                 </tr>
@@ -111,7 +110,6 @@
               <tbody>
                 <tr v-for="location in group.locations" :key="location.address">
                   <td>{{ location.address }}</td>
-                  <td>{{ location.zipCode }}</td>
                   <td>{{ location.quantity }}</td>
                   <td>
                     {{ location.stock_status }}

@@ -6,7 +6,6 @@ interface LocationGroup {
   name: string
   locations: Array<{
     address: string
-    zipCode: string
     quantity: number
     stock_status: string
   }>
