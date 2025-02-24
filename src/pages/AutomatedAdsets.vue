@@ -90,7 +90,7 @@
             :class="[
               'pill',
               group.status.toLowerCase(),
-              liveAdsets.find((adset) => adset.name === group.name) ? 'active' : '',
+              liveAdsets.find((adset) => adset.name === group.name) ? 'really-good' : '',
             ]"
           >
             {{ liveAdsets.find((adset) => adset.name === group.name) ? 'PUSHED' : group.status }}

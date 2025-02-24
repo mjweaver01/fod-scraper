@@ -19,6 +19,12 @@
     color: var(--green);
   }
 
+  &.really-good {
+    background-color: var(--green);
+    border-color: var(--green);
+    color: var(--white);
+  }
+
   &.bad,
   &.inactive,
   &.error {
