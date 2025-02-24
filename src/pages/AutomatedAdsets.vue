@@ -87,7 +87,7 @@
               liveAdsets.find((adset) => adset.name === group.name) ? 'active' : '',
             ]"
           >
-            {{ liveAdsets.find((adset) => adset.name === group.name) ? 'LIVE' : group.status }}
+            {{ liveAdsets.find((adset) => adset.name === group.name) ? 'PUSHED' : group.status }}
           </span>
         </div>
 
