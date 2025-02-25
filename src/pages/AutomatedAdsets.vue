@@ -13,7 +13,7 @@
       <button @click="adsetGroups.clearGroups" :disabled="!hasGroups || adsetGroups.pushingGroups">
         Clear All Groups
       </button>
-      <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll || true">
+      <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll">
         {{ facebook.pushingAll ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
     </div>
@@ -141,13 +141,14 @@
 
         <div class="controls">
           <button
-            @click="facebook.pushAdset(index, group)"
+            @click="createAndPushAdset(index, group)"
             :disabled="
               facebook.pushStatus[index]?.loading ||
               liveAdsets.find((adset) => adset.name === group.name)
             "
           >
-            Push {{ group.name.split(' - ')[0] }}
+            {{ liveAdsets.find((adset) => adset.name === group.name) ? 'Update' : 'Push' }}
+            {{ group.name.split(' - ')[0] }}
             {{
               group.name
                 .split(' - ')[1]
@@ -296,17 +297,15 @@ export default {
     },
 
     liveAdsets() {
-      return this.facebook.adSets.filter((adset) =>
-        this.adsetGroups.groups.some((group) => group.name === adset.name),
+      return (
+        this.facebook?.adSets?.filter((adset) =>
+          this.adsetGroups.groups.some((group) => group.name === adset.name),
+        ) || []
       )
     },
   },
 
   methods: {
-    getCampaignName(id) {
-      return this.facebook.campaigns.find((c) => c.id === id)?.name || 'Unknown Campaign'
-    },
-
     fuzzyMatch(query, text) {
       if (!text) return false
       text = text.toString().toLowerCase()
@@ -325,6 +324,15 @@ export default {
       this.selectedStatusFilter = 'all'
       this.selectedLocationsSort = 'none'
     },
+
+    createAndPushAdset(index, group) {
+      if (this.liveAdsets.find((adset) => adset.name === group.name)) {
+        const existingAdset = this.liveAdsets.find((adset) => adset.name === group.name)
+        this.facebook.updateAdset(existingAdset, group)
+      } else {
+        this.facebook.pushAdset(index, group)
+      }
+    },
   },
 }
 </script>
@@ -340,6 +348,10 @@ export default {
   margin-bottom: 1em;
   padding: 1em;
   background: var(--background);
+
+  .controls {
+    align-items: center;
+  }
 }
 
 .group-header {

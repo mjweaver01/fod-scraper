@@ -162,7 +162,7 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
             const stateName = this.getStateFromCode(state)
 
             const group = {
-              name: `${stateName} - ${product} - ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'} - ${new Date().toLocaleDateString()}`,
+              name: `${stateName} - ${product} - ${stockStatus === 'in_stock' ? 'In Stock' : 'Out of Stock'}`,
               state,
               campaignId: this.facebook.selectedCampaignId,
               locations: productRecords,

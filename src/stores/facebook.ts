@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
+import { useAdsetGroupsStore } from './adsetGroups'
 import { ref } from 'vue'
 
 /**
@@ -102,6 +103,7 @@ export const useFacebookStore = defineStore('facebook', {
   }),
   getters: {
     auth: () => useAuthStore(),
+    adsetGroups: () => useAdsetGroupsStore(),
   },
   actions: {
     constructAdsetPayload(record: AudienceRecord, config?: FacebookConfig): FacebookAdSetPayload {
@@ -176,14 +178,9 @@ export const useFacebookStore = defineStore('facebook', {
       }
     },
 
-    /**
-     * Pushes all audience records concurrently.
-     *
-     * @param records - An array of audience records to be pushed.
-     */
-    async pushAllAdsets(records: AudienceRecord[]) {
+    async pushAllAdsets() {
       this.pushingAll = true
-      const promises = records.map((record, index) => this.pushAdset(index, record))
+      const promises = this.adsetGroups.groups.map((group, index) => this.pushAdset(index, group))
       await Promise.all(promises)
       this.pushingAll = false
     },
@@ -223,6 +220,47 @@ export const useFacebookStore = defineStore('facebook', {
       const data = await res.json()
       this.adSets = data.data
       this.fetchingAdSets = false
+    },
+
+    async updateAdset(index: number, existingAdsetId: any, record: AudienceRecord) {
+      const config = this.recordConfigs[index] || this.defaultConfig
+      this.pushStatus[index] = {
+        loading: true,
+        error: null,
+        response: null,
+      }
+
+      let payload = {
+        id: existingAdsetId,
+        ...this.constructAdsetPayload(record, config),
+      }
+      console.log('payload', payload)
+
+      try {
+        const res = await fetch('/facebook/update-adset', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            password: this.auth.password,
+            payload,
+          }),
+        })
+        const data = await res.json()
+        await this.fetchAdSets()
+        this.pushStatus[index] = {
+          loading: false,
+          error: null,
+          response: data,
+        }
+      } catch (err: any) {
+        this.pushStatus[index] = {
+          loading: false,
+          error: err.message,
+          response: null,
+        }
+      }
     },
 
     async fetchAudiences() {

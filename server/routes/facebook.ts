@@ -141,6 +141,88 @@ router.post('/push-adset', async (req: Request, res: Response) => {
   }
 })
 
+router.post('/update-adset', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
+    if (!adAccountId || !accessToken) {
+      return res.status(500).json({
+        code: 500,
+        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+        error: true,
+      })
+    }
+
+    const adAccount = new AdAccount(adAccountId)
+
+    // Update the ad set using the payload directly
+    const adSet = await adAccount.updateAdSet([payload.id], payload)
+
+    return res.json({
+      code: 200,
+      message: 'Ad set updated successfully',
+      data: adSet,
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error updating ad set:', error)
+    return res.status(500).json({
+      code: 500,
+      message: error.message || 'Internal Server Error',
+      error: true,
+    })
+  }
+})
+
+router.post('/delete-adset', async (req: Request, res: Response) => {
+  const { payload, password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  try {
+    if (!adAccountId || !accessToken) {
+      return res.status(500).json({
+        code: 500,
+        message: 'Missing Facebook configuration (AD_ACCOUNT_ID or ACCESS_TOKEN).',
+        error: true,
+      })
+    }
+
+    const adAccount = new AdAccount(adAccountId)
+
+    // Delete the ad set using the payload directly
+    const adSet = await adAccount.deleteAdSet([], payload)
+
+    return res.json({
+      code: 200,
+      message: 'Ad set deleted successfully',
+      data: adSet,
+      error: false,
+    })
+  } catch (error: any) {
+    console.error('Error deleting ad set:', error)
+    return res.status(500).json({
+      code: 500,
+      message: error.message || 'Internal Server Error',
+      error: true,
+    })
+  }
+})
+
 router.get('/custom-audiences', async (req: Request, res: Response) => {
   if (!adAccountId || !accessToken) {
     return res.status(500).json({
