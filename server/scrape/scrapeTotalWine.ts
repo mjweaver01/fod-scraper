@@ -1,8 +1,9 @@
 import { userAgent } from '../constants'
-import browser from './browser'
+import newBrowser from './browser'
 
 export default async function scrapeTotalWine(url: string) {
   try {
+    const browser = await newBrowser()
     const context = await browser.newContext({
       userAgent,
       viewport: { width: 1920, height: 1080 },

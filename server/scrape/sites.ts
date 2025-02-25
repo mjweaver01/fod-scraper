@@ -29,11 +29,11 @@ export const sites = [
   //   url: 'https://www.totalwine.com/spirits/bourbon/small-batch-bourbon/field-of-dreams-small-batch-bourbon/p/2126259003?s=2701',
   //   scraper: 'totalwine',
   // },
-  {
-    name: 'Player Series - Total Wine',
-    url: 'https://www.totalwine.com/spirits/bourbon/field-of-dreams-bourbon/p/2126227189??s=2701',
-    scraper: 'totalwine',
-  },
+  // {
+  //   name: 'Player Series - Total Wine',
+  //   url: 'https://www.totalwine.com/spirits/bourbon/field-of-dreams-bourbon/p/2126227189??s=2701',
+  //   scraper: 'totalwine',
+  // },
   // {
   //   name: 'Small Batch - Gays',
   //   url: 'https://gayshopsnschnapps.com/shop/product/field-of-dreams-small-batch-bourbon-whiskey/670fdbe1d76d41428066111b',
