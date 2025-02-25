@@ -390,13 +390,26 @@ table {
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 1rem;
   width: 100%;
-}
 
-select {
-  width: 200px;
+  > div {
+    flex-grow: 1;
+  }
+
+  @media (min-width: $tablet) {
+    flex-wrap: nowrap;
+
+    > div {
+      flex-grow: 0;
+    }
+
+    .select {
+      max-width: 200px;
+    }
+  }
 }
 
 .search-filter {

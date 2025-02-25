@@ -77,7 +77,7 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
       ? JSON.parse(localStorage.getItem('adsetGroups') || '')
       : []) as LocationGroup[],
     onlyInStock: true,
-    dataSource: 'scraped',
+    dataSource: 'imported',
   }),
 
   getters: {
