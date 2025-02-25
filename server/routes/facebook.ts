@@ -12,6 +12,40 @@ const accessToken = process.env.ACCESS_TOKEN
 // Initialize the Facebook Ads API
 FacebookAdsApi.init(accessToken)
 
+// Cache implementation
+interface CacheItem {
+  data: any
+  timestamp: number
+}
+
+const cache: Record<string, CacheItem> = {}
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+function getCacheKey(route: string, params: any = {}): string {
+  return `${route}:${JSON.stringify(params)}`
+}
+
+function getFromCache(key: string): any | null {
+  const item = cache[key]
+  if (!item) return null
+
+  const now = Date.now()
+  if (now - item.timestamp > CACHE_TTL) {
+    // Cache expired
+    delete cache[key]
+    return null
+  }
+
+  return item.data
+}
+
+function setCache(key: string, data: any): void {
+  cache[key] = {
+    data,
+    timestamp: Date.now(),
+  }
+}
+
 router.get('/audiences', async (req: Request, res: Response) => {
   if (!adAccountId || !accessToken) {
     return res.status(500).json({
@@ -21,10 +55,25 @@ router.get('/audiences', async (req: Request, res: Response) => {
     })
   }
 
+  const cacheKey = getCacheKey('audiences')
+  const cachedData = getFromCache(cacheKey)
+
+  if (cachedData) {
+    return res.json({
+      code: 200,
+      message: 'Audiences fetched successfully (cached)',
+      data: cachedData,
+      error: false,
+      cached: true,
+    })
+  }
+
   try {
     const adAccount = new AdAccount(adAccountId)
-
     const audiences = await adAccount.getCustomAudiences(['id', 'name', 'description'])
+
+    // Only cache successful responses
+    setCache(cacheKey, audiences)
 
     return res.json({
       code: 200,
@@ -51,9 +100,25 @@ router.get('/campaigns', async (req: Request, res: Response) => {
     })
   }
 
+  const cacheKey = getCacheKey('campaigns')
+  const cachedData = getFromCache(cacheKey)
+
+  if (cachedData) {
+    return res.json({
+      code: 200,
+      message: 'Campaigns fetched successfully (cached)',
+      data: cachedData,
+      error: false,
+      cached: true,
+    })
+  }
+
   try {
     const adAccount = new AdAccount(adAccountId)
     const campaigns = await adAccount.getCampaigns(['id', 'name'])
+
+    // Only cache successful responses
+    setCache(cacheKey, campaigns)
 
     return res.json({
       code: 200,
@@ -80,9 +145,25 @@ router.get('/adsets', async (req: Request, res: Response) => {
     })
   }
 
+  const cacheKey = getCacheKey('adsets')
+  const cachedData = getFromCache(cacheKey)
+
+  if (cachedData) {
+    return res.json({
+      code: 200,
+      message: 'Ad sets fetched successfully (cached)',
+      data: cachedData,
+      error: false,
+      cached: true,
+    })
+  }
+
   try {
     const adAccount = new AdAccount(adAccountId)
     const adSets = await adAccount.getAdSets(['id', 'name'])
+
+    // Only cache successful responses
+    setCache(cacheKey, adSets)
 
     return res.json({
       code: 200,
@@ -125,6 +206,9 @@ router.post('/push-adset', async (req: Request, res: Response) => {
     // Create the ad set using the payload directly
     const adSet = await adAccount.createAdSet([], payload)
 
+    // Invalidate adsets cache after creating a new one
+    delete cache[getCacheKey('adsets')]
+
     return res.json({
       code: 200,
       message: 'Ad set created successfully',
@@ -165,6 +249,9 @@ router.post('/update-adset', async (req: Request, res: Response) => {
 
     // Update the ad set using the payload directly
     const adSet = await adAccount.updateAdSet([payload.id], payload)
+
+    // Invalidate adsets cache after updating
+    delete cache[getCacheKey('adsets')]
 
     return res.json({
       code: 200,
@@ -207,6 +294,9 @@ router.post('/delete-adset', async (req: Request, res: Response) => {
     // Delete the ad set using the payload directly
     const adSet = await adAccount.deleteAdSet([], payload)
 
+    // Invalidate adsets cache after deleting
+    delete cache[getCacheKey('adsets')]
+
     return res.json({
       code: 200,
       message: 'Ad set deleted successfully',
@@ -232,9 +322,25 @@ router.get('/custom-audiences', async (req: Request, res: Response) => {
     })
   }
 
+  const cacheKey = getCacheKey('custom-audiences')
+  const cachedData = getFromCache(cacheKey)
+
+  if (cachedData) {
+    return res.json({
+      code: 200,
+      message: 'Custom audiences fetched successfully (cached)',
+      data: cachedData,
+      error: false,
+      cached: true,
+    })
+  }
+
   try {
     const adAccount = new AdAccount(adAccountId)
     const audiences = await adAccount.getCustomAudiences(['id', 'name', 'description'])
+
+    // Only cache successful responses
+    setCache(cacheKey, audiences)
 
     return res.json({
       code: 200,
@@ -277,6 +383,10 @@ router.post('/push-custom-audience', async (req: Request, res: Response) => {
     // Create the custom audience using the payload directly
     const audience = await adAccount.createCustomAudience([], payload)
     console.log(audience)
+
+    // Invalidate audiences caches after creating a new one
+    delete cache[getCacheKey('audiences')]
+    delete cache[getCacheKey('custom-audiences')]
 
     return res.json({
       code: 200,
@@ -323,6 +433,9 @@ router.post('/create-campaign', async (req: Request, res: Response) => {
       status: payload.status,
     })
 
+    // Invalidate campaigns cache after creating a new one
+    delete cache[getCacheKey('campaigns')]
+
     return res.json({
       code: 200,
       message: 'Campaign created successfully',
@@ -337,6 +450,28 @@ router.post('/create-campaign', async (req: Request, res: Response) => {
       error: true,
     })
   }
+})
+
+// Add a utility endpoint to clear the cache if needed
+router.post('/clear-cache', async (req: Request, res: Response) => {
+  const { password } = req.body
+
+  if (password !== process.env.AUTH_SECRET) {
+    return res.json({
+      code: 401,
+      message: 'Unauthorized',
+      error: true,
+    })
+  }
+
+  // Clear all cache
+  Object.keys(cache).forEach((key) => delete cache[key])
+
+  return res.json({
+    code: 200,
+    message: 'Cache cleared successfully',
+    error: false,
+  })
 })
 
 export default router
