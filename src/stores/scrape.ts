@@ -2,6 +2,17 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { sites, type Site } from '../../server/scrape/sites'
 
+export type ResultsDataType = {
+  address: string
+  in_stock: boolean
+  name: string
+  stock_status: string
+  store: string
+  phone?: string
+  time?: string
+  url?: string
+}
+
 export const useScrapeStore = defineStore('scrape', {
   state: () => {
     return {
@@ -27,7 +38,7 @@ export const useScrapeStore = defineStore('scrape', {
       // @ts-ignore
       return this.activeSite?.data || []
     },
-    allResults() {
+    allResults(): ResultsDataType[] {
       // @ts-ignore
       return this.results.flatMap((result: any) => {
         if (!result?.data) return []

@@ -1,17 +1,11 @@
 import { defineStore } from 'pinia'
+import { type ResultsDataType } from './scrape'
 
 export const useImportedDataStore = defineStore('importedData', {
   state: () => ({
     importedResults: (window.localStorage.getItem('importedResults')
       ? JSON.parse(window.localStorage.getItem('importedResults') || '[]')
-      : []) as Array<{
-      name: string
-      store: string
-      address: string
-      stock_status: string
-      quantity: number
-      in_stock: boolean
-    }>,
+      : []) as ResultsDataType[],
   }),
   actions: {
     importCSV(file: File) {
@@ -49,7 +43,7 @@ export const useImportedDataStore = defineStore('importedData', {
               .filter(
                 (record) =>
                   record.name && record.store && record.address && record.in_stock !== undefined,
-              )
+              ) as ResultsDataType[]
 
             this.importedResults = [...this.importedResults, ...csvData]
             window.localStorage.setItem('importedResults', JSON.stringify(this.importedResults))
