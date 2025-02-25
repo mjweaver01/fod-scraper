@@ -16,8 +16,22 @@
       <button @click="facebook.pushAllAdsets" :disabled="!hasGroups || facebook.pushingAll || true">
         {{ facebook.pushingAll ? 'Pushing Groups...' : 'Push All Groups' }}
       </button>
+    </div>
+    <hr />
+
+    <div class="controls">
       <div>
-        <label for="campaignSelect">Select Campaign</label>
+        <label for="campaignSelect">Data Source</label>
+        <div class="select">
+          <select v-model="adsetGroups.dataSource" @change="adsetGroups.clearGroups">
+            <option value="" disabled selected>Select Data Source</option>
+            <option value="scraped">Scraped</option>
+            <option value="imported">Imported</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="campaignSelect">Campaign</label>
         <div class="select">
           <select v-model="facebook.selectedCampaignId" @change="adsetGroups.clearGroups">
             <option value="" disabled selected>Select Campaign</option>
@@ -215,7 +229,7 @@ export default {
     },
 
     hasRecords() {
-      return this.importedData.importedResults.length > 0
+      return this.adsetGroups.currentDataSet.length > 0
     },
 
     hasGroups() {

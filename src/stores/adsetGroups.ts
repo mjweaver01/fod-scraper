@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useFacebookStore } from './facebook'
 import { useImportedDataStore } from './importedData'
+import { useScrapeStore } from './scrape'
 
 interface LocationGroup {
   name: string
@@ -76,12 +77,16 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
       ? JSON.parse(localStorage.getItem('adsetGroups') || '')
       : []) as LocationGroup[],
     onlyInStock: true,
+    dataSource: 'scraped',
   }),
 
   getters: {
     facebook: () => useFacebookStore(),
-    importedData: () => useImportedDataStore(),
-    records: () => useImportedDataStore().importedResults,
+    scrapedData: () => useScrapeStore().allResults,
+    importedData: () => useImportedDataStore().importedResults,
+    currentDataSet(state) {
+      return state.dataSource === 'scraped' ? state.scrapedData : state.importedData
+    },
   },
 
   actions: {
@@ -111,8 +116,10 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
       this.creatingGroups = true
       this.groups = []
 
+      console.log(this.currentDataSet)
+
       // First group by stock status
-      const stockGroups = this.records.reduce((acc, record) => {
+      const stockGroups = this.currentDataSet.reduce((acc, record) => {
         const key = record.in_stock ? 'in_stock' : 'out_stock'
         if (!acc[key]) acc[key] = []
         acc[key].push(record)
