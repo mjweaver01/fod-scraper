@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import { Router, Request, Response } from 'express'
-import { AdAccount, FacebookAdsApi, CustomAudience } from 'facebook-nodejs-business-sdk'
+import { AdAccount, FacebookAdsApi, CustomAudience, AdSet } from 'facebook-nodejs-business-sdk'
 import crypto from 'crypto'
 
 dotenv.config()
@@ -225,8 +225,17 @@ router.post('/push-adset', async (req: Request, res: Response) => {
   }
 })
 
+// Define interface for AdSet update payload
+interface AdSetUpdatePayload {
+  id: string
+  [key: string]: any // Other fields to update
+}
+
 router.post('/update-adset', async (req: Request, res: Response) => {
-  const { payload, password } = req.body
+  const { payload, password } = req.body as { payload: AdSetUpdatePayload; password: string }
+  const { id, ...updates } = payload
+
+  console.log(payload)
 
   if (password !== process.env.AUTH_SECRET) {
     return res.json({
@@ -245,10 +254,13 @@ router.post('/update-adset', async (req: Request, res: Response) => {
       })
     }
 
-    const adAccount = new AdAccount(adAccountId)
+    // Create AdSet instance with just the ID
+    const adSet = new AdSet(id)
 
-    // Update the ad set using the payload directly
-    const adSet = await adAccount.updateAdSet([payload.id], payload)
+    // Update the ad set with the correct method signature
+    // The first parameter should be an array of fields to update (can be empty)
+    // The second parameter should be the update data
+    const updatedAdSet = await adSet.update([], updates)
 
     // Invalidate adsets cache after updating
     delete cache[getCacheKey('adsets')]
@@ -256,7 +268,7 @@ router.post('/update-adset', async (req: Request, res: Response) => {
     return res.json({
       code: 200,
       message: 'Ad set updated successfully',
-      data: adSet,
+      data: updatedAdSet,
       error: false,
     })
   } catch (error: any) {
@@ -289,10 +301,10 @@ router.post('/delete-adset', async (req: Request, res: Response) => {
       })
     }
 
-    const adAccount = new AdAccount(adAccountId)
+    const adSet = new AdSet(payload.id)
 
     // Delete the ad set using the payload directly
-    const adSet = await adAccount.deleteAdSet([], payload)
+    const deletedAdSet = await adSet.delete([payload.id])
 
     // Invalidate adsets cache after deleting
     delete cache[getCacheKey('adsets')]
@@ -300,7 +312,7 @@ router.post('/delete-adset', async (req: Request, res: Response) => {
     return res.json({
       code: 200,
       message: 'Ad set deleted successfully',
-      data: adSet,
+      data: deletedAdSet,
       error: false,
     })
   } catch (error: any) {

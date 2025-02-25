@@ -142,10 +142,7 @@
         <div class="controls">
           <button
             @click="createAndPushAdset(index, group)"
-            :disabled="
-              facebook.pushStatus[index]?.loading ||
-              liveAdsets.find((adset) => adset.name === group.name)
-            "
+            :disabled="facebook.pushStatus[index]?.loading"
           >
             {{ liveAdsets.find((adset) => adset.name === group.name) ? 'Update' : 'Push' }}
             {{ group.name.split(' - ')[0] }}
@@ -328,7 +325,7 @@ export default {
     createAndPushAdset(index, group) {
       if (this.liveAdsets.find((adset) => adset.name === group.name)) {
         const existingAdset = this.liveAdsets.find((adset) => adset.name === group.name)
-        this.facebook.updateAdset(existingAdset, group)
+        this.facebook.updateAdset(index, group, existingAdset.id)
       } else {
         this.facebook.pushAdset(index, group)
       }

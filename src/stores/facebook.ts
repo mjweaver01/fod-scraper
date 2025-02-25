@@ -222,7 +222,7 @@ export const useFacebookStore = defineStore('facebook', {
       this.fetchingAdSets = false
     },
 
-    async updateAdset(index: number, existingAdsetId: any, record: AudienceRecord) {
+    async updateAdset(index: number, record: AudienceRecord, existingAdsetId: string) {
       const config = this.recordConfigs[index] || this.defaultConfig
       this.pushStatus[index] = {
         loading: true,
