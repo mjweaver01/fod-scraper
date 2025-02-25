@@ -23,6 +23,7 @@ export const routes = [
 
 export const navRoutes = [
   { path: '/', name: 'Home' },
+  { path: '/scrape', name: 'Scrape' },
   { path: '/import', name: 'Import' },
   { path: '/automated-adsets', name: 'Automated Adsets' },
 ]

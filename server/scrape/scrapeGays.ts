@@ -1,9 +1,8 @@
-import { chromium } from 'playwright'
 import { userAgent } from '../constants'
+import browser from './browser'
 
 export default async function scrapeGays(url: string) {
   try {
-    const browser = await chromium.launch()
     const context = await browser.newContext({
       userAgent,
       viewport: { width: 1920, height: 1080 },

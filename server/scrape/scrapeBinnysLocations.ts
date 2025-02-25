@@ -1,6 +1,5 @@
-import { chromium } from 'playwright'
 import { userAgent } from '../constants'
-
+import browser from './browser'
 // Extend the global Window interface to include serverSideModel.
 declare global {
   interface Window {
@@ -14,7 +13,6 @@ declare global {
 const URL = 'https://www.binnys.com/store-locator/'
 
 export default async function scrapeBinnysLocations() {
-  const browser = await chromium.launch()
   const context = await browser.newContext({
     userAgent,
     viewport: { width: 1920, height: 1080 },
