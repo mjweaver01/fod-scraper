@@ -263,6 +263,40 @@ export const useFacebookStore = defineStore('facebook', {
       }
     },
 
+    async deleteAdset(index: number, id: string) {
+      this.pushStatus[index] = {
+        loading: true,
+        error: null,
+        response: null,
+      }
+
+      try {
+        const res = await fetch('/facebook/delete-adset', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            password: this.auth.password,
+            payload: { id },
+          }),
+        })
+        const data = await res.json()
+        await this.fetchAdSets()
+        this.pushStatus[index] = {
+          loading: false,
+          error: null,
+          response: data,
+        }
+      } catch (err: any) {
+        this.pushStatus[index] = {
+          loading: false,
+          error: err.message,
+          response: null,
+        }
+      }
+    },
+
     async fetchAudiences() {
       this.fetchingAudiences = true
       const res = await fetch('/facebook/audiences')

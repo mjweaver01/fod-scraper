@@ -140,38 +140,46 @@
         </div>
 
         <div class="controls">
-          <button
-            @click="createAndPushAdset(index, group)"
-            :disabled="facebook.pushStatus[index]?.loading"
+          <div class="controls">
+            <button
+              @click="createAndPushAdset(index, group)"
+              :disabled="facebook.pushStatus[index]?.loading"
+            >
+              {{ liveAdsets.find((adset) => adset.name === group.name) ? 'Update' : 'Push' }}
+              {{ group.name.split(' - ')[0] }}
+              {{
+                group.name
+                  .split(' - ')[1]
+                  .replace('Field of Dreams', '')
+                  .replace('Field Of Dreams', '')
+              }}
+            </button>
+            <p
+              v-if="facebook.pushStatus[index]"
+              class="pill"
+              :class="
+                facebook.pushStatus[index]?.error || facebook.pushStatus[index]?.response?.error
+                  ? 'error'
+                  : facebook.pushStatus[index]?.response
+                    ? 'success'
+                    : ''
+              "
+            >
+              {{
+                facebook.pushStatus[index]?.loading
+                  ? 'Loading...'
+                  : (facebook.pushStatus[index]?.response?.message ??
+                    facebook.pushStatus[index]?.response ??
+                    facebook.pushStatus[index]?.error)
+              }}
+            </p>
+          </div>
+          <div
+            v-if="liveAdsets.find((adset) => adset.name === group.name)"
+            class="controls flex-end"
           >
-            {{ liveAdsets.find((adset) => adset.name === group.name) ? 'Update' : 'Push' }}
-            {{ group.name.split(' - ')[0] }}
-            {{
-              group.name
-                .split(' - ')[1]
-                .replace('Field of Dreams', '')
-                .replace('Field Of Dreams', '')
-            }}
-          </button>
-          <p
-            v-if="facebook.pushStatus[index]"
-            class="pill"
-            :class="
-              facebook.pushStatus[index]?.error || facebook.pushStatus[index]?.response?.error
-                ? 'error'
-                : facebook.pushStatus[index]?.response
-                  ? 'success'
-                  : ''
-            "
-          >
-            {{
-              facebook.pushStatus[index]?.loading
-                ? 'Loading...'
-                : (facebook.pushStatus[index]?.response?.message ??
-                  facebook.pushStatus[index]?.response ??
-                  facebook.pushStatus[index]?.error)
-            }}
-          </p>
+            <button class="destructive" @click="deleteAdset(index)">Delete</button>
+          </div>
         </div>
       </div>
     </div>
@@ -330,6 +338,15 @@ export default {
         this.facebook.pushAdset(index, group)
       }
     },
+
+    deleteAdset(index) {
+      if (!confirm('Are you sure you want to delete this adset?')) return
+
+      this.facebook.deleteAdset(
+        index,
+        this.liveAdsets.find((adset) => adset.name === this.adsetGroups.groups[index].name).id,
+      )
+    },
   },
 }
 </script>
@@ -417,6 +434,11 @@ table {
 
     .select {
       max-width: 200px;
+    }
+
+    .flex-end {
+      justify-content: flex-end;
+      flex-basis: 20%;
     }
   }
 }
