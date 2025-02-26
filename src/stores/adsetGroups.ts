@@ -77,7 +77,7 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
       ? JSON.parse(localStorage.getItem('adsetGroups') || '')
       : []) as LocationGroup[],
     onlyInStock: true,
-    dataSource: 'imported',
+    dataSource: localStorage.getItem('dataSource') || 'imported',
   }),
 
   getters: {
@@ -102,24 +102,26 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
       if (stateAbbreviationMatch) {
         return stateAbbreviationMatch[1]
       } else if (stateNameMatch) {
-        return stateNames[stateNameMatch]
+        return stateNames[stateNameMatch as keyof typeof stateNames]
       } else {
         return 'Unknown'
       }
     },
 
     getStateFromCode(code: string): string {
-      return Object.keys(stateNames).find((state) => stateNames[state] === code) || code
+      return (
+        Object.keys(stateNames).find(
+          (state) => stateNames[state as keyof typeof stateNames] === code,
+        ) || code
+      )
     },
 
     async createGroups() {
       this.creatingGroups = true
       this.groups = []
 
-      console.log(this.currentDataSet)
-
       // First group by stock status
-      const stockGroups = this.currentDataSet.reduce((acc, record) => {
+      const stockGroups = this.currentDataSet.reduce((acc: Record<string, any[]>, record: any) => {
         const key = record.in_stock ? 'in_stock' : 'out_stock'
         if (!acc[key]) acc[key] = []
         acc[key].push(record)
@@ -135,7 +137,7 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
         if (this.onlyInStock && stockStatus === 'out_stock') continue
 
         // Group records by state
-        const stateGroups = stockRecords.reduce((acc, record) => {
+        const stateGroups = stockRecords.reduce((acc: Record<string, any[]>, record: any) => {
           const state = this.getStateFromAddress(record.address)
           // Skip records with "Unknown" state
           if (state === 'Unknown') return acc
@@ -148,7 +150,7 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
 
         // For each state, group by product
         for (const [state, stateRecords] of Object.entries(stateGroups)) {
-          const productGroups = stateRecords.reduce((acc, record) => {
+          const productGroups = stateRecords.reduce((acc: Record<string, any[]>, record: any) => {
             const product = record.name || 'Unknown Product' // Default value for undefined product
             if (!acc[product]) {
               acc[product] = []
@@ -215,6 +217,11 @@ export const useAdsetGroupsStore = defineStore('adsetGroups', {
     async clearGroups() {
       this.groups = []
       localStorage.removeItem('adsetGroups')
+    },
+
+    setDataSource(dataSource: string) {
+      this.dataSource = dataSource
+      localStorage.setItem('dataSource', dataSource)
     },
   },
 })

@@ -23,7 +23,10 @@
       <div>
         <label for="campaignSelect">Data Source</label>
         <div class="select">
-          <select v-model="adsetGroups.dataSource" @change="adsetGroups.clearGroups">
+          <select
+            v-model="adsetGroups.dataSource"
+            @change="adsetGroups.clearGroups && adsetGroups.setDataSource(adsetGroups.dataSource)"
+          >
             <option value="" disabled selected>Select Data Source</option>
             <option value="scraped">Scraped</option>
             <option value="imported">Imported</option>
